@@ -13,7 +13,7 @@ Node.js and Grunt CLI
 ```bash
 $ npm install
 $ grunt
-```bash
+```
 
 Modules and Libraries Used
 ============================
