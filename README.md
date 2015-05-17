@@ -48,9 +48,9 @@ Development Tools Used
 
 ## Tape
 
-Tape is a minimalistic JavaScript library used to create test cases for application.
+Tape is a minimalistic JavaScript library used to create test cases for applications.
 
 ## Grunt
 
-Grunt is a task automation tool that allows us automate the building process. For example, if we want to compile our less files into css before running our server to test changes made, our Gruntfile (a play on makefile) will specify these actions to take. This means, with a simple command, a number of tasks will be executed without us having to run each one manually, everytime.
+Grunt is a task automation tool that allows us automate the building process. For example, if we want to compile our less files into css before running our server to test changes made, our Gruntfile (the concept is based on makefile) will specify these actions to take. This means, with a simple command, a number of tasks will be executed without us having to run each one manually, everytime.
 
