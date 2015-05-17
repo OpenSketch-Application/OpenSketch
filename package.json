@@ -1,0 +1,36 @@
+{
+  "name": "opensketch",
+  "version": "1.0.0",
+  "description": "An online whiteboard used for remote colloboration and conferencing",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/OpenSketch-Application/OpenSketch.git"
+  },
+  "keywords": [
+    "opensketch",
+    "whiteboard"
+  ],
+  "author": "Ragu Sivanandha Benson Wong James F. Boyer Liam Martin",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/OpenSketch-Application/OpenSketch/issues"
+  },
+  "homepage": "https://github.com/OpenSketch-Application/OpenSketch#readme",
+  "dependencies": {
+  },
+  "devDependencies": {
+    "browserify": "^10.2.0",
+    "grunt": "^0.4.5",
+    "grunt-browserify": "^3.8.0",
+    "grunt-cli": "^0.1.13",
+    "grunt-contrib-clean": "^0.6.0",
+    "grunt-contrib-copy": "^0.8.0",
+    "grunt-contrib-less": "^1.0.1",
+    "grunt-contrib-watch": "^0.6.1",
+    "tape": "^4.0.0"
+  }
+}
