@@ -20,7 +20,7 @@ module.exports = function(grunt) {
       },
       dev: {
         src: ['client/src/js/**/*.js'],
-        dest: 'client/app/bundle.js'
+        dest: 'client/app/js/bundle.js'
       }
     }
   });
@@ -30,6 +30,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-browserify');
 
-  //grunt.registerTask('default', ['build', 'browserify', 'watch']);
-  grunt.registerTask('default', ['clean', 'copy']);
+  grunt.registerTask('default', ['clean', 'copy', 'browserify']);
 };
