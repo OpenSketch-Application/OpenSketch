@@ -1,7 +1,7 @@
 module.exports = function(grunt) {
 
   grunt.initConfig({
-    copy: {
+    /*copy: {
       build: {
         cwd: 'client/src',
         src: [ '**' ],
@@ -13,7 +13,7 @@ module.exports = function(grunt) {
       build: {
         src: ['client/app']
       }
-    },
+    },*/
     browserify: {
       options: {
         debug: true
@@ -30,5 +30,5 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-browserify');
 
-  grunt.registerTask('default', ['clean', 'copy', 'browserify']);
+  grunt.registerTask('default', ['browserify']);
 };

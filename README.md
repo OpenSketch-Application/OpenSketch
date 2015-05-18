@@ -1,6 +1,6 @@
 # OpenSketch
 
-An online whiteboard application used for remote collaboration and conferencing.
+An online whiteboard application used for ideation and remote collaboration. This project is developed for Seneca@York's PRJ566 and PRJ666 course.
 
 This project is built using [Pixi.js](https://github.com/GoodBoyDigital/pixi.js/) and [Socket.io](https://github.com/Automattic/socket.io).
 
@@ -28,7 +28,7 @@ The Socket.io library is used to develop real time applications by utilizing Web
 
 ## Express
 
-Express is a Node.js web application framework and will be used to create the server component of the application. Express is a minimalistic framework and makes it easy to compliment other developmental software design patterns.
+Express is a Node.js web application framework and will be used to create the server component of the application. Express is a minimalistic framework and makes it easy to compliment other developmental frameworks and libraries.
 
 ## Mongoose
 
