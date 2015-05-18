@@ -20,10 +20,17 @@
     "url": "https://github.com/OpenSketch-Application/OpenSketch/issues"
   },
   "homepage": "https://github.com/OpenSketch-Application/OpenSketch#readme",
-  "dependencies": {
+  "dependencies": {},
+  "browserify": {
+    "transform": [ "browserify-shim" ]
+  },
+  "browserify-shim": {
+    "pixi": "global:PIXI",
+    "io" : "global:io"
   },
   "devDependencies": {
     "browserify": "^10.2.0",
+    "browserify-shim": "^3.8.6",
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.8.0",
     "grunt-cli": "^0.1.13",
