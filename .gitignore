@@ -29,3 +29,7 @@ server/node_modules
 
 # Ignore mongodb binaries
 server/db
+
+# Client build
+/client/app/js/*.js
+/client/app/css/*.css
