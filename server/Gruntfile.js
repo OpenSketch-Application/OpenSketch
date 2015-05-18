@@ -48,6 +48,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', [
     'less:dev',
     'browserify:dev',
-    'express:dev'
+    'express:dev',
+    'watch'
   ]);
 };
