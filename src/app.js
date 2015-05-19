@@ -5,7 +5,7 @@ var io = require('io');
   window.onload = function() {
     console.log('loaded');
     var canvas = document.getElementById('whiteboard-container');
-    var renderer = new PIXI.WebGLRenderer(1200, 900);
+    var renderer = new PIXI.WebGLRenderer(500, 500);
     canvas.appendChild(renderer.view);
 
     var stage = new PIXI.Container();
@@ -17,6 +17,5 @@ var io = require('io');
       console.log(data);
       socket.emit('my other event', { my: 'data' });
     });
-
   };
 })();
