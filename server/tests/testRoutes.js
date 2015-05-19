@@ -39,12 +39,11 @@ test('Testing routes', function(t) {
   
   Promise.reduce(routes, function(prevRoute, curRoute, i, arrLength) {
     console.log(curRoute);
-    return testRunner(curRoute, t).then(function() {
-      if(i == arrLength-1)
-        server.destroy();
-    })
-    .catch(function (err) {
-      t.fail(err);
-    });
-  }, 0);
+    return testRunner(curRoute, t)
+           .catch(function (err) {
+             t.fail(err);
+           });
+  }, 0).then(function() {
+    server.destroy();
+  });
 });
