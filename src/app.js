@@ -19,5 +19,4 @@ var io = require('io');
     });
 
   };
-
 })();

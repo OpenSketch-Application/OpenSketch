@@ -21,7 +21,7 @@ module.exports = function(grunt) {
         }
       },
       less: {
-        files: ['../client/src/less/*.less'],
+        files: ['../src/less/*.less'],
         tasks: ['less:dev'],
         options: {
           spawn: false
@@ -29,10 +29,10 @@ module.exports = function(grunt) {
       }
     },
     less: {
-      paths: ['../client/src/less/**/*.less'],
+      paths: ['../src/less/**/*.less'],
       dev: {
         files: {
-          '../client/app/css/main.css': '../client/src/less/main.less'
+          '../app/css/main.css': '../src/less/main.less'
         }
       }
     },
@@ -41,8 +41,8 @@ module.exports = function(grunt) {
         debug: true
       },
       dev: {
-        src: ['../client/src/js/**/*.js'],
-        dest: '../client/app/js/bundle.js'
+        src: ['../src/*.js'],
+        dest: '../app/js/bundle.js'
       }
     }
   });

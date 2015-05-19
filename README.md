@@ -11,6 +11,7 @@ Ensure that the following dependencies are installed:
 Node.js and Grunt CLI
 
 ```bash
+$ cd Server
 $ npm install
 $ grunt
 ```
