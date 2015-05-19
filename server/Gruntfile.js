@@ -9,6 +9,27 @@ module.exports = function(grunt) {
         }
       }
     },
+    less: {
+      paths: ['../src/less/**/*.less'],
+      dev: {
+        files: {
+          '../app/css/main.css': '../src/less/main.less'
+        }
+      }
+    },
+    browserify: {
+      dev: {
+        src: ['../src/*.js'],
+        dest: '../app/js/bundle.js',
+        options: {
+          'debug': true,
+          'watch': true,
+          'verbose': true,
+          'open': true,
+          'browserifyOptions' : { 'debug': true }
+        }
+      }
+    },
     watch: {
       options: {
         livereload: true
@@ -26,23 +47,10 @@ module.exports = function(grunt) {
         options: {
           spawn: false
         }
-      }
-    },
-    less: {
-      paths: ['../src/less/**/*.less'],
-      dev: {
-        files: {
-          '../app/css/main.css': '../src/less/main.less'
-        }
-      }
-    },
-    browserify: {
-      options: {
-        debug: true
       },
-      dev: {
-        src: ['../src/*.js'],
-        dest: '../app/js/bundle.js'
+      browserify: {
+        files: ['../src/*.js'],
+        tasks: ['browserify:dev']
       }
     }
   });
