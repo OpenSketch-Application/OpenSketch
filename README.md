@@ -16,6 +16,73 @@ $ npm install
 $ grunt
 ```
 
+Project Structure
+====================
+
+```bash
+  project
+    │
+    ├── Gruntfile.js 
+    ├── LICENSE
+    ├── README.md
+    ├── app
+    │   ├── css
+    │   ├── images
+    │   ├── js
+    │   └── index.html
+    │
+    ├── node_modules
+    ├── package.json
+    ├── server
+    │   ├── Gruntfile.js
+    │   ├── package.json
+    │   ├── routes
+    │   ├── server.js
+    │   └── socketHandlers
+    │ 
+    └── src
+        ├── app.js
+        ├── assets
+        ├── less
+        ├── model
+        ├── tests
+        └── views
+```
+
+## Gruntfile.js
+
+A gruntfile is used to define a veriety of tasks that will be used by Grunt to build the application. Tasks can vary from running unit tests to compiling less files to deploying the application to a server.
+
+## package.json
+
+The package.json is a very important file that defines many key components utilized by the application. It also provides other useful information such as name and version number. The most read part of the package.json is perhaps the dependencies. The dependencies outlines what modules are utilized by this application and provides instructions on how npm should install these dependencies (ie. specific or latest version). When you do a npm install, package.json will be reviewed, and all dependencies will be installed in a folder called node_modules. To simply install a node module, do "npm install <module name>". To save it into the package.json as a dependency, use the --save option or --save-dev option to save it in the devDependencies. devDependencies are modules that are only utilized by developers to aid in developing the application. These dependencies should not be installed in the production copy. To ignore devDependencies when installing, do "npm install --production".
+
+## node_modules
+
+This folder contains all the node_modules you have installed for use with the application. Doing "npm install" will create the folder if it doesn't exist, and install all dependencies (regular, dev, and peer).
+
+
+## app
+
+The app folder will contain all the static web elements of the application. It is also the root folder of your local web server. There should be no need to edit any css or javascript files here. In short, all css and js files will be released here through various processes such as less processing or js browserification.
+
+## server
+
+The server folder contains the server component of our application. It will contain all the necessary logic to deliver the application and contains files such as routes and socketHandlers.
+
+## src
+
+The src folder contains all the main application logic. This is where the majority of our js files will reside. The js files in this folder will be concatonated by Grunt and outputed into the app/js folder (or less to css in the app/css folder).
+
+## src/assets
+
+The assets folder contains all the binary files that will be utilized in the application. This includes any images, audio, video, or font files.
+
+## src/views
+
+The views folder will contain handlebar templates that will be utilized to insert html snippets into the various html pages.
+
+
 Modules and Libraries Used
 ============================
 
