@@ -19,12 +19,20 @@ module.exports = function(grunt) {
         options: {
           spawn: false
         }
+      },
+      less: {
+        files: ['../client/src/less/*.less'],
+        tasks: ['less:dev'],
+        options: {
+          spawn: false
+        }
       }
     },
     less: {
+      paths: ['../client/src/less/**/*.less'],
       dev: {
         files: {
-        '../client/app/css/main.css': '../client/src/less/main.less'
+          '../client/app/css/main.css': '../client/src/less/main.less'
         }
       }
     },
@@ -48,6 +56,7 @@ module.exports = function(grunt) {
   grunt.registerTask('default', [
     'less:dev',
     'browserify:dev',
-    'express:dev'
+    'express:dev',
+    'watch'
   ]);
 };
