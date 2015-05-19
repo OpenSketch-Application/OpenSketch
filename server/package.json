@@ -20,9 +20,9 @@
     "socket.io": "^1.3.5"
   },
   "devDependencies": {
+    "bluebird": "^2.9.25",
     "browserify": "^10.2.0",
     "browserify-shim": "^3.8.6",
-    "bluebird": "^2.9.25",
     "grunt": "^0.4.5",
     "grunt-browserify": "^3.8.0",
     "grunt-contrib-clean": "^0.6.0",
@@ -30,6 +30,7 @@
     "grunt-contrib-less": "^1.0.1",
     "grunt-contrib-watch": "^0.6.1",
     "grunt-express-server": "^0.5.1",
-    "tap-spec": "^3.0.0"
+    "tap-spec": "^3.0.0",
+    "tape": "^4.0.0"
   }
 }
