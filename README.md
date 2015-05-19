@@ -11,11 +11,11 @@ Ensure that the following dependencies are installed:
 Node.js and Grunt CLI
 
 ```bash
-$ npm install
+$ npm install # Root folder
 
 $ cd Server
-$ npm install
-$ grunt
+$ npm install 
+$ grunt  # Server Folder
 ```
 
 Project Structure
