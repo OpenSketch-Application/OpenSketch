@@ -1,6 +1,6 @@
 var test = require('tape');
 var http = require('http');
-var Promise = require('bluebird');
+var promise = require('bluebird');
 
 // Define routes to test here
 var routes = [  '/index.html',
@@ -15,7 +15,7 @@ var testRunner = function(url, tester) {
     port: '8080'
   };
 
-  return new Promise(function(resolve, reject) {
+  return new promise(function(resolve, reject) {
     http.request(options, function(response){
       if(response) {
         tester.equal(response.statusCode, 200, url);
@@ -37,7 +37,7 @@ test('Testing routes', function(t) {
 
   server = require('../');
   
-  Promise.reduce(routes, function(prevRoute, curRoute, i, arrLength) {
+  promise.reduce(routes, function(prevRoute, curRoute, i, arrLength) {
     console.log(curRoute);
     return testRunner(curRoute, t)
            .catch(function (err) {
