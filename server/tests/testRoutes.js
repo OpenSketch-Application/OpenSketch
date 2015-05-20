@@ -1,14 +1,18 @@
 var test = require('tape');
 var http = require('http');
 var promise = require('bluebird');
+var  server = require('../');
 
 // Define routes to test here
-var routes = [  '/index.html',
-                '/whiteboard.html',
-                '/RouteThatDoesntExist.html' // Should fail
-             ];
+var goodRoutes = [ '/index.html',
+                    '/whiteboard.html',
+                  ];
 
-var testRunner = function(url, tester) {
+var badRoutes = [ '/DoesntExist.html',
+                  '/index'
+                ];
+
+var testRunner = function(url, tester, expectedCode) {
   var options = {
     host: 'localhost',
     path: url,
@@ -18,7 +22,7 @@ var testRunner = function(url, tester) {
   return new promise(function(resolve, reject) {
     http.request(options, function(response){
       if(response) {
-        tester.equal(response.statusCode, 200, url);
+        tester.equal(response.statusCode, expectedCode, url);
         resolve();
       } else {
         reject('No response from server');
@@ -31,14 +35,24 @@ var testRunner = function(url, tester) {
   });
 };
 
-test('Testing routes', function(t) {
+test('Testing good routes - 200 Status Code', function(t) {
 
-  t.plan(routes.length);
-
-  server = require('../');
+  t.plan(goodRoutes.length);
   
-  promise.reduce(routes, function(initial, curRoute) {
-    return testRunner(curRoute, t)
+  promise.reduce(goodRoutes, function(initial, curRoute) {
+    return testRunner(curRoute, t, 200)
+           .catch(function (err) {
+             t.fail(err);
+           });
+  }, 0);
+});
+
+test('Testing bad routes - 404 Status Code', function(t) {
+
+  t.plan(badRoutes.length);
+
+  promise.reduce(badRoutes, function(initial, curRoute) {
+    return testRunner(curRoute, t, 404)
            .catch(function (err) {
              t.fail(err);
            });
