@@ -37,7 +37,7 @@ test('Testing routes', function(t) {
 
   server = require('../');
   
-  promise.reduce(routes, function(prevRoute, curRoute) {
+  promise.reduce(routes, function(initial, curRoute) {
     return testRunner(curRoute, t)
            .catch(function (err) {
              t.fail(err);
