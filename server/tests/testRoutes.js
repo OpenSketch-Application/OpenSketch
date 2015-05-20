@@ -1,7 +1,7 @@
 var test = require('tape');
 var http = require('http');
 var promise = require('bluebird');
-var  server = require('../');
+var server = require('../');
 
 // Define routes to test here
 var goodRoutes = [ '/index.html',
@@ -16,9 +16,9 @@ var testRunner = function(url, tester, expectedCode) {
   var options = {
     host: 'localhost',
     path: url,
-    port: '8080'
+    port: server.address().port
   };
-
+  
   return new promise(function(resolve, reject) {
     http.request(options, function(response){
       if(response) {
