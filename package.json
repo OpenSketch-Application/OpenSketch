@@ -20,13 +20,18 @@
     "url": "https://github.com/OpenSketch-Application/OpenSketch/issues"
   },
   "homepage": "https://github.com/OpenSketch-Application/OpenSketch#readme",
-  "dependencies": {},
+  "dependencies": {
+    "bigwheel": "^2.0.7",
+    "mustache": "^2.0.0"
+  },
   "browserify": {
-    "transform": [ "browserify-shim" ]
+    "transform": [
+      "browserify-shim"
+    ]
   },
   "browserify-shim": {
     "pixi": "global:PIXI",
-    "io" : "global:io"
+    "io": "global:io"
   },
   "devDependencies": {
     "browserify": "^10.2.0",
