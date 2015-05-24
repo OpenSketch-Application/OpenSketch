@@ -5,7 +5,6 @@ module.exports = function(io) {
     console.log('connection made', socket.id);
     socket.emit('news', { hello: 'world' });
 
-
     socket.on('my other event', function (data) {
       console.log(data);
     });

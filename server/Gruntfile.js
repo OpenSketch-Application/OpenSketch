@@ -9,6 +9,20 @@ module.exports = function(grunt) {
         }
       }
     },
+    less: {
+      paths: ['../src/less/**/*.less'],
+      dev: {
+        files: {
+          '../app/css/main.css': '../src/less/main.less'
+        }
+      }
+    },
+    browserify: {
+      dev: {
+        src: ['../src/*.js'],
+        dest: '../app/js/bundle.js'
+      }
+    },
     watch: {
       options: {
         livereload: true

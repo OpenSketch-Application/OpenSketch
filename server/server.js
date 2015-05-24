@@ -1,8 +1,10 @@
 var express = require('express');
 var app = express();
+require('./routes/routes.js')(app); // set up routes
 var server = require('http').Server(app);
 var bodyParser = require('./node_modules/body-parser');
 var io = require('socket.io')(server);
+var enableDestroy = require('server-destroy');
 
 // set default port number
 var port = process.env.PORT || 8080;
@@ -19,11 +21,11 @@ server.listen(port, function() {
   console.log("Express Server running on port " + port);
 });
 
-// Set route handlers
-require('./routes/routeTest')(app);
+// Enables a server.destroy method that destroys all open connections
+enableDestroy(server);
 
 // Start socket.io and listen for events
 var socketHandler = require('./socketHandlers/socketHandler')(io);
 
 // Make server app available as export
-exports = module.exports = app;
+exports = module.exports = server;
