@@ -1,5 +1,6 @@
 var express = require('express');
 var app = express();
+require('./routes/routes.js')(app); // set up routes
 var server = require('http').Server(app);
 var bodyParser = require('./node_modules/body-parser');
 var io = require('socket.io')(server);
@@ -22,9 +23,6 @@ server.listen(port, function() {
 
 // Enables a server.destroy method that destroys all open connections
 enableDestroy(server);
-
-// Set route handlers
-require('./routes/routeTest')(app);
 
 // Start socket.io and listen for events
 var socketHandler = require('./socketHandlers/socketHandler')(io);

@@ -4,12 +4,13 @@ var promise = require('bluebird');
 var server = require('../');
 
 // Define routes to test here
-var goodRoutes = [ '/index.html',
-                    '/whiteboard.html',
-                  ];
+var goodRoutes = [ '/',
+                   '/index.html',
+                   '/whiteboard.html',
+                 ];
 
-var badRoutes = [ '/DoesntExist.html',
-                  '/index'
+var badRoutes = [ '/index',
+                  '/DoesntExist.html'
                 ];
 
 var testRunner = function(url, tester, expectedCode) {
