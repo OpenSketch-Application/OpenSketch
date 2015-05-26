@@ -7,7 +7,7 @@ var io = require('socket.io')(server);
 var enableDestroy = require('server-destroy');
 
 // set default port number
-var port = process.env.PORT || 8080;
+var port = 8087;
 
 // set the static files location /public/img will be /img for users
 app.use(express.static(__dirname + '/../app'));
