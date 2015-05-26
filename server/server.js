@@ -8,7 +8,7 @@ var enableDestroy = require('server-destroy');
 
 // set default port number
 var port = 8087;
-
+var private_ip = 'zenit.senecac.on.ca';
 // set the static files location /public/img will be /img for users
 app.use(express.static(__dirname + '/../app'));
 //app.use(express.static(__dirname + '/app/views'));
