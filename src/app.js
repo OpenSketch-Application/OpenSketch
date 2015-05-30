@@ -6,16 +6,19 @@ var io = require('io');
     console.log('loaded');
     var canvas = document.getElementById('whiteboard-container');
     var renderer = new PIXI.WebGLRenderer(500, 500);
-    canvas.appendChild(renderer.view);
+    if(canvas) {
 
-    var stage = new PIXI.Container();
+      canvas.appendChild(renderer.view);
 
-    //var socket = io.connect('http://localhost');
-    var socket = io();
+      var stage = new PIXI.Container();
 
-    socket.on('news', function (data) {
-      console.log(data);
-      socket.emit('my other event', { my: 'data' });
-    });
+      //var socket = io.connect('http://localhost');
+      var socket = io();
+
+      socket.on('news', function (data) {
+        console.log(data);
+        socket.emit('my other event', { my: 'data' });
+      });
+    }
   };
 })();
