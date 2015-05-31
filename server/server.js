@@ -16,6 +16,8 @@ app.use(bodyParser.json());
 // parse application/x-www-form-urlencoded
 app.use(bodyParser.urlencoded({ extended: true }));
 
+serverConf.port = process.env.PORT || 3000;
+
 // listen on port using http server instance
 server.listen(serverConf.port, function() {
   console.log("Express Server running on port " + serverConf.port);
