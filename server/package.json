@@ -10,11 +10,13 @@
   },
   "scripts": {
     "test": "node ./tests/testRoutes.js | tap-spec",
-    "start": "node server.js"
+    "start": "mongod --dbpath ./mongoBinaries --logpath ./logs/mongo_logs --fork",
+    "stop": "ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[0-9]+' | xargs kill"
   },
   "dependencies": {
     "body-parser": "^1.12.4",
     "express": "^4.12.3",
+    "mongod": "^1.3.0",
     "mongoose": "^4.0.3",
     "server-destroy": "^1.0.0",
     "socket.io": "^1.3.5"
