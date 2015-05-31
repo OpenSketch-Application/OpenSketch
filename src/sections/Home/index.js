@@ -5,11 +5,7 @@ var find = require('dom-select');
 var states = require('./states');
 var f1 = require('f1');
 
-var Whiteboard;
-
 module.exports = Section;
-// module.exports = Whiteboard;
-exports = Whiteboard;
 
 function Section() {}
 
@@ -58,11 +54,9 @@ Section.prototype = {
 
 function getWhiteboardSettings() {
   var inputElements = document.querySelectorAll('form input');
-
-  return Array.prototype.slice
-          .apply(inputElements)
-            .reduce(function(settings, input) {
-              settings[input.name] = input.value;
-              return settings;
-            }, {});
+  var form = document.querySelector('div.form form');
+  var formData = new FormData(form);
+  var ajax = new XMLHttpRequest();
+  ajax.setRequestHeader("Content-Type", "JSON");
+  ajax.send(formData);
 }

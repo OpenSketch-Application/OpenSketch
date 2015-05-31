@@ -6,8 +6,7 @@ var io = require('io');
 
 module.exports = Section;
 
-function Section() {}
-
+function Section() {};
 
 Section.prototype = {
 
@@ -15,7 +14,7 @@ Section.prototype = {
     var content = document.getElementById('content');
     var hbs = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.innerHTML = hbs;
-    
+
     // Strap html to application
     var canvas = document.getElementById('whiteboard-container');
     var renderer = new PIXI.WebGLRenderer(1200, 900);
