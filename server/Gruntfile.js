@@ -1,5 +1,6 @@
 module.exports = function(grunt) {
   grunt.initConfig({
+    pkg: grunt.file.readJSON('package.json'),
     express: {
       dev: {
         options: {
@@ -20,7 +21,14 @@ module.exports = function(grunt) {
     browserify: {
       dev: {
         src: ['../src/*.js'],
-        dest: '../app/js/bundle.js'
+        dest: '../app/js/bundle.js',
+        'options': {
+                    'debug': true,
+                    'watch': true,
+                    'verbose': true,
+                    'open': true,
+                    'browserifyOptions' : {'debug': true}
+                }
       }
     },
     watch: {
@@ -35,7 +43,7 @@ module.exports = function(grunt) {
         }
       },
       less: {
-        files: ['../src/less/**/*.less', '../src/sections/**/*.less'],
+        files: ['../src/less/**/*.less'],
         tasks: ['less:dev'],
         options: {
           spawn: false
@@ -43,7 +51,7 @@ module.exports = function(grunt) {
       }
     },
     less: {
-      paths: ['../src/less/**/*.less', '../src/sections/**/*.less'],
+      paths: ['../src/less/**/*.less'],
       dev: {
         files: {
           '../app/css/main.css': '../src/less/main.less'

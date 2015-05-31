@@ -1,0 +1,327 @@
+#home {
+  #header {
+    width: 100%;
+    height: 60px;
+    background-color: #132531;
+    h1 {
+      padding:0;
+      height: 0;
+      display: block;
+      float: left;
+      font-size: 0.8em;    
+
+      img {
+        margin: 0;
+        padding: 0;
+        width: 28%;
+      }
+    }
+  }
+
+  #main {
+    position: relative;
+    height: 445px;
+    .background {
+      width: 100%;
+      position: fixed;
+      max-height: 430px;
+    }
+    #info-box {
+      width: 40%;
+      float:left;
+      position: relative;
+      top: 100px;
+      .textbox {
+        margin: 1px 0;
+        padding: 10px 20px;
+        display: inline-block;
+        opacity: 0.8;
+        background-color: #4992B6;
+        font-family: 'Raleway', sans-serif;
+        font-size: 1.6em;
+        color: white;
+      }
+    }
+
+    #form {
+      width: 460px;
+      height: 300px;
+      box-shadow: 1px 2px 3px #888888;
+      position: relative;
+      top: 50px;
+      float: left;
+      opacity: 0.88;
+      background-color: black;
+      padding: 15px 45px;
+      color: white;
+
+      .title {
+        font-size: 2em;
+        font-weight: 0;
+        margin-bottom: 5%;
+        font-weight: 900;
+      }
+      .control {
+        display: block;
+        height: 45px;
+        margin: 0px 0px;
+
+        label {
+          display:inline-block;
+          width: 230px;
+          font-size: 1.2em;
+        }
+
+        .username {
+          width: 150px;
+          text-align: left;
+          padding-left: 10px;
+        }
+
+        input {
+          position: relative;
+          top: 5px;
+          width: 45px;
+          font-size: 1.2em;
+          text-align: center;
+          border: none;
+          vertical-align: baseline;
+        }
+
+        input[type="checkbox"] {
+          opacity: 0;
+        }
+
+        .roundedOne {
+          margin: 0;
+          padding: 0;
+          display: inline-block;
+          width: 28px;
+          height: 28px;
+          left: 5px;
+          bottom: 3px;
+          background: #fcfff4;
+
+          background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+          background: -moz-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+          background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+          background: -ms-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+          background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfff4', endColorstr='#b3bead',GradientType=0 );
+          margin: 0 auto;
+
+          -webkit-border-radius: 50px;
+          -moz-border-radius: 50px;
+          border-radius: 50px;
+
+          -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+          -moz-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+          position: relative;
+        }
+
+        .roundedOne label {
+          cursor: pointer;
+          position: absolute;
+          width: 20px;
+          height: 20px;
+
+          -webkit-border-radius: 50px;
+          -moz-border-radius: 50px;
+          border-radius: 50px;
+          left: 4px;
+          top: 4px;
+
+          -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
+          -moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
+          box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
+
+          background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);
+          background: -moz-linear-gradient(top, #222 0%, #45484d 100%);
+          background: -o-linear-gradient(top, #222 0%, #45484d 100%);
+          background: -ms-linear-gradient(top, #222 0%, #45484d 100%);
+          background: linear-gradient(top, #222 0%, #45484d 100%);
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222', endColorstr='#45484d',GradientType=0 );
+        }
+
+        .roundedOne label:after {
+          -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+          filter: alpha(opacity=0);
+          opacity: 0;
+          content: '';
+          position: absolute;
+          width: 9px;
+          height: 5px;
+          background: transparent;
+          top: 5px;
+          left: 4px;
+          border: 3px solid #fcfff4;
+          border-top: none;
+          border-right: none;
+
+          -webkit-transform: rotate(-45deg);
+          -moz-transform: rotate(-45deg);
+          -o-transform: rotate(-45deg);
+          -ms-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+        }
+
+        .roundedOne label:hover::after {
+          -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+          filter: alpha(opacity=30);
+          opacity: 0.3;
+        }
+
+        .roundedOne input[type=checkbox]:checked + label:after {
+          -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+          filter: alpha(opacity=100);
+          opacity: 1;
+        }
+
+        .roundedTwo {
+          display: inline-block;
+          width: 28px;
+          height: 28px;
+          left: 5px;
+          bottom: 3px;
+          background: #fcfff4;
+
+          background: -webkit-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+          background: -moz-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+          background: -o-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+          background: -ms-linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+          background: linear-gradient(top, #fcfff4 0%, #dfe5d7 40%, #b3bead 100%);
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#fcfff4', endColorstr='#b3bead',GradientType=0 );
+          margin: 0 auto;
+
+          -webkit-border-radius: 50px;
+          -moz-border-radius: 50px;
+          border-radius: 50px;
+
+          -webkit-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+          -moz-box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+          box-shadow: inset 0px 1px 1px white, 0px 1px 3px rgba(0,0,0,0.5);
+          position: relative;
+        }
+
+        .roundedTwo label {
+          cursor: pointer;
+          position: absolute;
+          width: 20px;
+          height: 20px;
+
+          -webkit-border-radius: 50px;
+          -moz-border-radius: 50px;
+          border-radius: 50px;
+          left: 4px;
+          top: 4px;
+
+          -webkit-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
+          -moz-box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
+          box-shadow: inset 0px 1px 1px rgba(0,0,0,0.5), 0px 1px 0px rgba(255,255,255,1);
+
+          background: -webkit-linear-gradient(top, #222 0%, #45484d 100%);
+          background: -moz-linear-gradient(top, #222 0%, #45484d 100%);
+          background: -o-linear-gradient(top, #222 0%, #45484d 100%);
+          background: -ms-linear-gradient(top, #222 0%, #45484d 100%);
+          background: linear-gradient(top, #222 0%, #45484d 100%);
+          filter: progid:DXImageTransform.Microsoft.gradient( startColorstr='#222', endColorstr='#45484d',GradientType=0 );
+        }
+
+        .roundedTwo label:after {
+          -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=0)";
+          filter: alpha(opacity=0);
+          opacity: 0;
+          content: '';
+          position: absolute;
+          width: 9px;
+          height: 5px;
+          background: transparent;
+          top: 5px;
+          left: 4px;
+          border: 3px solid #fcfff4;
+          border-top: none;
+          border-right: none;
+
+          -webkit-transform: rotate(-45deg);
+          -moz-transform: rotate(-45deg);
+          -o-transform: rotate(-45deg);
+          -ms-transform: rotate(-45deg);
+          transform: rotate(-45deg);
+        }
+
+        .roundedTwo label:hover::after {
+          -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=30)";
+          filter: alpha(opacity=30);
+          opacity: 0.3;
+        }
+
+        .roundedTwo input[type=checkbox]:checked + label:after {
+          -ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
+          filter: alpha(opacity=100);
+          opacity: 1;
+        }
+        .btn {
+          position: relative;
+          float: right;
+          bottom: 0px;
+          background: #07b807;
+          background-image: -webkit-linear-gradient(top, #07b807, #5dc748);
+          background-image: -moz-linear-gradient(top, #07b807, #5dc748);
+          background-image: -ms-linear-gradient(top, #07b807, #5dc748);
+          background-image: -o-linear-gradient(top, #07b807, #5dc748);
+          background-image: linear-gradient(to bottom, #07b807, #5dc748);
+          font-family: Arial;
+          color: #ffffff;
+          font-size: 20px;
+          padding: 10px 20px 10px 20px;
+          text-decoration: none;
+          border: none;
+        }
+
+        .btn:hover {
+          background: #3cb0fd;
+          background-image: -webkit-linear-gradient(top, #3cb0fd, #3498db);
+          background-image: -moz-linear-gradient(top, #3cb0fd, #3498db);
+          background-image: -ms-linear-gradient(top, #3cb0fd, #3498db);
+          background-image: -o-linear-gradient(top, #3cb0fd, #3498db);
+          background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+          text-decoration: none;
+        }
+      }
+    }
+  }
+  #bottom {
+    position: relative;
+    top: 10px;
+    color: black;
+    font-size: 1.8em;
+    text-align: center;
+    .title {
+      width: 1000px;
+      padding: 20px 0;
+      color: #444;
+      position: relative;
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+      border-top: 1px solid #dedede;
+      border-bottom: 1px solid #dedede;
+    }
+    .icon {
+      position: relative;
+      display: inline-block;
+      width: 300px;
+      margin: 20px 0px;
+      opacity: 0.8;
+      img {
+        width: 100px;
+        margin: 10px;
+      }
+      label {
+        display: block;
+        font-size: 0.9em;
+      }
+    }
+  }
+}

@@ -1,12 +1,22 @@
-body {
-  margin: 10px;
-  padding: 10px;
+@import 'imports/fonts.less';
 
-  .h1 {
-    font-size: 10pt;
-  }
-
-  #whiteboard {
-    margin: 0 auto;
-  }
+body, html {
+  margin: 0;
+  padding: 0;
+  min-width: 1000px;
+  height: 100%;
+  .sans-serif-regular;
 }
+
+.center {
+  width: 950px;
+  margin: 0 auto;
+}
+
+.sans-serif-regular {
+  font-family: 'Lato', sans-serif;
+}
+
+// Sections
+@import 'sections/home.less';
+@import 'sections/whiteboard.less';

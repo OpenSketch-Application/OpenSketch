@@ -5,10 +5,6 @@ module.exports = function(app) {
 
   // GET
   app.get('/', function(req, res, next) {
-    console.log('home request received');
-    console.log('send more');
-    console.log('hello');
-
     res.sendFile(viewdir + '/index.html');
   });
 

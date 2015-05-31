@@ -1,6 +1,10 @@
+var fs = require('fs');
 var framework = require('../../framework/index');
-var Mustache = require('mustache');
-var Model = require('../../model/model');
+var model = require('../../model/model');
+var find = require('dom-select');
+var states = require('./states');
+var f1 = require('f1');
+
 
 module.exports = Section;
 
@@ -9,36 +13,33 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
-    console.log('home index.js loaded');
+    var content = find('#content');
+    var hbs = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
+    var infobox = find('#info-box');
 
-    // Strap html to application
+    //states.init.textbox.position[1] = infobox.offsetWidth;
 
+    // this.animate.go = new f1({
+
+    // });
+
+    content.innerHTML = hbs;
     done();
   },
 
   resize: function(w, h) {
-
-    console.log('resize', 'width:', w, 'height:', h);
-
   },
 
   animateIn: function(req, done) {
-    console.log('animateIn');
-
     done();
-
   },
 
   animateOut: function(req, done) {
-    console.log('animateOut');
-
     done();
 
   },
 
   destroy: function(req, done) {
-    console.log('destroy called');
-
     done();
   }
 };

@@ -1,3 +1,4 @@
+var fs = require('fs');
 var framework = require('../../framework/index');
 var Model = require('../../model/model');
 var PIXI = require('pixi');
@@ -7,11 +8,14 @@ module.exports = Section;
 
 function Section() {}
 
+
 Section.prototype = {
 
   init: function(req, done) {
-    console.log('whiteboard loading');
-
+    var content = document.getElementById('content');
+    var hbs = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
+    content.innerHTML = hbs;
+    
     // Strap html to application
     var canvas = document.getElementById('whiteboard-container');
     var renderer = new PIXI.WebGLRenderer(1200, 900);
@@ -30,23 +34,18 @@ Section.prototype = {
   },
 
   resize: function(w, h) {
-    console.log('resize', 'width:', w, 'height:', h);
   },
 
   animateIn: function(req, done) {
-    console.log('animateIn');
     done();
-
   },
 
   animateOut: function(req, done) {
-    console.log('animateOut');
     done();
 
   },
 
   destroy: function(req, done) {
-    console.log('destroy called');
     done();
   }
 };
