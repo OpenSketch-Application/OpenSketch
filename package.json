@@ -22,6 +22,7 @@
   "homepage": "https://github.com/OpenSketch-Application/OpenSketch#readme",
   "dependencies": {
     "bigwheel": "^2.0.7",
+    "dom-select": "0.0.0",
     "eases": "^1.0.6",
     "f1": "^5.0.1",
     "mustache": "^2.0.0"
