@@ -1,0 +1,29 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Open Sketch</title>
+  <link rel="stylesheet" type="text/css" href="css/main.css">
+   <script type="text/javascript" src="js/vendor/pixi.js"></script>
+  <script type="text/javascript" src="js/vendor/socket.io.js"></script>
+  <script type="text/javascript" src="http://code.jquery.com/jquery-1.11.1.js"></script>
+</head>
+<body>
+  <h1>Open Sketch</h1>
+  <h3>Create Session</h3>
+  <form id="createSession" method="POST" action ="">
+    <input type = "text" id="userName"></input><br/>
+    <input type = "text" id="maxUsers"></input><br/>
+    <input type="checkbox" id="drawPermission" value="draw"> Draw permission<br/>
+    <input type="checkbox" id="chatPermission" value="chat" checked>chat permission <br/>
+    <input id="submit-form" type = "submit" ></input><br/>
+  </form>
+  <div id="container">
+    <div id="content">
+      <div id="side-nav"></div>
+    </div>
+    <div id="footer"></div>
+  </div>
+  <script src = "js/createSession.js"></script>
+</body>
+</html>
