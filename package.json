@@ -20,15 +20,24 @@
     "url": "https://github.com/OpenSketch-Application/OpenSketch/issues"
   },
   "homepage": "https://github.com/OpenSketch-Application/OpenSketch#readme",
-  "dependencies": {},
+  "dependencies": {
+    "bigwheel": "^2.0.7",
+    "eases": "^1.0.6",
+    "f1": "^5.0.1",
+    "mustache": "^2.0.0"
+  },
   "browserify": {
-    "transform": [ "browserify-shim" ]
+    "transform": [
+      "browserify-shim",
+      "brfs"
+    ]
   },
   "browserify-shim": {
     "pixi": "global:PIXI",
-    "io" : "global:io"
+    "io": "global:io"
   },
   "devDependencies": {
+    "brfs": "^1.4.0",
     "browserify": "^10.2.0",
     "browserify-shim": "^3.8.6",
     "grunt": "^0.4.5",

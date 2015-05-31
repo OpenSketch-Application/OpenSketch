@@ -1,5 +1,4 @@
-var PIXI = require('pixi');
-var io = require('io');
+var framework = require('./framework/index.js');
 
 (function() {
   window.onload = function() {
@@ -22,3 +21,6 @@ var io = require('io');
     }
   };
 })();
+
+// Start the Big Wheel framework
+framework.init();

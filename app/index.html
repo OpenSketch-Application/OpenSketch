@@ -4,69 +4,13 @@
   <meta charset="UTF-8">
   <title>Open Sketch</title>
   <link rel="stylesheet" type="text/css" href="css/main.css">
+</head>
+<body>
+  <div id="content">
+  </div>
+  <script src="http://localhost:35729/livereload.js"></script>
   <script type="text/javascript" src="js/vendor/pixi.js"></script>
   <script type="text/javascript" src="js/vendor/socket.io.js"></script>
   <script type="text/javascript" src="js/bundle.js"></script>
-</head>
-<body>
-  <div id="home">
-    <header id="header">
-      <div class="center">
-        <h1 id="logo">
-          <img src="images/logo.png" alt="Open Sketch">
-        </h1>
-      </div>
-    </header>
-    <div id="main">
-      <img class="background" src="images/home-banner.jpg">
-      <div class="center">
-        <div id="info-box">
-          <div class="textbox">Powerful Ideation Tool</div>
-          <div class="textbox">Remote Meetings</div>
-          <div class="textbox">Effective Communication</div>
-        </div>
-        <div id="form">
-          <form>
-            <div class="title">Create a Whiteboard</div>
-            <div class="control">
-              <label>Username</label><input class="username" type="text" />
-            </div>
-            <div class="control">
-              <label>Max Users</label><input type="text" /><br/>
-            </div>
-            <div class="control">
-              <label>Participants can Chat</label>
-              <div class="roundedOne">
-                <input type="checkbox" value="None" id="roundedOne" name="check" />
-                <label for="roundedOne"></label>
-              </div>
-            </div>
-            <div class="control">
-              <label>Participants can Draw</label>
-              <div class="roundedTwo">
-                <input type="checkbox" value="None" id="roundedTwo" name="check" />
-                <label for="roundedTwo"></label>
-              </div>
-            </div>
-            <div class="control">
-              <button class="btn">Create</button>
-            </div>
-          </form>
-        </div>
-      </div>
-    </div>
-    <div id="bottom">
-      <div class="title">Powerful Remote Whiteboard Application</div>
-      <div class="icon">
-        <img src="images/collaboration-image.png">
-        <label>Collaborations</label>
-      </div>
-      <div class="icon">
-        <img src="images/presentation-image.png">
-        <label>Presentations</label>
-      </div>
-    </div>
-  </div>
-  <script src="http://localhost:35729/livereload.js"></script>
 </body>
 </html>
