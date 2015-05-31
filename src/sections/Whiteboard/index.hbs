@@ -1,20 +1,39 @@
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title>Open Sketch</title>
-  <link rel="stylesheet" type="text/css" href="css/main.css">
-   <script type="text/javascript" src="js/vendor/pixi.js"></script>
-  <script type="text/javascript" src="js/vendor/socket.io.js"></script>
-  <script type="text/javascript" src="js/bundle.js"></script>
-</head>
-<body>
-  <h1>The Whiteboard</h1>
-  <div id="whiteboard-container"></div>
-  <div id="container">
-    <div id="content">
-      <div id="side-nav"></div>
+<div id="whiteboard">
+  <header id="header">
+    <h1 id="logo">
+      <img src="images/logo.png" alt="Open Sketch">
+      <nav>
+        <!-- Toolbar goes here -->
+      </nav>
+    </h1>
+  </header>
+  <div id="main">
+    <div id="whiteboard-container"></div>
+    <div id="tabs">
+      <div class="cd-tabs">
+        <!-- Navigation Header -->
+        <nav>
+          <ul class="cd-tabs-navigation">
+            <li><a data-content="Chat" class="selected" href="#0">Chat</a></li>
+            <li><a data-content="Users" href="#0">Users</a></li>
+          </ul>
+        </nav>
+
+        <ul class="cd-tabs-content">
+
+          <!-- ChatBox Tab -->
+          <li data-content="Chat" class="selected">
+            <h1>I'm The Chat Tab!</h1>
+          </li>
+
+          <!-- User Management Tab -->
+          <li data-content="Users">
+            <h1>I'm The Users Tab!</h1>
+          </li>
+
+        </ul>
+      </div>
     </div>
-    <div id="footer"></div>
   </div>
-</body>
-</html>
+</div>
+
