@@ -14,9 +14,6 @@ Section.prototype = {
   init: function(req, done) {
     var content = find('#content');
     content.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
-    
-    //var infobox = find('#info-box');
-    // states().idle.textbox.position[0] = 500;
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
                            .targets({ textbox1: find('#textbox1'), 
@@ -27,6 +24,15 @@ Section.prototype = {
                            .init('init');
 
     this.animate.go('idle');
+
+    // whiteboard options Section for user to create a whiteboard
+    find('div.control:last-child button').addEventListener('click', function(e) {
+      e.preventDefault();
+
+      console.log('creating whiteboard');
+      Whiteboard = getWhiteboardSettings();
+    });
+
     done();
   },
 
@@ -48,3 +54,15 @@ Section.prototype = {
     done();
   }
 };
+
+
+function getWhiteboardSettings() {
+  var inputElements = document.querySelectorAll('form input');
+
+  return Array.prototype.slice
+          .apply(inputElements)
+            .reduce(function(settings, input) {
+              settings[input.name] = input.value;
+              return settings;
+            }, {});
+}
