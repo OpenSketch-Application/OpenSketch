@@ -8,11 +8,17 @@ module.exports = function(io,db) {
        console.log('connected ',socket.adapter.nsp.name);
 
        socket.on('joinSession',function(uName,curSession){
-         for(session in db){
-           if(session.id == curSession){
-            // session.users.push({id: socket.id, name : uName});
+         var currentUsers;
+         for(var i = 0; i<db.length; i++){
+           if(db[i].id == curSession){
+             db[i].users.push({id: socket.id, name : uName});
+             currentUsers = db[i].users; 
            }
          }
+         
+         socket.emit('updateUserList',currentUsers);
+         socket.broadcast.emit('updateUserList',currentUsers);
+
          socket.broadcast.emit('userJoining', socket.id + ' has joined the session'); 
        });
        
