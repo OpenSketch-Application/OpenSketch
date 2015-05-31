@@ -2,7 +2,6 @@ var framework = require('./framework/index.js');
 
 (function() {
   window.onload = function() {
-    console.log('loaded');
     var canvas = document.getElementById('whiteboard-container');
     var renderer = new PIXI.WebGLRenderer(500, 500);
     if(canvas) {
