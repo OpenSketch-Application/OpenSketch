@@ -33,9 +33,7 @@ Section.prototype = {
     find('div.control:last-child button').addEventListener('click', function(e) {
       e.preventDefault();
 
-      console.log('creating whiteboard');
-      Whiteboard = getWhiteboardSettings();
-      this.animateOut();
+      //Whiteboard = getWhiteboardSettings();
       framework.go('/whiteboard');
     }.bind(this));
 
