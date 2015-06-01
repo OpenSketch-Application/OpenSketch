@@ -4,14 +4,20 @@ var find = require('dom-select');
 var framework = require('../../framework/index');
 var model = require('../../model/model');
 var states = require('./states');
-
 module.exports = Section;
+var SERVERNAME = 'http://localhost:3000';
 
 function Section() {}
 
 Section.prototype = {
 
   init: function(req, done) {
+    var socket = io.connect(SERVERNAME + '/home');
+    var sid;
+    socket.on('getId',function(id){
+        sid= id;
+    });
+
     var content = find('#content');
     var section = document.createElement('div');
     section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
@@ -32,9 +38,11 @@ Section.prototype = {
     // whiteboard options Section for user to create a whiteboard
     find('div.control:last-child button').addEventListener('click', function(e) {
       e.preventDefault();
-
       //Whiteboard = getWhiteboardSettings();
-      framework.go('/whiteboard');
+      sessionSettings = {};
+      sessionSettings.id = sid;
+      socket.emit('createSession',sessionSettings);
+      framework.go('/whiteboard/'+ sessionSettings.id);
     }.bind(this));
 
     done();
