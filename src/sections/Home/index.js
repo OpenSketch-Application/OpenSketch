@@ -13,9 +13,9 @@ Section.prototype = {
 
   init: function(req, done) {
     var content = find('#content');
-    var section = document.createElement('div');
-    section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
-    content.appendChild(section);
+    this.section = document.createElement('div');
+    this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
+    content.appendChild(this.section);
 
     states.out.home.position[0] = -document.body.offsetWidth;
 
@@ -59,6 +59,7 @@ Section.prototype = {
   },
 
   destroy: function(req, done) {
+    this.section.parentNode.removeChild(this.section);
     done();
   }
 };
