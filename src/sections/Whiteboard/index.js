@@ -23,7 +23,7 @@ Section.prototype = {
 
     createTabs();
 
-    // states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
+    states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
     
     // Strap html to application
     var canvas = document.getElementById('whiteboard-container');
