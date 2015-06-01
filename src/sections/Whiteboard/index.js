@@ -17,16 +17,19 @@ Section.prototype = {
   init: function(req, done) {
     var body = find('body');
     var content = find('#content');
-    var section = document.createElement('div');
-    section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
-    content.appendChild(section);
+    this.section = document.createElement('div');
+    this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
+    content.appendChild(this.section);
 
     createTabs();
 
-    states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
+    // find('#tabs').style.width = body.offsetWidth * 0.25 + 'px';
+
+    states.init.whiteboard.position[0] = body.offsetWidth * 1.5;
     
     // Strap html to application
-    var canvas = document.getElementById('whiteboard-container');
+    var canvas = find('#whiteboard-container');
+    console.log("width", canvas.style.width);
     var renderer = new PIXI.WebGLRenderer(body.offsetWidth * 0.75, body.offsetHeight - 60);
     canvas.appendChild(renderer.view);
 
@@ -40,10 +43,10 @@ Section.prototype = {
     });
 
     this.animate = new f1().states(states)
-    .transitions(require('./transitions'))
-    .targets({ whiteboard: find('#whiteboard')})
-    .parsers(require('f1-dom'))
-    .init('init');
+                           .transitions(require('./transitions'))
+                           .targets({ whiteboard: find('#whiteboard')})
+                           .parsers(require('f1-dom'))
+                           .init('init');
 
     done();
   },
@@ -64,6 +67,8 @@ Section.prototype = {
   },
 
   destroy: function(req, done) {
+    console.log("Destroy!");
+    this.section.parentNode.removeChild(this.section);
     done();
   }
 };
@@ -98,12 +103,12 @@ function createTabs() {
         tabItems.removeClass('selected');
         selectedItem.addClass('selected');
         selectedContent.addClass('selected').siblings('li').removeClass('selected');
-      //animate tabContentWrapper height when content changes 
-      tabContentWrapper.animate({
-        'height': slectedContentHeight
-      }, 200);
-    }
-  });
+        //animate tabContentWrapper height when content changes 
+        tabContentWrapper.animate({
+          'height': slectedContentHeight
+        }, 200);
+      }
+    });
 
   //hide the .cd-tabs::after element when tabbed navigation has scrolled to the end (mobile version)
   checkScrolling($('.cd-tabs nav'));
