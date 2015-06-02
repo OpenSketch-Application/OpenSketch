@@ -1,11 +1,25 @@
 <div id="whiteboard">
   <header id="header">
     <h1 id="logo">
-      <img src="images/logo.png" alt="Open Sketch">
-      <nav>
-        <!-- Toolbar goes here -->
-      </nav>
+      <div class="logo-container">
+        <img src="images/logo.png" alt="Open Sketch">
+      </div>
     </h1>
+    <ul class="toolbar">
+      <li><img src="images/pencil-icon.png" alt="pencil" /></li>
+      <li><img src="images/bucket-icon.png" alt="bucket" /></li>
+      <li><img src="images/shapes-icon.png" alt="shapes" /></li>
+      <li><img src="images/text-icon.png" alt="text" /></li>
+      <li><img src="images/table-icon.png" alt="table" /></li>
+      <li><img src="images/import-icon.png" alt="import" /></li>
+      <li><img src="images/template-icon.png" alt="template" /></li>
+      <li><img src="images/color-icon.png" alt="color" /></li>
+    </ul>
+    <ul class="options">
+      <li>Save</li>
+      <li>Settings</li>
+      <li>Close</li>
+    </ul>
   </header>
   <div id="main">
     <div id="whiteboard-container"></div>
@@ -23,12 +37,12 @@
 
           <!-- ChatBox Tab -->
           <li data-content="Chat" class="selected">
-            <h1>I'm The Chat Tab!</h1>
+            <h1 style="text-align:center;">I'm The Chat Tab!</h1>
           </li>
 
           <!-- User Management Tab -->
           <li data-content="Users">
-            <h1>I'm The Users Tab!</h1>
+            <h1 style="text-align:center;">I'm The Users Tab!</h1>
           </li>
 
         </ul>

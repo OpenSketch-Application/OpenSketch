@@ -9,16 +9,100 @@
     height: 60px;
     background-color: #132531;
     h1 {
-      position: absolute;
-      z-index: 999;
+      margin: 0;
+      position: relative;
       display: block;
       float: left;
-      font-size: 0.8em;    
-      img {
+      font-size: 0.8em;
+      width: 10%;
+      .logo-container {
+        padding: 0px 10px;
+        width: 100%;
+        height: 60px;
+        background-color: #010310;
+        img {
+          position: relative;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 100%;
+        }
+      }
+    }
+    .toolbar {
+      position: relative;
+      margin: 0 0 0 50px;
+      padding: 0;
+      width: 50%;
+      height: 60px;
+      left: 0;
+      display: inline-block;
+      li {
+        height: 100%;
+        margin: 0;
+        padding: 0px 10px;
+        float: left;
+        width: 50px;
+        img {
+          position: relative;
+          top: 50%;
+          transform: translateY(-50%);
+          width: 90%;
+
+        }
+  
+        img:hover {
+          left: -23%;
+          margin: 0;
+          padding: 0;
+          width: 135%;
+          cursor: pointer;
+          cursor: hand;
+          -webkit-transition: opacity .25s ease;
+          -moz-transition: opacity .25s ease;
+        }
+
+        img:active {
+          left: -23%;
+          margin: 0;
+          padding: 0;
+          width: 135%;
+          cursor: pointer;
+          cursor: hand;
+          -webkit-transition: opacity .25s ease;
+          -moz-transition: opacity .25s ease;
+        }
+      }
+
+
+      .overlay {  
+          background:rgba(0,0,0,.75);
+          text-align:center;
+          opacity:0;
+          -webkit-transition: opacity .25s ease;
+          -moz-transition: opacity .25s ease;
+          z-index:-1;
+        }
+    }
+    .options {
+      display: inline-block;
+      float: right;
+      color: white;
+      height: 60px;
+      li {
+        text-align: center;
+        float: left;
         position: relative;
+        padding-left: 55px;
+        padding-right: 55px;
+        @media 
+        (-webkit-min-device-pixel-ratio: 2), 
+        (min-resolution: 192dpi) { 
+          padding-left: 38px;
+          padding-right: 38px;
+        }
         top: 50%;
-        left: 1%;
-        width: 20%;
+        transform: translateY(-50%);
+        font-size: 1.1em;
       }
     }
   }
@@ -29,7 +113,8 @@
       top: 0;
       color: white;
       background-color: white;
-      opacity: 0.05;
+      opacity: 0;
+      width: 75%;
     }
     #tabs {
       position: absolute;
@@ -39,5 +124,6 @@
       height: 100%;
       background-color: #efefef;
     }
+    
   }
 }
