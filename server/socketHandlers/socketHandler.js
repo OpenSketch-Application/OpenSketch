@@ -1,6 +1,6 @@
 var CanvasSession = require('../db/models/CanvasSession');
 
-module.exports = function(io) {
+module.exports = function(io,testDB) {
   var home = io.of('/home');
   home.on('connection',homeHandler(home));
 
@@ -11,7 +11,7 @@ module.exports = function(io) {
 
       socket.on('createSession', function(canvasSession){
        //push canvasSession to db   
-       
+       testDB.push(canvasSession); 
        //create new namespace
        var nsp = io.of('/whiteboard/'+canvasSession.id);
        nsp.on('connection',wbHandler(nsp));
@@ -23,6 +23,7 @@ module.exports = function(io) {
     return function(socket){
       socket.on('joinSession',function(uName,curSession){
         //push new user to session obj in db
+              //emit update user list 
         
         socket.broadcast.emit('userJoining', socket.id + ' has joined the session');
       });
@@ -35,6 +36,20 @@ module.exports = function(io) {
   io.on('connection', function (socket) {
 
     console.log('connection made', socket.id);
+    socket.on('validate',function(sessionid){
+        var exists= false;
+        for(var i = 0; i<testDB.length;i++){
+          console.log('in testdb: ',testDB[i].id,sessionid);
+          if(testDB[i].id == sessionid){
+              exists = true; 
+          }
+        }
+        //if session is not in db redirect to home
+        if(!exists){
+          socket.emit('notFound');
+        }
+
+    });
    // socket.emit('news', { hello: 'world' });
 
    // socket.on('joinRoom', function (data) {

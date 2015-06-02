@@ -41,6 +41,10 @@ Section.prototype = {
       //Whiteboard = getWhiteboardSettings();
       sessionSettings = {};
       sessionSettings.id = sid;
+      sessionSettings.canDraw = find('div.control #roundedTwo').checked;
+      sessionSettings.canChat = find('div.control #roundedOne').checked;
+      sessionSettings.maxUsers = find('div.control input[name=maxUsers]').value;
+      sessionSettings.users = [];
       socket.emit('createSession',sessionSettings);
       framework.go('/whiteboard/'+ sessionSettings.id);
     }.bind(this));
