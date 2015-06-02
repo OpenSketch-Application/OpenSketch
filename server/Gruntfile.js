@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         options: {
           script: 'server.js',
           background: true,
-          port: 3000
+          port: 8080
         }
       }
     },
