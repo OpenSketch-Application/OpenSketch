@@ -10,8 +10,8 @@
   },
   "scripts": {
     "test": "node ./tests/testRoutes.js | tap-spec",
-    "start": "mongod --dbpath ./mongoBinaries --logpath ./logs/mongo_logs --fork",
-    "stop": "ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[0-9]+' | xargs kill"
+    "startDb": "mkdir ./mongoBinaries; mkdir ./logs; touch ./logs/mongo_logs; mongod --dbpath ./mongoBinaries --logpath ./logs/mongo_logs --fork;",
+    "stopDb": "ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[0-9]+' | xargs kill"
   },
   "dependencies": {
     "body-parser": "^1.12.4",
