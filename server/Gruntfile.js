@@ -75,7 +75,6 @@ module.exports = function(grunt) {
   grunt.loadNpmTasks('grunt-express-server');
   grunt.loadNpmTasks('grunt-contrib-less');
   grunt.loadNpmTasks('grunt-browserify');
-
   grunt.registerTask('default', [
     'less:dev',
     'browserify:dev',
