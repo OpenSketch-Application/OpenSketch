@@ -7,7 +7,7 @@ var PIXI = require('pixi');
 var framework = require('../../framework/index');
 var Model = require('../../model/model');
 var states = require('./states');
-var SERVERNAME = 'http://localhost:3000';
+var SERVERNAME = window.location.origin || 'http://zenit.senecac.on.ca:9086';
 module.exports = Section;
 
 function Section() {}
@@ -28,7 +28,7 @@ Section.prototype = {
     });
     socket = io.connect(SERVERNAME + curSession);
     socket.emit('joinSession','testname',curSessionId);
-    console.log(curSession); 
+    console.log(curSession);
     //var socket = io.connect(SERVERNAME +
     var body = find('body');
     var content = find('#content');
@@ -41,7 +41,7 @@ Section.prototype = {
     // find('#tabs').style.width = body.offsetWidth * 0.25 + 'px';
 
     states.init.whiteboard.position[0] = body.offsetWidth * 1.5;
-    
+
     // Strap html to application
     var canvas = find('#whiteboard-container');
     console.log("width", canvas.style.width);
@@ -118,7 +118,7 @@ function createTabs() {
         tabItems.removeClass('selected');
         selectedItem.addClass('selected');
         selectedContent.addClass('selected').siblings('li').removeClass('selected');
-        //animate tabContentWrapper height when content changes 
+        //animate tabContentWrapper height when content changes
         tabContentWrapper.animate({
           'height': slectedContentHeight
         }, 200);
@@ -131,7 +131,7 @@ function createTabs() {
     checkScrolling($('.cd-tabs nav'));
     tabContentWrapper.css('height', 'auto');
   });
-  $('.cd-tabs nav').on('scroll', function(){ 
+  $('.cd-tabs nav').on('scroll', function(){
     checkScrolling($(this));
   });
 
