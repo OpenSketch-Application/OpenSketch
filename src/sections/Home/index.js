@@ -5,14 +5,25 @@ var framework = require('../../framework/index');
 var model = require('../../model/model');
 var states = require('./states');
 module.exports = Section;
-var SERVERNAME = 'http://localhost:3000';
+var SERVERNAME = window.location.origin;
 
+function getWhiteboardSession(socket,whiteboardId){
+      var sessionSettings = {};
+      sessionSettings.id = whiteboardId;
+      sessionSettings.canDraw = find('div.control #roundedTwo').checked;
+      sessionSettings.canChat = find('div.control #roundedOne').checked;
+      sessionSettings.maxUsers = find('div.control input[name=maxUsers]').value;
+      sessionSettings.users = [];
+      socket.emit('createSession',sessionSettings);
+      console.log(sessionSettings);
+      return sessionSettings.id;
+}
 function Section() {}
 
 Section.prototype = {
 
   init: function(req, done) {
-    var socket = io.connect(SERVERNAME + '/home');
+    var socket = io.connect(SERVERNAME +'/home');
     var sid;
     socket.on('getId',function(id){
         sid= id;
@@ -38,15 +49,14 @@ Section.prototype = {
     // whiteboard options Section for user to create a whiteboard
     find('div.control:last-child button').addEventListener('click', function(e) {
       e.preventDefault();
-      //Whiteboard = getWhiteboardSettings();
-      sessionSettings = {};
-      sessionSettings.id = sid;
-      sessionSettings.canDraw = find('div.control #roundedTwo').checked;
-      sessionSettings.canChat = find('div.control #roundedOne').checked;
-      sessionSettings.maxUsers = find('div.control input[name=maxUsers]').value;
-      sessionSettings.users = [];
-      socket.emit('createSession',sessionSettings);
-      framework.go('/whiteboard/'+ sessionSettings.id);
+      console.log('b4');
+      WhiteboardId = getWhiteboardSession(socket,sid);
+      console.log('aft');
+      if(WhiteboardId != undefined && WhiteboardId !=null){
+        framework.go('/whiteboard/'+ WhiteboardId);
+      }else{
+        socket = io.connect(SERVERNAME+'/home');
+      }
     }.bind(this));
 
     done();

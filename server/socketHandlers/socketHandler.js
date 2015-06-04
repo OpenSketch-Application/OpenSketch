@@ -23,9 +23,14 @@ module.exports = function(io,testDB) {
     return function(socket){
       socket.on('joinSession',function(uName,curSession){
         //push new user to session obj in db
-              //emit update user list 
+              //emit update user list from db 
+              //emit update whiteboard from db
         
         socket.broadcast.emit('userJoining', socket.id + ' has joined the session');
+      });
+      socket.on('chatMessage',function(uName, msg){
+        //send chat to other users -- 
+        //add
       });
       socket.on('disconnect',function(){
         socket.broadcast.emit('userLeaving', socket.id);
@@ -50,14 +55,5 @@ module.exports = function(io,testDB) {
         }
 
     });
-   // socket.emit('news', { hello: 'world' });
-
-   // socket.on('joinRoom', function (data) {
-   //   console.log(data);
-   // });
-   // socket.on('test', function (data) {
-   //   console.log(data);
-   // });
-
   });
 };

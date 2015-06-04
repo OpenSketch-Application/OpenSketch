@@ -7,14 +7,9 @@ var PIXI = require('pixi');
 var framework = require('../../framework/index');
 var Model = require('../../model/model');
 var states = require('./states');
-var SERVERNAME = 'http://localhost:3000';
 module.exports = Section;
-
-function Section() {}
-
-Section.prototype = {
-
-  init: function(req, done) {
+var SERVERNAME = window.location.origin;
+function socketSetup(){
     var curSession = window.location.href;
     curSession = curSession.split('/');
     var end = curSession.length -1;
@@ -26,10 +21,18 @@ Section.prototype = {
       framework.go('/home');
       done();
     });
-    socket = io.connect(SERVERNAME + curSession);
+    socket = io.connect(SERVERNAME +curSession);
     socket.emit('joinSession','testname',curSessionId);
     console.log(curSession); 
-    //var socket = io.connect(SERVERNAME +
+    return socket;
+  }
+
+function Section() {}
+
+Section.prototype = {
+
+  init: function(req, done) {
+    var socket = socketSetup(); 
     var body = find('body');
     var content = find('#content');
     this.section = document.createElement('div');
@@ -50,13 +53,8 @@ Section.prototype = {
 
     var stage = new PIXI.Container();
 
-    var socket = io();
 
-    socket.on('news', function (data) {
-      console.log(data);
-      socket.emit('my other event', { my: 'data' });
-    });
-
+  
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
                            .targets({ whiteboard: find('#whiteboard')})
