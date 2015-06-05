@@ -28,10 +28,15 @@ module.exports = function(io,testDB) {
         
         socket.broadcast.emit('userJoining', socket.id + ' has joined the session');
       });
-      socket.on('chatMessage',function(uName, msg){
-        //send chat to other users -- 
-        //add
+      socket.on('chatMessage',function(user, msg){
+        //socket emit chat to other users  
+        //add chat to db //but maybe we don't need to keep chat messages stored?
       });
+      socket.on('sendDrawing',function(user, CanvasShape){
+        //add drawing to db 
+        //emit drawing to other users
+      });
+
       socket.on('disconnect',function(){
         socket.broadcast.emit('userLeaving', socket.id);
       });

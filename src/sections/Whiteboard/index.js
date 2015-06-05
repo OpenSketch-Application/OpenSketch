@@ -9,6 +9,7 @@ var Model = require('../../model/model');
 var states = require('./states');
 module.exports = Section;
 var SERVERNAME = window.location.origin;
+
 function socketSetup(){
     var curSession = window.location.href;
     curSession = curSession.split('/');
@@ -23,6 +24,20 @@ function socketSetup(){
     });
     socket = io.connect(SERVERNAME +curSession);
     socket.emit('joinSession','testname',curSessionId);
+    
+    socket.on('userJoining',function(msg){
+      //update user list clientside
+      //update chat tab with msg
+      //adjust all users priority
+      //send edited user list to db
+    });
+    socket.on('userLeaving',function(msg){
+      //update user list clientside
+      //update chat tab with msg
+      //adjust all users priority
+      //send edited user list to db
+    });
+    
     console.log(curSession); 
     return socket;
   }
@@ -32,6 +47,7 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
+
     var socket = socketSetup(); 
     var body = find('body');
     var content = find('#content');
