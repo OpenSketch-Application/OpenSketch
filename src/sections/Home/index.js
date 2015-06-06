@@ -5,7 +5,7 @@ var framework = require('../../framework/index');
 var model = require('../../model/model');
 var states = require('./states');
 module.exports = Section;
-var SERVERNAME = 'http://localhost:3000';
+var SERVERNAME = window.location.origin;
 
 function Section() {}
 
