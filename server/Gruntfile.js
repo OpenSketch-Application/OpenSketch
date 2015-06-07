@@ -48,6 +48,10 @@ module.exports = function(grunt) {
         options: {
           spawn: false
         }
+      },
+      browserify: {
+          files: ['../src/**/*.js'],
+          tasks: ['browserify:dev']
       }
     },
     less: {
