@@ -41,7 +41,7 @@ module.exports = function(io,testDB) {
             userCount = testDB[i].userCount+=1;
             testDB[i].users[userCount-1] = incomingUser;
             maxUsers = s.maxUsers;
-            console.log(testDB[i].users);
+            //console.log(testDB[i].users);
           }
         }
 
@@ -65,7 +65,6 @@ module.exports = function(io,testDB) {
       socket.on('disconnect',function(){
         sessionid = socket.adapter.nsp.name.split('/');
         sessionid = sessionid[sessionid.length - 1];
-        console.log('disconn ',sessionid);
         //remove user from db
         var roll = false;
         var userCount;
@@ -84,7 +83,7 @@ module.exports = function(io,testDB) {
                 testDB[i].users[j] = testDB[i].users[j+1];
               }
             }
-            console.log(testDB[i].users);
+            //console.log(testDB[i].users);
           }
         }
         socket.broadcast.emit('userLeaving', socket.id + ' has left the session');
