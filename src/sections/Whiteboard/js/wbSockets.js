@@ -1,7 +1,7 @@
 var find = require('dom-select');
 var SERVERNAME = window.location.origin;
 
-module.exports = function(io){
+module.exports = function(io,framework){
 var curSession = window.location.href;
     curSession = curSession.split('/');
     var end = curSession.length -1;

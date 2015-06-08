@@ -7,8 +7,9 @@ var PIXI = require('pixi');
 var framework = require('../../framework/index');
 var Model = require('../../model/model');
 var states = require('./states');
-var SERVERNAME = 'http://localhost:3000';
+
 var createTabs = require('./ui/tabs');
+var socketSetup = require('./js/wbSockets.js');
 
 module.exports = Section;
 
@@ -17,19 +18,7 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
-    var curSession = window.location.href;
-    curSession = curSession.split('/');
-    var end = curSession.length -1;
-    var curSessionId = curSession[end];
-    curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
-    var socket = io.connect(SERVERNAME);
-    socket.emit('validate',curSessionId);
-    socket.on('notFound',function(){
-      framework.go('/home');
-      done();
-    });
-    socket = io.connect(SERVERNAME + curSession);
-    socket.emit('joinSession','testname',curSessionId);
+    var socket = socketSetup(io,framework); 
 
     var content = find('#content');
     this.section = document.createElement('div');
