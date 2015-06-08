@@ -8,16 +8,24 @@ module.exports = Section;
 var SERVERNAME = window.location.origin;
 
 function getWhiteboardSession(socket,whiteboardId){
+      var max  = find('div.control input[name=maxUsers]').value;
+      var maxUsers = parseInt(max);
+      if(isNaN(maxUsers) || maxUsers > 30 || maxUsers <=0) {
+        maxUsers = 30;
+      }
+
       var sessionSettings = {};
       sessionSettings.id = whiteboardId;
       sessionSettings.canDraw = find('div.control #roundedTwo').checked;
       sessionSettings.canChat = find('div.control #roundedOne').checked;
-      sessionSettings.maxUsers = find('div.control input[name=maxUsers]').value;
+      sessionSettings.maxUsers = maxUsers; 
+      
       sessionSettings.users = [];
       socket.emit('createSession',sessionSettings);
       console.log(sessionSettings);
       return sessionSettings.id;
 }
+
 function Section() {}
 
 Section.prototype = {
@@ -49,9 +57,8 @@ Section.prototype = {
     // whiteboard options Section for user to create a whiteboard
     find('div.control:last-child button').addEventListener('click', function(e) {
       e.preventDefault();
-      console.log('b4');
       WhiteboardId = getWhiteboardSession(socket,sid);
-      console.log('aft');
+
       if(WhiteboardId != undefined && WhiteboardId !=null){
         framework.go('/whiteboard/'+ WhiteboardId);
       }else{
