@@ -80,7 +80,6 @@ Section.prototype = {
   },
 
   animateOut: function(req, done) {
-    console.log('animate out');
     this.animate.go('out', function() {
       if(done)
         done();
