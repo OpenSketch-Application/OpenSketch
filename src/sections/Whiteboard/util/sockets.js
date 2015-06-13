@@ -9,7 +9,7 @@ module.exports = function(io, framework){
   curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
 
   var socket = io.connect(SERVERNAME);
-  socket.emit('validate',curSessionId);
+  socket.emit('validateSessionId',curSessionId);
   socket.on('fullorinvalid',function(){
     framework.go('/home');
   });
