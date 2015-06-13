@@ -4,32 +4,6 @@ var dbShapes = require('./CanvasShapesManager');
 var SeedDb = require('../seedDatabase/seedDatabase');
 var CanvasSession = require('../../db/models/CanvasSession');
 
-//seedDatabase();
-// test('Testing good routes - 200 Status Code', function(t) {
-
-//   t.plan(goodRoutes.length);
-
-//   promise.reduce(goodRoutes, function(initial, curRoute) {
-//     return testRunner(curRoute, t, 200)
-//            .catch(function (err) {
-//              t.fail(err);
-//            });
-//   }, 0);
-// });
-// return new promise(function(resolve, reject) {
-//     http.request(options, function(response){
-//       if(response) {
-//         tester.equal(response.statusCode, expectedCode, url);
-//         resolve();
-//       } else {
-//         reject('No response from server');
-//       }
-//     })
-//     .on('error', function(e) {
-//       reject('Connection refused');
-//     })
-//     .end();
-//   });
 
 test('Test Database Seeding', function(t) {
 
@@ -67,23 +41,24 @@ function subTest_CreateShape(t) {
 
   t.ok(dbShapes.canvasSessionId && dbShapes.canvasSessionId === 'session1', 'Id "session1" found');
 
-  t.ok(dbShapes.one && typeof dbShapes.one === 'function', 'findOne or one method exists');
+  t.ok(dbShapes.findOne && typeof dbShapes.findOne === 'function', 'findOne or findOne method exists');
 
-  var promise = dbShapes.all();
+  dbShapes.findOne('0', function(err, result) {
+    if(err) throw new Error('CanvasShape findOne: ' + err);
 
-  t.ok(promise, 'Shapes returned promise with find All');
-
-
-
-  console.log(promise);
-
-  promise.then(function(res) {
-    console.log('results', res);
-
-    t.end();
+    t.ok(result && result.length, 'findOne returned expected result');
   });
 
-  t.ok(dbShapes.add, 'dbShapes.add exists');
+  dbShapes.findAll(function(err, result) {
+    if(err) throw new Error('CanvasShape findAll: ' + err);
+
+    console.log(result);
+
+    t.ok(result && result.length, 'findAll returned results');
+  });
+
+  t.ok(dbShapes.addOne, 'addOne method exists');
+
   var rect = {
     shapeId: 'rj34kskdj43',
     userId: 'John0',
@@ -97,7 +72,13 @@ function subTest_CreateShape(t) {
     objectType: 'Rectangle'
   }
 
-  promise = dbShapes.add(rect);
+  dbShapes.addOne(rect, function(err, result) {
+    if(err) throw new Error('CanvasShape findAll: ' + err);
+
+    console.log(result);
+  });
+
+
   // promise.then(function(res) {
   //   t.ok('Object saved ' + res);
   // }, function(err) {

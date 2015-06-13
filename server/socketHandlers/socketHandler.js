@@ -10,13 +10,13 @@ module.exports = function(io,testDB) {
       socket.emit('getId',socket.id);
 
       socket.on('createSession', function(canvasSession){
-       //push canvasSession to db   
+       //push canvasSession to db
        canvasSession.userCount = 0;
-       testDB.push(canvasSession); 
+       testDB.push(canvasSession);
        //create new namespace
        var nsp = io.of('/whiteboard/'+canvasSession.id);
        nsp.on('connection',wbHandler(nsp));
-       
+
       });
     };
   }
@@ -28,7 +28,7 @@ module.exports = function(io,testDB) {
         //validate name
 
         var incomingUser = {};
-        
+
         //push new user to session obj in db
         for(var i = 0; i<testDB.length;i++){
           if(testDB[i].id == sessionid){
@@ -45,20 +45,27 @@ module.exports = function(io,testDB) {
           }
         }
 
-        //emit update user list from db 
+        console.log('User joining', uName, 'sessionId', sessionid);
+
+        //emit update user list from db
         //emit update whiteboard from db
-        
+
         socket.broadcast.emit('userJoining', socket.id + ' has joined the session');
         socket.broadcast.emit('userCount', 'Users: '+userCount+'/'+maxUsers);
         socket.emit('userCount','Users: '+userCount+'/'+maxUsers);
 
       });
-      socket.on('chatMessage',function(user, msg){
-        //socket emit chat to other users  
+      socket.on('chatMessage',function(message){
+        //socket emit chat to other users
+        socket.broadcast.emit('chatMessage', {
+          'user': message.user,
+          'msg': message.msg
+        });
+        console.log('msg received', message);
         //add chat to db //but maybe we don't need to keep chat messages stored?
       });
       socket.on('sendDrawing',function(user, CanvasShape){
-        //add drawing to db 
+        //add drawing to db
         //emit drawing to other users
       });
 
@@ -103,7 +110,7 @@ module.exports = function(io,testDB) {
         for(var i = 0; i<testDB.length;i++){
           console.log('in testdb: ',testDB[i].id,sessionid);
           if(testDB[i].id == sessionid){
-              exists = true; 
+              exists = true;
               if(testDB[i].userCount >= testDB[i].maxUsers){
                 full = true;
               }

@@ -10,7 +10,7 @@ var states = require('./states');
 
 var createTabs = require('./ui/tabs');
 var socketSetup = require('./js/wbSockets.js');
-
+var ChatboxManager = require('./js/ChatboxManager');
 module.exports = Section;
 
 function Section() {}
@@ -18,7 +18,7 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
-    var socket = socketSetup(io,framework); 
+    var socket = socketSetup(io,framework);
 
     var content = find('#content');
     this.section = document.createElement('div');
@@ -28,7 +28,7 @@ Section.prototype = {
     createTabs();
 
     states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
-    
+
     // Strap html to application
     var canvas = find('#whiteboard-container');
     var renderer = new PIXI.autoDetectRenderer(document.body.offsetWidth * 0.75, document.body.offsetHeight - 60);
@@ -65,16 +65,13 @@ Section.prototype = {
         renderer.render(stage);
     }
 
-    socket.on('news', function (data) {
-      console.log(data);
-      socket.emit('my other event', { my: 'data' });
-    });
-
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
                            .targets({ whiteboard: find('#whiteboard')})
                            .parsers(require('f1-dom'))
                            .init('init');
+
+    ChatboxManager.init(req, socket, done);
 
     done();
   },
