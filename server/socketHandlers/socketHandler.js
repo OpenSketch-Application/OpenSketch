@@ -1,6 +1,6 @@
 var CanvasSession = require('../db/models/CanvasSession');
 
-module.exports = function(io,testDB) {
+module.exports = function(io,DB) {
   var home = io.of('/home');
   home.on('connection',homeHandler(home));
 
@@ -12,7 +12,23 @@ module.exports = function(io,testDB) {
       socket.on('createSession', function(canvasSession){
        //push canvasSession to db   
        canvasSession.userCount = 0;
-       testDB.push(canvasSession); 
+       var newSession = new CanvasSession(
+       {
+         canvasId : canvasSession.id,
+         canDraw : canvasSession.canDraw,
+         canChat : canvasSession.canChat,
+         maxUsers : canvasSession.maxUsers
+       }
+       ); 
+
+       newSession.save(function(err,obj){
+         if(err){
+           console.log(err);
+         }
+         else{
+           console.log('success',obj);
+         }
+       });
        //create new namespace
        var nsp = io.of('/whiteboard/'+canvasSession.id);
        nsp.on('connection',wbHandler(nsp));
@@ -23,35 +39,36 @@ module.exports = function(io,testDB) {
   function wbHandler(nspWb){
     return function(socket){
       socket.on('joinSession',function(uName,sessionid){
-        var userCount;
-        var maxUsers;
         //validate name
-
-        var incomingUser = {};
         
-        //push new user to session obj in db
-        for(var i = 0; i<testDB.length;i++){
-          if(testDB[i].id == sessionid){
-            var s = testDB[i];
-            incomingUser.name = 'testName';
-            incomingUser.id = socket.id;
-            incomingUser.canChat = s.canChat;
-            incomingUser.canDraw = s.canDraw;
-            //incomingUser.priority = s.userCount +1;
-            userCount = testDB[i].userCount+=1;
-            testDB[i].users[userCount-1] = incomingUser;
-            maxUsers = s.maxUsers;
-            console.log(testDB[i].users);
-          }
-        }
+       //push user to db 
+        CanvasSession.findOne({canvasId : sessionid},function(err,obj){
+          if(err){
 
-        //emit update user list from db 
+          }else if(obj){
+            //push user to canvas
+            obj.users.push({
+              name: uName,
+              canDraw: true,
+              canChat: true,
+              _id: socket.id
+            });      
+
+            socket.broadcast.emit('userJoining', socket.id + ' has joined the session');
+            socket.broadcast.emit('userCount', 'Users: '+obj.users.length+'/'+obj.maxUsers);
+            socket.emit('userCount','Users: '+obj.users.length+'/'+obj.maxUsers);
+
+            obj.save(function(err){
+               if(err) console.log(err);
+               else console.log(obj);
+            });
+
+          }
+        });      
+
         //emit update whiteboard from db
         
-        socket.broadcast.emit('userJoining', socket.id + ' has joined the session');
-        socket.broadcast.emit('userCount', 'Users: '+userCount+'/'+maxUsers);
-        socket.emit('userCount','Users: '+userCount+'/'+maxUsers);
-
+        
       });
       socket.on('chatMessage',function(user, msg){
         //socket emit chat to other users  
@@ -65,31 +82,30 @@ module.exports = function(io,testDB) {
       socket.on('disconnect',function(){
         sessionid = socket.adapter.nsp.name.split('/');
         sessionid = sessionid[sessionid.length - 1];
-        console.log('disconn ',sessionid);
+        console.log('disconn ',socket.id);
         //remove user from db
-        var roll = false;
-        var userCount;
-        var maxUsers;
-        for(var i = 0; i<testDB.length;i++){
-          if(testDB[i].id == sessionid){
-            for(var j = 0; j < testDB[i].userCount;j++){
-              if(testDB[i].users[j]){
-                if(testDB[i].users[j].id == socket.id){
-                   roll = true;
-                   userCount = testDB[i].userCount-=1;
-                   maxUsers = testDB[i].maxUsers;
-                }
-              }
-              if(roll){
-                testDB[i].users[j] = testDB[i].users[j+1];
-              }
-            }
-            console.log(testDB[i].users);
+
+        CanvasSession.findOne({canvasId : sessionid},function(err,obj){
+          if(err){
+
+          }else if(obj){
+            //delete user 
+           if(obj.users.id(socket.id)!=null){
+             obj.users.id(socket.id).remove();
+           }
+
+           console.log(obj.users.length,obj.maxUsers);
+           socket.broadcast.emit('userLeaving', socket.id + ' has left the session');
+           socket.broadcast.emit('userCount', 'Users: '+obj.users.length+'/'+obj.maxUsers);
+           socket.emit('userCount','Users: '+obj.users.length+'/'+obj.maxUsers);
+
+           obj.save(function(err){
+               if(err) console.log(err);
+               else console.log(obj);
+            });
           }
-        }
-        socket.broadcast.emit('userLeaving', socket.id + ' has left the session');
-        socket.broadcast.emit('userCount', 'Users: '+userCount+'/'+maxUsers);
-        socket.emit('userCount','Users: '+userCount+'/'+maxUsers);
+        });
+        
 
       });
     };
@@ -99,22 +115,23 @@ module.exports = function(io,testDB) {
 
     console.log('connection made', socket.id);
     socket.on('validate',function(sessionid){
-        var exists= false;
-        var full = false;
-        for(var i = 0; i<testDB.length;i++){
-          console.log('in testdb: ',testDB[i].id,sessionid);
-          if(testDB[i].id == sessionid){
-              exists = true; 
-              if(testDB[i].userCount >= testDB[i].maxUsers){
-                full = true;
-              }
+        console.log('in validate');
+        CanvasSession.findOne({canvasId : sessionid},function(err,obj){
+           if(err){
+             console.log(err);
+             socket.emit('fullorinvalid');
+           }else if(obj){
+             console.log('found');    
+             if(obj.users.length >= obj.maxUsers){
+               socket.emit('fullorinvalid');
+               console.log('full');
+             }
+           }else{
+             socket.emit('fullorinvalid');
+           }
 
-          }
-        }
-        //if session is not in db or full redirect to home
-        if(!exists || full){
-          socket.emit('fullorinvalid');
-        }
+        });
+
 
     });
   });
