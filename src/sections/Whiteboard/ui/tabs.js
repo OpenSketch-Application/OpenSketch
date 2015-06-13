@@ -37,24 +37,23 @@ module.exports = function () {
       }
     });
 
-  //hide the .cd-tabs::after element when tabbed navigation has scrolled to the end (mobile version)
-  checkScrolling($('.cd-tabs nav'));
-  $(window).on('resize', function(){
     checkScrolling($('.cd-tabs nav'));
-    tabContentWrapper.css('height', 'auto');
-  });
-  $('.cd-tabs nav').on('scroll', function(){ 
-    checkScrolling($(this));
-  });
+    $(window).on('resize', function(){
+      checkScrolling($('.cd-tabs nav'));
+      tabContentWrapper.css('height', 'auto');
+    });
+    $('.cd-tabs nav').on('scroll', function(){ 
+      checkScrolling($(this));
+    });
 
-  function checkScrolling(tabs){
-    var totalTabWidth = parseInt(tabs.children('.cd-tabs-navigation').width()),
-    tabsViewport = parseInt(tabs.width());
-    if( tabs.scrollLeft() >= totalTabWidth - tabsViewport) {
-      tabs.parent('.cd-tabs').addClass('is-ended');
-    } else {
-      tabs.parent('.cd-tabs').removeClass('is-ended');
+    function checkScrolling(tabs){
+      var totalTabWidth = parseInt(tabs.children('.cd-tabs-navigation').width()),
+      tabsViewport = parseInt(tabs.width());
+      if( tabs.scrollLeft() >= totalTabWidth - tabsViewport) {
+        tabs.parent('.cd-tabs').addClass('is-ended');
+      } else {
+        tabs.parent('.cd-tabs').removeClass('is-ended');
+      }
     }
-  }
-});
-}
+  });
+};

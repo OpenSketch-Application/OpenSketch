@@ -20,6 +20,7 @@ var CanvasSessionSchema = new mongoose.Schema({
   sessionProperties: { type: Object },
 
   canvasModel: { type: Object },
+  users: Array,
   canvasShapes: Array,
   messages: Array
 });

@@ -6,14 +6,14 @@
       </div>
     </h1>
     <ul class="toolbar">
-      <li><img src="images/pencil-icon.png" alt="pencil" /></li>
-      <li><img src="images/bucket-icon.png" alt="bucket" /></li>
-      <li><img src="images/shapes-icon.png" alt="shapes" /></li>
-      <li><img src="images/text-icon.png" alt="text" /></li>
-      <li><img src="images/table-icon.png" alt="table" /></li>
-      <li><img src="images/import-icon.png" alt="import" /></li>
-      <li><img src="images/template-icon.png" alt="template" /></li>
-      <li><img src="images/color-icon.png" alt="color" /></li>
+      <li><img id="tool-pencil" src="images/pencil-icon.png" alt="pencil" /></li>
+      <li><img id="tool-fill" src="images/bucket-icon.png" alt="bucket" /></li>
+      <li><img id="tool-shapes" src="images/shapes-icon.png" alt="shapes" /></li>
+      <li><img id="tool-text" src="images/text-icon.png" alt="text" /></li>
+      <li><img id="tool-table" src="images/table-icon.png" alt="table" /></li>
+      <li><img id="tool-import" src="images/import-icon.png" alt="import" /></li>
+      <li><img id="tool-template" src="images/template-icon.png" alt="template" /></li>
+      <li><img id="tool-color" src="images/color-icon.png" alt="color" /></li>
     </ul>
     <ul class="options">
       <li>Save</li>
@@ -37,7 +37,16 @@
 
           <!-- ChatBox Tab -->
           <li data-content="Chat" class="selected">
-            <h1 style="text-align:center;">I'm The Chat Tab!</h1>
+            <!-- <h1 style="text-align:center;">I'm The Chat Tab!</h1> -->
+            <div class="chatMessageBox">
+              <div class="messageInputUI">
+                <input type="text" />
+                <button>Send</button>
+              </div>
+              <ul class="chatMessages">
+                <li>Messages:</li>
+              </ul>
+            </div>
           </li>
 
           <!-- User Management Tab -->

@@ -10,7 +10,7 @@ module.exports = function(io,DB) {
       socket.emit('getId',socket.id);
 
       socket.on('createSession', function(canvasSession){
-       //push canvasSession to db   
+       //push canvasSession to db
        canvasSession.userCount = 0;
        var newSession = new CanvasSession(
        {
@@ -32,7 +32,7 @@ module.exports = function(io,DB) {
        //create new namespace
        var nsp = io.of('/whiteboard/'+canvasSession.id);
        nsp.on('connection',wbHandler(nsp));
-       
+
       });
     };
   }
@@ -63,19 +63,29 @@ module.exports = function(io,DB) {
                else console.log(obj);
             });
 
+
           }
         });      
 
+        
+        //console.log('User joining', uName, 'sessionId', sessionid);
+
+        //emit update user list from db
         //emit update whiteboard from db
-        
-        
+
+
       });
-      socket.on('chatMessage',function(user, msg){
-        //socket emit chat to other users  
+      socket.on('chatMessage',function(message){
+        //socket emit chat to other users
+        socket.broadcast.emit('chatMessage', {
+          'user': message.user,
+          'msg': message.msg
+        });
+        console.log('msg received', message);
         //add chat to db //but maybe we don't need to keep chat messages stored?
       });
       socket.on('sendDrawing',function(user, CanvasShape){
-        //add drawing to db 
+        //add drawing to db
         //emit drawing to other users
       });
 
@@ -103,7 +113,6 @@ module.exports = function(io,DB) {
                if(err) console.log(err);
                else console.log(obj);
             });
-          }
         });
         
 
