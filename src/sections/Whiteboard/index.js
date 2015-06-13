@@ -31,7 +31,7 @@ Section.prototype = {
       whiteboard: '#whiteboard-container',
       tools: {
         pencil: '#tool-pencil',
-        eraser: '#tool-eraser',
+        // eraser: '#tool-eraser',
         fill: '#tool-fill',
         shapes: {
           'el': '#tool-shapes',
