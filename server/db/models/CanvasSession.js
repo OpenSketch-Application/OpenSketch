@@ -2,7 +2,7 @@ var mongoose = require('mongoose');
 
 // Create a session model, _id will be assigned by Mongoose
 var CanvasSessionSchema = new mongoose.Schema({
-  canvasId: Number,
+  canvasId: String,
   users: { type: Object },
   dateCreated: Date,
   dateUpdated: Date,
