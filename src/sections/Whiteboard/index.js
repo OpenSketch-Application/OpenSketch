@@ -9,8 +9,8 @@ var Model = require('../../model/model');
 var states = require('./states');
 
 var createTabs = require('./ui/tabs');
-var socketSetup = require('./js/wbSockets.js');
-var ChatboxManager = require('./js/ChatboxManager');
+var socketSetup = require('./util/sockets');
+var ChatboxManager = require('./util/chatbox');
 module.exports = Section;
 
 function Section() {}
@@ -29,11 +29,10 @@ Section.prototype = {
 
     states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
 
-    // Strap html to application
-    var canvas = find('#whiteboard-container');
+    var whiteboard = find('#whiteboard-container');
     var renderer = new PIXI.autoDetectRenderer(document.body.offsetWidth * 0.75, document.body.offsetHeight - 60);
-    renderer.backgroundColor = 0x123feb;
-    canvas.appendChild(renderer.view);
+    renderer.backgroundColor = 0xffffff;
+    whiteboard.appendChild(renderer.view);
 
     var stage = new PIXI.Container();
 
