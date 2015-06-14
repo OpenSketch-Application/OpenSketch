@@ -50,8 +50,7 @@ function toolbar(elements) {
         this.pencil = createPencil(settings, el);
         break;
       case 'eraser':
-        //this.tools.eraser = find(elements.tools[tool]);
-        //createPencil(settings, this.tools.pencil);
+        this.eraser = createEraser(settings, el);
         break;
       case 'fill':
         this.fill = el;
