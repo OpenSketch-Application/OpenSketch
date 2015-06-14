@@ -32,7 +32,7 @@ Shapes.findAll = function(callback) {
     )
     .exec(function(err, res) {
       if(err || !res[0] && !res[0].canvasShapes) callback(err, res);
-
+      //console.log(res);
       callback(err, res[0].canvasShapes)
     });
 };

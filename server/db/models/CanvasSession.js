@@ -13,3 +13,17 @@ var CanvasSessionSchema = new mongoose.Schema({
 
 // Make Session available to rest of the application
 module.exports = mongoose.model('CanvasSession', CanvasSessionSchema);
+
+user = {
+  userId: 'socket123', // socket Id
+  username: 'Ragu', //'username',
+  userRank: 5, //'0 - maxNum'
+  permissions : {
+    canDraw: true,
+    canChat: true
+  }
+}
+
+// sessionProperties = {
+
+// }
