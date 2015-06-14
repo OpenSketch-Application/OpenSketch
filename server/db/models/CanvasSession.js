@@ -17,10 +17,7 @@ var CanvasSessionSchema = new mongoose.Schema({
   canDraw: Boolean,
   canChat: Boolean,
   maxUsers: Number,
-  sessionProperties: { type: Object },
-
   canvasModel: { type: Object },
-  users: Array,
   canvasShapes: Array,
   messages: Array
 });
