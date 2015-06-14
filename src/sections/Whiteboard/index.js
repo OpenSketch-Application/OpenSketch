@@ -18,7 +18,7 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
-    var socket = socketSetup(io,framework);
+    var socket = socketSetup(io,framework,done);
 
     var content = find('#content');
     this.section = document.createElement('div');

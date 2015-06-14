@@ -1,7 +1,8 @@
 var find = require('dom-select');
+var EVENT = require('../../../model/model').socketEvents;
 var SERVERNAME = window.location.origin;
 
-module.exports = function(io, framework){
+module.exports = function(io, framework,done){
   var curSession = window.location.href;
   curSession = curSession.split('/');
   var end = curSession.length -1;
@@ -9,54 +10,50 @@ module.exports = function(io, framework){
   curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
 
   var socket = io.connect(SERVERNAME);
-  socket.emit('validateSessionId',curSessionId);
-  socket.on('fullorinvalid',function(){
+  socket.on(EVENT.badSession,function(){
     framework.go('/home');
+    done();
   });
+
+  socket.emit(EVENT.validateSession,curSessionId);
 
   socket = io.connect(SERVERNAME +curSession);
-  socket.emit('joinSession','testname',curSessionId);
-  socket.on('userCount',function(msg) {
+  socket.emit(EVENT.joinSession,'testname',curSessionId);
+  socket.on(EVENT.updateUserList,function(msg,users) {
+    console.log('in update user list');
     var Usertab =  find('.cd-tabs-content li[data-content=Users]');
-    var countElement;
-    countElement = document.getElementById('userCount');
-    if(countElement){
-      countElement.innerHTML = msg;
+    var UsertabName = find('a[data-content=Users]');
+    
+    UsertabName.innerHTML = 'Users('+msg+')';
+    
+    var UserList = find('.userList');   
+    if(UserList){
+      UserList.innerHTML = "";
     }else{
-      countElement = document.createElement('div');
-      countElement.id = 'userCount';
-      countElement.innerHTML = msg;
-      Usertab.appendChild(countElement);
+      UserList = document.createElement('div'); 
+      UserList.className = 'userList';
     }
+    for(var i = 0; i< users.length; i++){
+      var user = document.createElement('div'); 
+      user.innerHTML = 'Name: '+users[i].name + ' ID: '+users[i]._id;
+      UserList.appendChild(user);
+    }
+    Usertab.appendChild(UserList);
 
   });
 
-  socket.on('userJoining',function(msg,userCount){
+  socket.on(EVENT.announcement,function(msg){
     //update user list clientside
     //update chat tab with msg
-    var Chattab =  find('.cd-tabs-content li[data-content=Chat]');
+    var Chattab =  find('.chatMessageBox .chatMessages');
 
-    console.log('User has been added to session');
 
-    var div =document.createElement('div');
-    div.innerHTML = msg;
-    Chattab.appendChild(div);
+    var li =document.createElement('li');
+    li.innerHTML = msg;
+    Chattab.appendChild(li);
     //adjust all users priority
     //send edited user list to db
   });
-
-  socket.on('userLeaving', function(msg,userCount){
-      //update user list clientside
-      //update chat tab with msg
-      var Chattab =  find('.cd-tabs-content li[data-content=Chat]');
-
-      var div = document.createElement('div');
-      div.innerHTML = msg;
-      Chattab.appendChild(div);
-      //adjust all users priority
-      //send edited user list to db
-    });
-
 
   console.log(curSession);
   return socket;
