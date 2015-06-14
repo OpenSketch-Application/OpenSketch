@@ -33,6 +33,7 @@ Installing and Setting up Mongod database:
  $npm start
  ```
  Note: Make sure 2 directories (mongoBinaries and logs) are present in the server directory
+ 
  Note: if you are running on windows, just run "npm run startWin" in a new git console (windows cannot run background instances the same way unix/linux can and setting up a service requires more work then is worth it)
 
  4) To stop MongoDb, run 
