@@ -6,6 +6,7 @@ var model = require('../../model/model');
 var states = require('./states');
 module.exports = Section;
 var SERVERNAME = window.location.origin;
+var EVENT = model.socketEvents;
 
 function getWhiteboardSession(socket,whiteboardId){
       var max  = find('div.control input[name=maxUsers]').value;
@@ -21,7 +22,7 @@ function getWhiteboardSession(socket,whiteboardId){
       sessionSettings.maxUsers = maxUsers; 
       
       sessionSettings.users = [];
-      socket.emit('createSession',sessionSettings);
+      socket.emit(EVENT.createSession,sessionSettings);
       console.log(sessionSettings);
       return sessionSettings.id;
 }
@@ -33,7 +34,7 @@ Section.prototype = {
   init: function(req, done) {
     var socket = io.connect(SERVERNAME +'/home');
     var sid;
-    socket.on('getId',function(id){
+    socket.on(EVENT.getSocketID,function(id){
         sid= id;
     });
 
