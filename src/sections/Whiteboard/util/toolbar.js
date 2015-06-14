@@ -10,7 +10,6 @@ var createImport = require('./tools/import');
 var createColor = require('./tools/color');
 var createTemplates = require('./tools/templates');
 
-
 module.exports = toolbar;
 
 function toolbar(elements) {
@@ -18,7 +17,10 @@ function toolbar(elements) {
   var imgs = [];
   this.tools = {};
   this.container = find(elements.whiteboard);
-  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75, document.body.offsetHeight - 60, {antialias: true});
+  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75, 
+                                          document.body.offsetHeight - 60, 
+                                          { antialias: true });
+
   this.container.appendChild(this.renderer.view);
   this.stage = new PIXI.Stage(0xFFFFFF, true);
   this.renderer.render(this.stage);
@@ -30,56 +32,11 @@ function toolbar(elements) {
   };
 
   for(var tool in elements.tools) {
-    el = find(typeof elements.tools[tool] === 'string' 
-              ? elements.tools[tool] : elements.tools[tool].el);
-
+    el = find(typeof elements.tools[tool] === 'string' ? 
+                     elements.tools[tool] : elements.tools[tool].el);
     imgs.push(el);
 
-    switch(tool) {
-      case 'pencil':
-        this.tools.pencil = el;
-        createPencil(settings, this.tools.pencil);
-        break;
-      case 'eraser':
-        //this.tools.eraser = find(elements.tools[tool]);
-        //createPencil(settings, this.tools.pencil);
-        break;
-      case 'fill':
-        this.tools.fill = el;
-        createFill(settings, this.tools.fill);
-        break;
-      case 'shapes':
-        this.tools.shapes = el;
-        createShapes(settings, this.tools.shapes);
-        break;
-      case 'text':
-        this.tools.text = el;
-        createText(settings, this.tools.text);
-        break;
-      case 'table':
-        this.tools.table = el;
-        createTable(settings, this.tools.table);
-        break;
-      case 'import':
-        this.tools.import = el;
-        createImport(settings, this.tools.import);
-        break;
-      case 'color':
-        this.tools.color = el;
-        createColor(settings, this.tools.color);
-        break;
-      case 'templates':
-        this.tools.templates = el;
-        createTemplates(settings, this.tools.templates);
-        break;
-      default:
-        break;
-    }
-  }
-
-  imgs.forEach(function(img) {
-    img.addEventListener('click', function(e) {
-
+    el.addEventListener('click', function(e) {
       this.className = 'tool-selected';
 
       imgs.forEach(function(img) {
@@ -87,5 +44,45 @@ function toolbar(elements) {
           img.className = "";
       }.bind(this));
     });
-  });
+
+    switch(tool) {
+      case 'pencil':
+        this.pencil = createPencil(settings, el);
+        break;
+      case 'eraser':
+        //this.tools.eraser = find(elements.tools[tool]);
+        //createPencil(settings, this.tools.pencil);
+        break;
+      case 'fill':
+        this.fill = el;
+        createFill(settings, el);
+        break;
+      case 'shapes':
+        this.shapes = el;
+        createShapes(settings, el);
+        break;
+      case 'text':
+        this.text = el;
+        createText(settings, el);
+        break;
+      case 'table':
+        this.table = el;
+        createTable(settings, el);
+        break;
+      case 'import':
+        this.import = el;
+        createImport(settings, el);
+        break;
+      case 'color':
+        this.color = el;
+        createColor(settings, el);
+        break;
+      case 'templates':
+        this.templates = el;
+        createTemplates(settings, el);
+        break;
+      default:
+        break;
+    }
+  }
 }
