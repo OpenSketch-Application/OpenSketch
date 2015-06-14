@@ -26,12 +26,13 @@ server.listen(serverConf.port, function() {
 // Enables a server.destroy method that destroys all open connections
 enableDestroy(server);
 
-var testDB = [];
-// Start socket.io and listen for events
-var socketHandler = require('./socketHandlers/socketHandler')(io,testDB);
-
 // Start Mongoose middleware for mongodb
 var database = require('./db/database');
+
+var testDB = [];
+// Start socket.io and listen for events
+var socketHandler = require('./socketHandlers/socketHandler')(io,database);
+
 
 // Make server app available as export
 exports = module.exports = server;
