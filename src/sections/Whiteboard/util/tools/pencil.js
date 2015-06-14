@@ -1,82 +1,52 @@
 var PIXI = require('pixi');
 
-module.exports = function(settings, el) {
-  el.addEventListener('click', function(data) {
-    console.log('Selected Pencil...');
-
-    selectPressed = true;
-    activate(settings.stage, settings.renderer);
-  });
-};
-
-function activate(stage, renderer) {
-  var color;
-  var path = [];
-  // var isActive = true;
+module.exports = function(info, el) {
+  var userID = info.userID;
+  var stage = info.stage;
+  var renderer = info.renderer;
+  var color = 0x000000;
+  var strokeWeight = 2;
   var isDown = false;
-  var posOld;
-  var stageIndex = 0;
-  var lines = 0;
+  var prevPos = { x: null, y: null };
+  var settings = {
+    el: el,
+    color: color,
+    strokeWeight: strokeWeight
+  };
 
-  stage.mousedown = function(data) {
-
-    //if(!isActive) return;
+  function mousedown(data) {
     isDown = true;
-    lines = 0;
-    path = [];
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    stageIndex = stage.children.length - 1;
-    //graphics.moveTo(data.global.x, data.global.y);
-  };
+    prevPos.x = data.global.x;
+    prevPos.y = data.global.y;
+  }
 
-  stage.mousemove = function(data) {
-    //if(!isActive) return;
-    if(!isDown) return;
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-    //path.push(data.global.y);
-    //var newPosition = this.data.getLocalPosition(this.parent);
-    graphics.moveTo(posOld[0], posOld[1]);
-    //console.log(data.global.x, data.global.y);
-    graphics.lineTo(data.global.x, data.global.y);
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    lines++;
-    stage.addChild(graphics);
+  function mousemove(data) {
+    var graphics;
 
-    renderer.render(stage);
-  };
-
-  stage.mouseup = function() {
-    isDown = false;
-
-    if(!path.length) return;
-    //graphics.lineStyle(5, 0xFF0000);
-    //graphics.moveTo(path[0][0], path[0][1]);
-    //graphics.drawPolygon(path);
-    while(lines) {
-      stage.removeChildAt(stageIndex + lines);
-      lines--;
+    if(isDown) {
+      graphics = new PIXI.Graphics().lineStyle(strokeWeight, color);
+      graphics.moveTo(prevPos.x, prevPos.y);
+      graphics.lineTo(data.global.x, data.global.y);
+      prevPos.x = data.global.x;
+      prevPos.y = data.global.y;
+      stage.addChild(graphics);
+      renderer.render(stage);
     }
+  }
 
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
+  function mouseup() {
+    isDown = false;
+  }
 
-    graphics.drawPolygon(path);
+  function activate() {
+    color = "0x" + prompt("Enter a hex color without #");
+    strokeWeight = prompt("Enter a stroke weight") || 2;
+    stage.mousedown = mousedown;
+    stage.mousemove = mousemove;
+    stage.mouseup = mouseup;
+  }
 
-    graphics.interactive = true;
+  el.addEventListener('click', activate);
 
-    graphics.hitArea = graphics.getBounds();
-
-    // moveObject(renderer, stage, graphics, { x: graphics.hitArea.x, y: graphics.hitArea.y });
-
-    stage.addChild(graphics);
-
-    // CanvasObjects.push({
-    //   _id: CanvasObjects.length + 1,
-    //   type: 'pencil',
-    //   coords: path
-    // });
-
-    renderer.render(stage);
-  };
-}
+  return settings;
+};
