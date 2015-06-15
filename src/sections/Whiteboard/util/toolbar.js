@@ -27,7 +27,7 @@ function toolbar(elements) {
   this.container.appendChild(this.renderer.view);
   this.stage = new PIXI.Stage(0xFFFFFF, true);
   this.renderer.render(this.stage);
-  
+
   var settings = {
     container: this.container,
     renderer: this.renderer,
@@ -35,7 +35,7 @@ function toolbar(elements) {
   };
 
   for(var tool in elements.tools) {
-    el = find(typeof elements.tools[tool] === 'string' ? 
+    el = find(typeof elements.tools[tool] === 'string' ?
                      elements.tools[tool] : elements.tools[tool].el);
     imgs.push(el);
 

@@ -2,7 +2,7 @@ var dbShapes = require('./CanvasShapesManager');
 //var SeedDb = require('../seedDatabase/seedDatabase');
 var database = require('../database');
 dbShapes.init({}, 'session1');
-
+var Promise = require('bluebird');
 // SeedDb.seedDb()
 //   .then(function(res) {
 
@@ -20,25 +20,39 @@ dbShapes.init({}, 'session1');
     }
 
     //console.log('Rect', rect);
-    dbShapes.addOne(rect, function(err, res) {
-      if(err) throw new Error('Unable to add: ' + err);
+    // dbShapes.addOne(rect, function(err, res) {
+    //   if(err) throw new Error('Unable to add: ' + err);
 
-      console.log(res);
-      checkAll();
-    });
+    //   console.log(res);
+    //   checkAll();
+    // });
+  checkAll();
 
     function checkAll() {
-      dbShapes.findAll(function(err, res) {
-        if(err) throw new Error('Unable to get all: ' + err);
+      // dbShapes.findAll(function(err, res) {
+      //   if(err) throw new Error('Unable to get all: ' + err);
 
-        console.log('Result', res);
+      //   console.log('Result', res);
 
-        //database.close();
-      });
+      //   //database.close();
+      // });
+      new Promise(function(resolve, reject) {
+        dbShapes.findOne('rj34kskdj43', function(err, res) {
+          if(err) reject(err);
+          resolve(res);
+        })
+      })
+      .then(function(results) {
+        console.log(results);
+
+        database.close();
+      })
+      .catch(function(e) {
+        console.log('error', e);
+        database.close();
+      })
     }
 
 
-  // .then(function(res) {
 
-  // })
 

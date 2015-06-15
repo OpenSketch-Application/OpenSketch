@@ -65,9 +65,11 @@ Section.prototype = {
   },
 
   animateIn: function(req, done) {
-    this.animate.go('idle', function() {
-      done();
-    }.bind(this));
+    setTimeout(function() {
+      this.animate.go('idle', function() {
+        done();
+      }.bind(this));
+    }.bind(this), 800);
   },
 
   animateOut: function(req, done) {

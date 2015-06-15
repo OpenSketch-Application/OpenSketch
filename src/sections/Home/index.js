@@ -26,6 +26,30 @@ function getWhiteboardSession(socket,whiteboardId){
       console.log(sessionSettings);
       return sessionSettings.id;
 }
+function verifyForm(){
+  console.log('in verify');
+      var max  = find('div.control input[name=maxUsers]');
+      var maxUsers = parseInt(max.value);
+      var userName = find('div.control input.username');
+      var error = { };
+      error.errors = [];
+
+      if(isNaN(maxUsers) || maxUsers > 30 || maxUsers <=0) {
+         error.errors.push({msg:'Number not valid, must be between 1 and 30.',element: max});
+      }
+      if(userName.value == ''){
+         error.errors.push({msg:'A username has not been made.',element: userName});
+      }
+      
+     console.log('error');
+     if(error.errors.length > 0){
+       return error;
+     }
+     else{
+       return null;
+     }
+      
+}
 
 function Section() {}
 
@@ -58,12 +82,29 @@ Section.prototype = {
     // whiteboard options Section for user to create a whiteboard
     find('div.control:last-child button').addEventListener('click', function(e) {
       e.preventDefault();
-      WhiteboardId = getWhiteboardSession(socket,sid);
-
-      if(WhiteboardId != undefined && WhiteboardId !=null){
-        framework.go('/whiteboard/'+ WhiteboardId);
+      err = verifyForm();
+      if(err !=null || err!= undefined){
+      var errLabel = find('label#errormsg');
+      errLabel.innerHTML = '';
+        for(var i = 0; i<err.errors.length;i++){
+          el = err.errors[i].element;  
+          
+          el.onclick = function(){
+            el.className = el.className.split(' ')[0]; 
+          };
+          
+          el.className = el.className + ' error';
+          errLabel.innerHTML = errLabel.innerHTML + err.errors[i].msg + '<br/>'; 
+        }
       }else{
-        socket = io.connect(SERVERNAME+'/home');
+
+        WhiteboardId = getWhiteboardSession(socket,sid);
+
+        if(WhiteboardId != undefined && WhiteboardId !=null){
+          framework.go('/whiteboard/'+ WhiteboardId);
+        }else{
+          socket = io.connect(SERVERNAME+'/home');
+        }
       }
     }.bind(this));
 

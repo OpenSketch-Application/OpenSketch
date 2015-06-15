@@ -12,11 +12,10 @@ module.exports = {
       .then(function() {
         return CanvasSession.create({
           canvasId: 'session1',
-          users: {},
+          users: [],
           dateCreated: Date.now(),
           dateUpdated: Date.now(),
           sessionProperties: {},
-          canvasModel: {},
           canvasShapes: [],
           messages: []
         });
@@ -26,20 +25,6 @@ module.exports = {
       })
   }
 }
-
-// .then(function(res) {
-//   if(!res.length) {
-//     console.log('no results found');
-//     database.close();
-//     throw new Error('no results found');
-//   }
-//   console.log('results', res);
-
-//   return
-//     //database.close();
-// })
-
-//createCanvasSession(testDb);
 
 
 
