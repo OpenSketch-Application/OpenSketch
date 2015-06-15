@@ -19,8 +19,8 @@ function getWhiteboardSession(socket,whiteboardId){
       sessionSettings.id = whiteboardId;
       sessionSettings.canDraw = find('div.control #roundedTwo').checked;
       sessionSettings.canChat = find('div.control #roundedOne').checked;
-      sessionSettings.maxUsers = maxUsers; 
-      
+      sessionSettings.maxUsers = maxUsers;
+
       sessionSettings.users = [];
       socket.emit(EVENT.createSession,sessionSettings);
       console.log(sessionSettings);
@@ -71,8 +71,8 @@ Section.prototype = {
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
-                           .targets({ textbox1: find('#textbox1'), 
-                                      textbox2: find('#textbox2'), 
+                           .targets({ textbox1: find('#textbox1'),
+                                      textbox2: find('#textbox2'),
                                       textbox3: find('#textbox3'),
                                       home: find('#home')
                                     })

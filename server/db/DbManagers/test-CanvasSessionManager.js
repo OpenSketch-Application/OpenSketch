@@ -8,7 +8,7 @@ var CanvasSession = require('../../db/models/CanvasSession');
 test('Test Database Seeding', function(t) {
 
   var promise = SeedDb.seedDb();
-
+  //t.plan(3);
   promise
     .then(function(res) {
       if(!res.length) {
@@ -21,6 +21,7 @@ test('Test Database Seeding', function(t) {
       t.ok(res.length === 1, 'Results are correct');
     })
     .then(function(res) {
+      // t.plan(2);
       new Promise(function(resolve, reject) {
         dbShapes.findOne('rj34kskdj43', function(err, res) {
         if(err) reject(err);//reject(err);//throw new Error();
@@ -37,15 +38,15 @@ test('Test Database Seeding', function(t) {
 
             console.log(res);
             t.ok(true, 'test 2 passed');
+
             resolve();
           });
         });
       })
-      //t.test('Testing Canvas Session CRUD methods', subTest_CreateShape(t));
-    })
-    .finally(function() {
-      SeedDb.database.close();
-      t.end();
+      .then(function() {
+        t.end();
+        SeedDb.database.close();
+      })
     })
 });
 

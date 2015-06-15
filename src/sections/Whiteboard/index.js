@@ -19,7 +19,6 @@ Section.prototype = {
 
   init: function(req, done) {
     var socket = socketSetup(io,framework,done);
-
     var content = find('#content');
     this.section = document.createElement('div');
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
