@@ -1,39 +1,30 @@
-var database = require('../../db/database');
+//var database = require('../../db/database');
 var CanvasSession = require('../../db/models/CanvasSession');
+//var mongoose = require('../../node_modules/mongoose');
 
-var closeDb = function() {
-  database.close();
-};
+console.log('calling seed DB');
+//console.log(CanvasSession);
 
-var createCanvasSession = function(callback) {
-  console.log('canvassession created');
-  new CanvasSession({
-    canvasId: 0,
-    users: {},
-    dateCreated: Date.now(),
-    dateUpdated: Date.now(),
-    sessionProperties: {},
-    canvasModel: {},
-    canvasShapes: [],
-    messages: []
-  }).save(function(err) {
-    if(err) throw err;
-
-    console.log('saved');
-    callback();
-  });
-};
-
-// Check if collections exist
-CanvasSession.find(function(res, err) {
-  if(err || res.length === 0) {
-    closeDb();
-    throw new Error('unable to find results');
+module.exports = {
+  database: require('../../db/database'),
+  seedDb: function() {
+    return CanvasSession.remove()
+      .then(function() {
+        return CanvasSession.create({
+          canvasId: 'session1',
+          users: [],
+          dateCreated: Date.now(),
+          dateUpdated: Date.now(),
+          sessionProperties: {},
+          canvasShapes: [],
+          messages: []
+        });
+      })
+      .then(function(res) {
+        return CanvasSession.find({'canvasId': 'session1'}).exec();
+      })
   }
-  else {
-    createCanvasSession(closeDb);
-  }
-});
+}
 
 
 

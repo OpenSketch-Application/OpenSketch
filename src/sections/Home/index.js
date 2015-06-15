@@ -6,15 +6,35 @@ var model = require('../../model/model');
 var states = require('./states');
 module.exports = Section;
 var SERVERNAME = window.location.origin;
+var EVENT = model.socketEvents;
+
+function getWhiteboardSession(socket,whiteboardId){
+      var max  = find('div.control input[name=maxUsers]').value;
+      var maxUsers = parseInt(max);
+      if(isNaN(maxUsers) || maxUsers > 30 || maxUsers <=0) {
+        maxUsers = 30;
+      }
+
+      var sessionSettings = {};
+      sessionSettings.id = whiteboardId;
+      sessionSettings.canDraw = find('div.control #roundedTwo').checked;
+      sessionSettings.canChat = find('div.control #roundedOne').checked;
+      sessionSettings.maxUsers = maxUsers;
+
+      sessionSettings.users = [];
+      socket.emit(EVENT.createSession,sessionSettings);
+      console.log(sessionSettings);
+      return sessionSettings.id;
+}
 
 function Section() {}
 
 Section.prototype = {
 
   init: function(req, done) {
-    var socket = io.connect(SERVERNAME + '/home');
+    var socket = io.connect(SERVERNAME +'/home');
     var sid;
-    socket.on('getId',function(id){
+    socket.on(EVENT.getSocketID,function(id){
         sid= id;
     });
 
@@ -27,8 +47,8 @@ Section.prototype = {
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
-                           .targets({ textbox1: find('#textbox1'), 
-                                      textbox2: find('#textbox2'), 
+                           .targets({ textbox1: find('#textbox1'),
+                                      textbox2: find('#textbox2'),
                                       textbox3: find('#textbox3'),
                                       home: find('#home')
                                     })
@@ -38,15 +58,13 @@ Section.prototype = {
     // whiteboard options Section for user to create a whiteboard
     find('div.control:last-child button').addEventListener('click', function(e) {
       e.preventDefault();
-      //Whiteboard = getWhiteboardSettings();
-      sessionSettings = {};
-      sessionSettings.id = sid;
-      sessionSettings.canDraw = find('div.control #roundedTwo').checked;
-      sessionSettings.canChat = find('div.control #roundedOne').checked;
-      sessionSettings.maxUsers = find('div.control input[name=maxUsers]').value;
-      sessionSettings.users = [];
-      socket.emit('createSession',sessionSettings);
-      framework.go('/whiteboard/'+ sessionSettings.id);
+      WhiteboardId = getWhiteboardSession(socket,sid);
+
+      if(WhiteboardId != undefined && WhiteboardId !=null){
+        framework.go('/whiteboard/'+ WhiteboardId);
+      }else{
+        socket = io.connect(SERVERNAME+'/home');
+      }
     }.bind(this));
 
     done();
@@ -63,7 +81,6 @@ Section.prototype = {
   },
 
   animateOut: function(req, done) {
-    console.log('animate out');
     this.animate.go('out', function() {
       if(done)
         done();

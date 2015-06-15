@@ -4,5 +4,21 @@ module.exports = {
   },
   '/whiteboard': {
     'template': 'template file'
+  },
+  'socketEvents':{
+    'sendDrawing': 'sendDrawing',
+    'chatMessage': 'chatMessage',
+    'joinSession': 'joinSession',
+    'validateSession': 'validateSession',
+    'updateUserList': 'updateUserList',
+    'getSocketID': 'getSocketID',
+    'createSession': 'createSession',
+    'badSession': 'badSession',
+    'announcement': 'announcement',
+
+    // Pixi/Canvas Draw Events
+    'objectModified':'objectModified',
+    'objectAdded':'objectAdded',
+    'objectDeleted': 'objectDeleted'
   }
 };

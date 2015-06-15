@@ -1,63 +1,76 @@
 var CanvasSession = require('../db/models/CanvasSession');
-
-module.exports = function(io,testDB) {
+var wbLogic = require('./whiteboardSockets');
+var EVENT = require('../../src/model/model').socketEvents;
+//var homeLogic = require('./homeSockets'); 
+module.exports = function(io,DB) {
   var home = io.of('/home');
   home.on('connection',homeHandler(home));
 
   function homeHandler(nspHome){
     return function(socket){
-      console.log('emitting getid : '+socket.id);
-      socket.emit('getId',socket.id);
+//      socket.on('createSession',createSessionCB(socket,nspHome));
 
-      socket.on('createSession', function(canvasSession){
-       //push canvasSession to db   
-       testDB.push(canvasSession); 
+      socket.emit(EVENT.getSocketID,socket.id);
+
+      socket.on(EVENT.createSession, function(canvasSession){
+       //push canvasSession to db
+       var newSession = new CanvasSession(
+       {
+         canvasId : canvasSession.id,
+         canDraw : canvasSession.canDraw,
+         canChat : canvasSession.canChat,
+         maxUsers : canvasSession.maxUsers
+       }
+       ); 
+
+       newSession.save(function(err,obj){
+         if(err){
+           console.log(err);
+         }
+         else{
+           console.log('Session saved to db');
+         }
+       });
        //create new namespace
        var nsp = io.of('/whiteboard/'+canvasSession.id);
        nsp.on('connection',wbHandler(nsp));
-       
+
       });
     };
   }
   function wbHandler(nspWb){
     return function(socket){
-      socket.on('joinSession',function(uName,curSession){
-        //push new user to session obj in db
-              //emit update user list 
-        
-        socket.broadcast.emit('userJoining', socket.id + ' has joined the session');
-      });
-      socket.on('disconnect',function(){
-        socket.broadcast.emit('userLeaving', socket.id);
-      });
+      socket.on(EVENT.joinSession,wbLogic.joinSessionCB(socket,nspWb));
+      socket.on(EVENT.chatMessage,wbLogic.chatMessageCB(socket,nspWb));
+      socket.on('disconnect',wbLogic.disconnectCB(socket,nspWb));
+      socket.on(EVENT.sendDrawing,wbLogic.sendDrawingCB(socket,nspWb));
+
     };
   }
-  // Start socket and listen for incoming connections
+  
+  // Validation function
   io.on('connection', function (socket) {
 
     console.log('connection made', socket.id);
-    socket.on('validate',function(sessionid){
-        var exists= false;
-        for(var i = 0; i<testDB.length;i++){
-          console.log('in testdb: ',testDB[i].id,sessionid);
-          if(testDB[i].id == sessionid){
-              exists = true; 
-          }
-        }
-        //if session is not in db redirect to home
-        if(!exists){
-          socket.emit('notFound');
-        }
+    socket.on(EVENT.validateSession,function(sessionid){
+        console.log('in validate');
+        CanvasSession.findOne({canvasId : sessionid},function(err,obj){
+           if(err){
+             console.log(err);
+             socket.emit(EVENT.badSession);
+           }else if(obj){
+             console.log('found, len: ',obj.users.length);    
+             if(obj.users.length >= obj.maxUsers){
+               socket.emit(EVENT.badSession);
+               console.log('full');
+             }
+           }else{
+             socket.emit(EVENT.badSession);
+           }
+
+        });
+
 
     });
-   // socket.emit('news', { hello: 'world' });
-
-   // socket.on('joinRoom', function (data) {
-   //   console.log(data);
-   // });
-   // socket.on('test', function (data) {
-   //   console.log(data);
-   // });
-
   });
 };

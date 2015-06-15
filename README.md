@@ -18,6 +18,29 @@ $ npm install
 $ grunt  # Server Folder
 ```
 
+MongoDB:
+
+Installing and Setting up Mongod database:
+
+ 1) Install MongoDb on your machine, see http://www.mongodb.org/downloads
+
+ 2) Add the bin folder to System path, ie. if u installed Mongodb in C:/Programs/MongoDb, the bin folder is in   C:/Programs/MongoDb/bin
+
+ Windows/Window's Git console: edit the .bash_profile and add /c:/Programs/MongoDb/bin to the PATH variable
+
+ 3) Inside the server folder in the OpenSketch folder, run 
+ ```bash
+ $npm start
+ ```
+ Note: Make sure 2 directories (mongoBinaries and logs) are present in the server directory
+ 
+ Note: if you are running on windows, just run "npm run startWin" in a new git console (windows cannot run background instances the same way unix/linux can and setting up a service requires more work then is worth it)
+
+ 4) To stop MongoDb, run 
+ ```bash
+ $npm stop
+ ```
+ 
 Project Structure
 ====================
 

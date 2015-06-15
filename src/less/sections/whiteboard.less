@@ -1,5 +1,5 @@
 @import 'ui/tabs.less';
-
+@import 'ui/chatbox.less';
 #whiteboard {
   width: 100%;
   height: 100%;
@@ -49,7 +49,7 @@
           width: 90%;
 
         }
-  
+
         img:hover {
           left: -23%;
           margin: 0;
@@ -71,10 +71,21 @@
           -webkit-transition: opacity .25s ease;
           -moz-transition: opacity .25s ease;
         }
+
+        .tool-selected {
+          left: -23%;
+          margin: 0;
+          padding: 0;
+          width: 135%;
+          cursor: pointer;
+          cursor: hand;
+          background-color: #3F3075;
+          -webkit-transition: opacity .25s ease;
+          -moz-transition: opacity .25s ease;
+        }
       }
 
-
-      .overlay {  
+      .overlay {
           background:rgba(0,0,0,.75);
           text-align:center;
           opacity:0;
@@ -94,9 +105,9 @@
         position: relative;
         padding-left: 55px;
         padding-right: 55px;
-        @media 
-        (-webkit-min-device-pixel-ratio: 2), 
-        (min-resolution: 192dpi) { 
+        @media
+        (-webkit-min-device-pixel-ratio: 2),
+        (min-resolution: 192dpi) {
           padding-left: 38px;
           padding-right: 38px;
         }
@@ -111,10 +122,13 @@
     #whiteboard-container {
       position: relative;
       top: 0;
-      color: white;
+      // color: white;
       background-color: white;
-      opacity: 0;
+      opacity: 1;
       width: 75%;
+      canvas {
+        background-color: white;
+      }
     }
     #tabs {
       position: absolute;
@@ -124,6 +138,6 @@
       height: 100%;
       background-color: #efefef;
     }
-    
+
   }
 }
