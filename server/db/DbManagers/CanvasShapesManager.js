@@ -31,8 +31,8 @@ Shapes.findAll = function(callback) {
       { $project: { _id: false, 'canvasShapes': true } }
     )
     .exec(function(err, res) {
-      //if(err || !res[0] && !res[0].canvasShapes) callback(err, res);
-      //if(err)
+      if(err || !res[0] && !res[0].canvasShapes) callback(err, res);
+
       callback(err, res)
     });
 };
