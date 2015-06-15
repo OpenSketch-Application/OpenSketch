@@ -43,7 +43,7 @@ Section.prototype = {
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.appendChild(this.section);
 
-    states.out.home.position[0] = -document.body.offsetWidth;
+    states.out.home.position[1] = -document.body.offsetHeight;
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))

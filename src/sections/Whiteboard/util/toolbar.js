@@ -17,9 +17,12 @@ function toolbar(elements) {
   var imgs = [];
   this.tools = {};
   this.container = find(elements.whiteboard);
+  PIXI.dontSayHello = true;
+
   this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75, 
                                           document.body.offsetHeight - 60, 
                                           { antialias: true });
+
 
   this.container.appendChild(this.renderer.view);
   this.stage = new PIXI.Stage(0xFFFFFF, true);
