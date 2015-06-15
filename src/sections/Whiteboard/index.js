@@ -6,7 +6,7 @@ var $ = require('jquery');
 var framework = require('../../framework/index');
 var Model = require('../../model/model');
 var states = require('./states');
-var createTabs = require('./ui/tabs');
+var createTabs = require('./util/tabs');
 var socketSetup = require('./util/sockets');
 var ChatboxManager = require('./util/chatbox');
 var Toolbar = require('./util/toolbar');
@@ -23,14 +23,14 @@ Section.prototype = {
     this.section = document.createElement('div');
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.appendChild(this.section);
-    states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
+    // states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
     createTabs();
 
     this.toolbar = new Toolbar({
       whiteboard: '#whiteboard-container',
       tools: {
         pencil: '#tool-pencil',
-        // eraser: '#tool-eraser',
+        eraser: '#tool-eraser',
         fill: '#tool-fill',
         shapes: {
           'el': '#tool-shapes',
@@ -64,9 +64,11 @@ Section.prototype = {
   },
 
   animateIn: function(req, done) {
-    this.animate.go('idle', function() {
-      done();
-    }.bind(this));
+    setTimeout(function() {
+      this.animate.go('idle', function() {
+        done();
+      }.bind(this));
+    }.bind(this), 800);
   },
 
   animateOut: function(req, done) {

@@ -1,7 +1,7 @@
 module.exports = {
     init: {
         whiteboard: {
-            alpha: 1,
+            alpha: 0,
             position: [ 0, 0, 0 ]
         }
     },
