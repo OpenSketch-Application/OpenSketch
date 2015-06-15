@@ -1,4 +1,3 @@
-
 var CanvasSession = require('../db/models/CanvasSession');
 var EVENT = require('../../src/model/model').socketEvents;
 var whiteboardSockets = {};
@@ -10,18 +9,17 @@ whiteboardSockets.joinSessionCB = function(socket,nsp){
         CanvasSession.findOne({canvasId : sessionid},function(err,obj){
           if(err){
 
-          }else if(obj){
+          }
+          else if(obj){
             //push user to db
-                 
 
-            
             if(obj.users.length < obj.maxUsers){
               obj.users.push({
                 name: uName,
                 canDraw: obj.canDraw,
                 canChat: obj.canChat,
                 _id: socket.id
-              }); 
+              });
               obj.save(function(err){
                  if(err) console.log(err);
                  else{
@@ -34,8 +32,8 @@ whiteboardSockets.joinSessionCB = function(socket,nsp){
             }
           }
         });
-  };          
-  
+  };
+
 };
 //CHAT
 whiteboardSockets.chatMessageCB = function(socket,nsp){
@@ -57,12 +55,12 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
         sessionid = sessionid[sessionid.length - 1];
         console.log('disconn ',socket.id);
         //remove user from db
-        CanvasSession.findOne({canvasId : sessionid},function(err,obj){
+        CanvasSession.findOne({canvasId : sessionid}, function(err,obj){
           if(err){
 
           }else if(obj){
-            //delete user 
-           if(obj.users){ 
+            //delete user
+           if(obj.users){
              if(obj.users.id(socket.id)!=null){
                obj.users.id(socket.id).remove();
              }
@@ -72,7 +70,7 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
            socket.broadcast.emit(EVENT.announcement, socket.id + ' has left the session');
            socket.broadcast.emit(EVENT.updateUserList, obj.users.length+'/'+obj.maxUsers,obj.users);
            socket.emit(EVENT.updateUserList,obj.users.length+'/'+obj.maxUsers,obj.users);
-       
+
            obj.save(function(err){
                if(err) console.log(err);
                else console.log(obj);

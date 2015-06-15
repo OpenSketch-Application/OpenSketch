@@ -44,8 +44,6 @@ Shapes.findSome = function(criteria, callback) {
       { $project: { _id: false, 'canvasShapes': true } }
     )
     .exec(function(err, res) {
-      if(err) callback(err, res);
-
       callback(err, res);
     });
 };
