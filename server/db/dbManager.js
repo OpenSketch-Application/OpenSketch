@@ -7,7 +7,6 @@ Db.findOne = function(objectString, ) {
 
 }
 
-
 //CanvasSession.
 module.exports = Db;
 

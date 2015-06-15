@@ -17,14 +17,14 @@ function toolbar(elements) {
   var imgs = [];
   this.tools = {};
   this.container = find(elements.whiteboard);
-  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75, 
-                                          document.body.offsetHeight - 60, 
+  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
+                                          document.body.offsetHeight - 60,
                                           { antialias: true });
 
   this.container.appendChild(this.renderer.view);
   this.stage = new PIXI.Stage(0xFFFFFF, true);
   this.renderer.render(this.stage);
-  
+
   var settings = {
     container: this.container,
     renderer: this.renderer,
@@ -32,7 +32,7 @@ function toolbar(elements) {
   };
 
   for(var tool in elements.tools) {
-    el = find(typeof elements.tools[tool] === 'string' ? 
+    el = find(typeof elements.tools[tool] === 'string' ?
                      elements.tools[tool] : elements.tools[tool].el);
     imgs.push(el);
 

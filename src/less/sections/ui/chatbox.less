@@ -1,7 +1,6 @@
 
 .chatMessageBox {
   width: 100%;
-  position: absolute;
   .chatMessages {
     width: 100%;
     > li {
@@ -21,15 +20,22 @@
     margin: 0;
     padding: 0;
     width: 100%;
+    position: absolute;
+    bottom: 0px;
+    height: 9%;
+    transform: translateY(-50%);
+
     input {
       background-color: #FFF;
       height: 2.6em;
+      padding: 0;
+      margin: 0;
     }
     button {
+      margin: 0;
       padding: 5px 10px;
       height: 2.6em;
       background-color: #F00;
     }
   }
-
 }

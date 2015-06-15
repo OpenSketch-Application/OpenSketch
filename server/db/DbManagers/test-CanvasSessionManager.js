@@ -21,25 +21,66 @@ test('Test Database Seeding', function(t) {
       t.ok(res.length === 1, 'Results are correct');
     })
     .then(function(res) {
-      t.test('Testing Canvas Session CRUD methods', subTest_CreateShape(t));
+      new Promise(function(resolve, reject) {
+        dbShapes.findOne('rj34kskdj43', function(err, res) {
+        if(err) reject(err);//reject(err);//throw new Error();
+
+          //console.log(res);
+          t.ok(true, 'test 1 passed');
+          resolve();
+        })
+      })
+      .then(function() {
+        return new Promise(function(resolve, reject) {
+          dbShapes.findAll(function(err, res) {
+            if(err) reject(err);
+
+            console.log(res);
+            t.ok(true, 'test 2 passed');
+            resolve();
+          });
+        });
+      })
+      //t.test('Testing Canvas Session CRUD methods', subTest_CreateShape(t));
     })
     .finally(function() {
       SeedDb.database.close();
       t.end();
     })
-    // .then(function(res) {
-    //   SeedDb.database.close();
-    //   t.end();
-    // }, function(err) {
-    //   SeedDb.database.close();
-    //   t.fail('Error Thrown: ' + err);
-    //   t.end();
-    // });
 });
 
 function subTest_CreateShape(t) {
   //console.log(db);
-  t.plan(3 + 6);
+  t.plan(3 + 2);
+
+  t.ok(dbShapes && typeof dbShapes === 'object', 'Canvas Session manager has loaded');
+  t.ok(dbShapes.init && typeof dbShapes.init === 'function', 'DbShapes has init method');
+
+  dbShapes.init({}, 'session1');
+
+  t.ok(dbShapes.canvasSessionId && dbShapes.canvasSessionId === 'session1', 'Id "session1" found');
+
+  new Promise(function(resolve, reject) {
+    dbShapes.findOne('rj34kskdj43', function(err, res) {
+    if(err) reject(err);//reject(err);//throw new Error();
+
+      //console.log(res);
+      t.ok(true, 'test 1 passed');
+      resolve();
+    })
+  })
+  .then(function() {
+    return new Promise(function(resolve, reject) {
+      dbShapes.findAll(function(err, res) {
+        if(err) reject(err);
+
+        console.log(res);
+        t.ok(true, 'test 2 passed');
+        resolve();
+      });
+    });
+  })
+
 
   // var rect = {
   //   shapeId: 'rj34kskdj43',
@@ -61,78 +102,89 @@ function subTest_CreateShape(t) {
 
   //   resolve();
   // });
+  // new Promise(function(resolve, reject) {
+  //   t.ok(dbShapes.addOne, 'addOne method exists');
 
-  var testcases = [
-    function() {
-      return new Promise(function(resolve, reject) {
+  //   var rect = {
+  //     shapeId: 'rj34kskdj43',
+  //     userId: 'John0',
+  //     borderStyle: null,
+  //     width: 300,
+  //     height: 400,
+  //     layerLevel: 6,
+  //     position: { x: 400, y: 500 },
+  //     rotation: 30,
+  //     fillColor: '0x788945',
+  //     objectType: 'Rectangle'
+  //   }
 
-        t.ok(dbShapes.addOne, 'addOne method exists');
+  //   dbShapes.addOne(rect, function(err, result) {
+  //     if(err) reject(err);
 
-        var rect = {
-          shapeId: 'rj34kskdj43',
-          userId: 'John0',
-          borderStyle: null,
-          width: 300,
-          height: 400,
-          layerLevel: 6,
-          position: { x: 400, y: 500 },
-          rotation: 30,
-          fillColor: '0x788945',
-          objectType: 'Rectangle'
-        }
+  //     t.ok(result && result.length, 'addOne added ' + result[0]);
 
-        dbShapes.addOne(rect, function(err, result) {
-          if(err) reject(err);
+  //     resolve();
+  //     //callback();
+  //   });
+  // })
+  // .then(function() {
+  //   t.ok(dbShapes.findOne && typeof dbShapes.findOne === 'function', 'findOne method exists');
 
-          t.ok(result && result.length, 'addOne added ' + result[0]);
+  //   dbShapes.findOne('rj34kskdj43', function(err, res) {
+  //     if(err) reject(err);//throw new Error();
 
-          resolve();
-        });
-      })
-    },
-    function() {
-      return new Promise(function(resolve, reject) {
-        t.ok(dbShapes.findOne && typeof dbShapes.findOne === 'function', 'findOne method exists');
+  //     t.ok(res && res.length === 1, 'findOne returned one result');
 
-        dbShapes.findOne('rj34kskdj43', function(err, res) {
-          if(err) reject(err);
+  //     resolve();
+  //   })
+  // });
 
-          t.ok(res && res.length === 1, 'findOne returned one result');
+  // var testcases = [
+  //   function(callback) {
+  //     return function() {
+  //       t.ok(dbShapes.findOne && typeof dbShapes.findOne === 'function', 'findOne method exists');
 
-          resolve();
-        })
-      })
-    },
-    function() {
-      //var result;
-      return new Promise(function(resolve, reject) {
-        t.ok(dbShapes.findAll && typeof dbShapes.findAll === 'function', 'findAll method exists');
+  //       dbShapes.findOne('rj34kskdj43', function(err, res) {
+  //         if(err) throw new Error(err);//reject(err);//throw new Error();
 
-        dbShapes.findAll(function(err, result) {
-          if(err) reject(err);
+  //         t.ok(res && res.length === 1, 'findOne returned one result');
 
-          console.log(result);
+  //         //resolve();
+  //         callback();
+  //       })
+  //     }
+  //   },
+  //   function(callback) {
+  //     return function() {
+  //       t.ok(dbShapes.findSome && typeof dbShapes.findSome === 'function', 'findSome method exists');
 
-          t.ok(result && result.length, 'findAll returned results');
+  //       dbShapes.findOne('rj34kskdj43', function(err, res) {
+  //         if(err) throw new Error(err);//reject(err);//throw new Error();
 
-          resolve();
-        })
-      });
-    }
-  ];
+  //         t.ok(res && res.length === 1, 'findSome returned one result');
 
-  t.ok(dbShapes && typeof dbShapes === 'object', 'Canvas Session manager has loaded');
-  t.ok(dbShapes.init && typeof dbShapes.init === 'function', 'DbShapes has init method');
-  dbShapes.init({}, 'session1');
+  //         //resolve();
+  //         callback();
+  //       })
+  //     }
+  //   },
+  //   function(callback) {
+  //     return function() {
+  //       t.ok(dbShapes.findAll && typeof dbShapes.findAll === 'function', 'findAll method exists');
 
-  t.ok(dbShapes.canvasSessionId && dbShapes.canvasSessionId === 'session1', 'Id "session1" found');
+  //       dbShapes.findAll(function(err, result) {
+  //         if(err) throw new Error(err);//reject(err);
 
-  Promise.map(testcases, function(promise) {
-    return promise()
-           .catch(function(err) {
-              t.fail(err);
-           });
-  });
+  //         console.log(result);
+
+  //         t.ok(result && result.length, 'findAll returned results');
+  //         t.end();
+  //         //resolve();
+  //         callback();
+  //       })
+  //     }
+  //   }
+  // ];
 }
 
 

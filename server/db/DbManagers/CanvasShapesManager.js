@@ -19,7 +19,7 @@ Shapes.findOne = function(id, callback) {
   Db
     .find(
       {'canvasId' : _this.canvasSessionId},
-      { 'canvasShapes': 1, '_id': id }
+      { 'canvasShapes': 1, '_id': 0 }
     )
     .exec(callback);
 };
@@ -33,7 +33,7 @@ Shapes.findAll = function(callback) {
     .exec(function(err, res) {
       if(err || !res[0] && !res[0].canvasShapes) callback(err, res);
       //console.log(res);
-      callback(err, res[0].canvasShapes)
+      callback(err, res)
     });
 };
 

@@ -14,6 +14,11 @@ module.exports = {
     'getSocketID': 'getSocketID',
     'createSession': 'createSession',
     'badSession': 'badSession',
-    'announcement': 'announcement'
+    'announcement': 'announcement',
+
+    // Pixi/Canvas Draw Events
+    'objectModified':'objectModified',
+    'objectAdded':'objectAdded',
+    'objectDeleted': 'objectDeleted'
   }
 };
