@@ -68,11 +68,26 @@
         display: block;
         height: 45px;
         margin: 0px 0px;
+        .error{
+          border-color: #f00;
+          background: #f00;
+          background-color: #f00;
+          background-image: -webkit-linear-gradient(top, #a90329, #8f0222);
+          background-image: -moz-linear-gradient(top, #a90329, #8f0222);
+          background-image: -ms-linear-gradient(top, #a90329, #8f0222);
+          background-image: -o-linear-gradient(top, #a90329, #8f0222);
+          background-image: linear-gradient(to bottom, #a90329, #8f0222);
 
+        }
         label {
           display:inline-block;
           width: 230px;
           font-size: 1.2em;
+        }
+        label#errormsg{
+          color: red;
+          font-size: 0.9em;
+
         }
 
         .username {
@@ -90,6 +105,7 @@
           text-align: center;
           border: none;
           vertical-align: baseline;
+          
         }
 
         input[type="checkbox"] {
