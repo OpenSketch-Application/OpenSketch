@@ -1,82 +1,38 @@
 var PIXI = require('pixi');
 
-module.exports = function(settings, el) {
-  el.addEventListener('click', function(data) {
-    console.log('Selected Fill...');
-
-    selectPressed = true;
-    activate(settings.stage, settings.renderer);
-  });
-};
-
-function activate(stage, renderer) {
-  var color = 0xFF0000;
-  var path = [];
-  // var isActive = true;
+module.exports = function(info, el) {
+  var userID = info.userID;
+  var stage = info.stage;
+  var renderer = info.renderer;
   var isDown = false;
-  var posOld;
-  var stageIndex = 0;
-  var lines = 0;
+  var settings = {
+    el: el,
+    color: 0xFFFFFF,
+    radius: 10
+  };
 
-  stage.mousedown = function(data) {
-
-    //if(!isActive) return;
+  function mousedown(data) {
     isDown = true;
-    lines = 0;
-    path = [];
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    stageIndex = stage.children.length - 1;
-    //graphics.moveTo(data.global.x, data.global.y);
-  };
+  }
 
-  stage.mousemove = function(data) {
-    //if(!isActive) return;
-    if(!isDown) return;
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-    //path.push(data.global.y);
-    //var newPosition = this.data.getLocalPosition(this.parent);
-    graphics.moveTo(posOld[0], posOld[1]);
-    //console.log(data.global.x, data.global.y);
-    graphics.lineTo(data.global.x, data.global.y);
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    lines++;
-    stage.addChild(graphics);
+  function mousemove(data) {
+  }
 
-    renderer.render(stage);
-  };
-
-  stage.mouseup = function() {
+  function mouseup() {
     isDown = false;
-
-    if(!path.length) return;
-    //graphics.lineStyle(5, color);
-    //graphics.moveTo(path[0][0], path[0][1]);
-    //graphics.drawPolygon(path);
-    while(lines) {
-      stage.removeChildAt(stageIndex + lines);
-      lines--;
-    }
-
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-
-    graphics.drawPolygon(path);
-
-    graphics.interactive = true;
-
-    graphics.hitArea = graphics.getBounds();
-
-    // moveObject(renderer, stage, graphics, { x: graphics.hitArea.x, y: graphics.hitArea.y });
-
-    stage.addChild(graphics);
-
-    // CanvasObjects.push({
-    //   _id: CanvasObjects.length + 1,
-    //   type: 'pencil',
-    //   coords: path
-    // });
-
+    stage.setBackgroundColor(settings.color);
     renderer.render(stage);
-  };
-}
+    console.log(stage);
+  }
+
+  function activate() {
+    settings.color = prompt('Enter a hex color without #:');
+    stage.mousedown = mousedown;
+    stage.mousemove = mousemove;
+    stage.mouseup = mouseup;
+  }
+
+  el.addEventListener('click', activate);
+
+  return settings;
+};

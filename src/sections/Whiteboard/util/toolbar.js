@@ -17,9 +17,12 @@ function toolbar(elements) {
   var imgs = [];
   this.tools = {};
   this.container = find(elements.whiteboard);
-  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
-                                          document.body.offsetHeight - 60,
+  PIXI.dontSayHello = true;
+
+  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75, 
+                                          document.body.offsetHeight - 60, 
                                           { antialias: true });
+
 
   this.container.appendChild(this.renderer.view);
   this.stage = new PIXI.Stage(0xFFFFFF, true);
@@ -50,8 +53,7 @@ function toolbar(elements) {
         this.pencil = createPencil(settings, el);
         break;
       case 'eraser':
-        //this.tools.eraser = find(elements.tools[tool]);
-        //createPencil(settings, this.tools.pencil);
+        this.eraser = createEraser(settings, el);
         break;
       case 'fill':
         this.fill = el;

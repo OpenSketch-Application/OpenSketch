@@ -4,14 +4,13 @@ module.exports = function(info, el) {
   var userID = info.userID;
   var stage = info.stage;
   var renderer = info.renderer;
-  var color = 0x000000;
-  var strokeWeight = 2;
   var isDown = false;
   var prevPos = { x: null, y: null };
+  
   var settings = {
     el: el,
-    color: color,
-    strokeWeight: strokeWeight
+    color: 0x000000,
+    strokeWeight: 2
   };
 
   function mousedown(data) {
@@ -24,7 +23,7 @@ module.exports = function(info, el) {
     var graphics;
 
     if(isDown) {
-      graphics = new PIXI.Graphics().lineStyle(strokeWeight, color);
+      graphics = new PIXI.Graphics().lineStyle(settings.strokeWeight, settings.color);
       graphics.moveTo(prevPos.x, prevPos.y);
       graphics.lineTo(data.global.x, data.global.y);
       prevPos.x = data.global.x;
@@ -39,8 +38,6 @@ module.exports = function(info, el) {
   }
 
   function activate() {
-    color = "0x" + prompt("Enter a hex color without #");
-    strokeWeight = prompt("Enter a stroke weight") || 2;
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;

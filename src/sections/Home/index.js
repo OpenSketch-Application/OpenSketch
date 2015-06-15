@@ -35,10 +35,10 @@ function verifyForm(){
       error.errors = [];
 
       if(isNaN(maxUsers) || maxUsers > 30 || maxUsers <=0) {
-         error.errors.push({msg:'Number not valid, must be between 1 and 30.',element: max});
+         error.errors.push({msg:'Max users: 1 - 30',element: max});
       }
       if(userName.value == ''){
-         error.errors.push({msg:'A username has not been made.',element: userName});
+         error.errors.push({msg:'Please Enter a Username',element: userName});
       }
       
      console.log('error');
@@ -67,7 +67,7 @@ Section.prototype = {
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.appendChild(this.section);
 
-    states.out.home.position[0] = -document.body.offsetWidth;
+    states.out.home.position[1] = -document.body.offsetHeight;
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
@@ -79,19 +79,23 @@ Section.prototype = {
                            .parsers(require('f1-dom'))
                            .init('init');
 
+    find('#inputName').addEventListener('click', function(e) {
+      this.className = "username";
+    });
+
+    find('#inputMax').addEventListener('click', function(e) {
+      this.className = "";
+    });
+
     // whiteboard options Section for user to create a whiteboard
     find('div.control:last-child button').addEventListener('click', function(e) {
       e.preventDefault();
       err = verifyForm();
       if(err !=null || err!= undefined){
-      var errLabel = find('label#errormsg');
-      errLabel.innerHTML = '';
+        var errLabel = find('label#errormsg');
+        errLabel.innerHTML = '';
         for(var i = 0; i<err.errors.length;i++){
           el = err.errors[i].element;  
-          
-          el.onclick = function(){
-            el.className = el.className.split(' ')[0]; 
-          };
           
           el.className = el.className + ' error';
           errLabel.innerHTML = errLabel.innerHTML + err.errors[i].msg + '<br/>'; 
