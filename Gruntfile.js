@@ -34,7 +34,7 @@ module.exports = function(grunt) {
         }
       },
       browserify: {
-        files: ['src/*.js'],
+        files: ['src/**/*.js'],
         tasks: ['browserify:dev']
       }
     }

@@ -1,16 +1,30 @@
 var mongoose = require('mongoose');
+var User = new mongoose.Schema({
+  name : String,
+  canDraw : Boolean,
+  canChat : Boolean,
+
+  // permissions : {
+  //   canDraw: true,
+  //   canChat: true
+  // },
+  _id : String
+});
 
 // Create a session model, _id will be assigned by Mongoose
 var CanvasSessionSchema = new mongoose.Schema({
   canvasId: String,
-  users: [],
+  users: [User],
   dateCreated: Date,
   dateUpdated: Date,
-  sessionProperties: {
-    canDraw: Boolean,
-    canChat: Boolean,
-    maxUsers: Number
-  },
+  canDraw: Boolean,
+  canChat: Boolean,
+  maxUsers: Number,
+  // sessionProperties: {
+  //   canDraw: Boolean,
+  //   canChat: Boolean,
+  //   maxUsers: Number
+  // },
   //canvasModel: { type: Object },
   canvasShapes: Array,
   messages: Array

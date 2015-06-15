@@ -10,7 +10,11 @@
   },
   "scripts": {
     "test": "node ./tests/testRoutes.js | tap-spec",
-    "start": "mongod --dbpath ./mongoBinaries --logpath ./logs/mongo_logs --fork",
+    "mkDbFolders": "ls -d ./mongoBinaries > /dev/null 2> /dev/null || mkdir ./mongoBinaries; ls -d ./logs > /dev/null 2> /dev/null || mkdir ./logs && touch ./logs/mongo_logs;",
+    "startMongoDb": "mongod --dbpath ./mongoBinaries --logpath ./logs/mongo_logs --fork;",
+    "start": "npm run mkDbFolders; npm run startMongoDb",
+    "startWin": "mongod --dbpath ./mongoBinaries --logpath ./logs/mongo_logs",
+    "stopProd" : "echo mjJL4574 | sudo -S mongod --shutdown --dbpath ./mongoBinaries",
     "stop": "ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[0-9]+' | xargs kill"
   },
   "dependencies": {

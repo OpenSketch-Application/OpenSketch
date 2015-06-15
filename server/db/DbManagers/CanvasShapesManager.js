@@ -32,7 +32,7 @@ Shapes.findAll = function(callback) {
     )
     .exec(function(err, res) {
       if(err || !res[0] && !res[0].canvasShapes) callback(err, res);
-      //console.log(res);
+
       callback(err, res)
     });
 };
@@ -44,8 +44,6 @@ Shapes.findSome = function(criteria, callback) {
       { $project: { _id: false, 'canvasShapes': true } }
     )
     .exec(function(err, res) {
-      if(err) callback(err, res);
-
       callback(err, res);
     });
 };
