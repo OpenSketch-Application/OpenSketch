@@ -3,16 +3,48 @@
   width: 100%;
   .chatMessages {
     width: 100%;
+    height: 60%;
+    overflow-y: scroll;
+    position: absolute;
     > li {
       font-weight: bold;
     }
-    li {
-      text-align: center;
+    #msgContainer {
       display: block;
-      width: 100%;
-      margin: 2px 0;
-      padding: 0;
+      width: 95%;
+      margin: 5%;
+      margin-left: 0;
+      padding: 5px;
+      padding-bottom: 10px;
+      position: relative;
+      min-height: 10%;
+      border-bottom: 1px solid grey;
+    } 
+   
+
+    #name{
+      float: left;
+      font-weight: bold;
+      position: relative;
+      width: 40%;
+      bottom: 0;
+      height: 100%;
     }
+    #msg{
+     float: right; 
+     font-weight: normal;
+     word-wrap: break-word;
+     position: relative;
+     width: 60%;
+     background: black;
+     padding: 5px;
+     color: white;
+     text-align: center;
+     border-radius: 5px 15px;
+
+    }
+    
+
   }
 
   .messageInputUI {
@@ -21,23 +53,25 @@
     padding: 0;
     width: 100%;
     position: absolute;
-    bottom: 8%;
+    bottom: 15%;
     height: 9%;
     transform: translateY(-50%);
-
+    border-top: 1px solid grey;
     textarea {
       background-color: #FFF;
-      height: 2.6em;
-      padding: 0;
-      margin: 0;
+      height: 100%;
+      margin: 5%;
+      margin-bottom: 0;
       width: 90%;
         
     }
     button {
       margin: 0;
-      padding: 5px 10px;
       height: 2.6em;
-      background-color: #F00;
+      margin-right: 2.5%;
+      background-color: #000;
+      color: white;
+      font-family: inherit;
       float: right;
     }
   }

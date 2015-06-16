@@ -4,8 +4,8 @@ module.exports = {
   init: function(req, socket, done) {
     var _this = this;
     _this.socket = socket;
-    _this.chatMessages = $('.chatMessageBox ul.chatMessages')[0];
-    _this.inputBox = $('.messageInputUI input')[0];
+    _this.chatMessages = $('.chatMessageBox div.chatMessages')[0];
+    _this.inputBox = $('.messageInputUI textarea')[0];
     _this.sendButton = $('.messageInputUI button')[0];
 
     _this.socketOnEventHandlers();
@@ -28,10 +28,13 @@ module.exports = {
   // Basic add message to chatbox
   addMsg: function(content) {
     console.log(content.user + 'msg about to be added', content.msg);
-    var newMsg = $('<li>' + content.user + ':  ' + content.msg + '</li>');
+    var newMsg = $('<div id = "msgContainer">' +'<div id="name">'+ content.user + ':  ' +
+                   '</div><div id="msg">'+ content.msg + '</div><div style="clear:both;"></div></div>');
+    
     console.log(this.chatMessages);
     console.log(newMsg);
     this.chatMessages.appendChild(newMsg[0]);
+    this.chatMessages.scrollTop = this.chatMessages.scrollHeight;  
   },
 
   // All the events defined here happen after session has been validated and stored in the Db
