@@ -2,8 +2,9 @@ var test = require('tape');
 var Promise = require('bluebird');
 var dbShapes = require('./CanvasShapesManager');
 var SeedDb = require('../seedDatabase/seedDatabase');
-var CanvasSession = require('../../db/models/CanvasSession');
 
+var SESSION_ID = 'session1';
+var TestUser = require('../../tests/DbTests/subTest_User');
 
 test('Test Database Seeding', function(t) {
 
@@ -21,172 +22,204 @@ test('Test Database Seeding', function(t) {
       t.ok(res.length === 1, 'Results are correct');
     })
     .then(function(res) {
-      // t.plan(2);
-      new Promise(function(resolve, reject) {
-        dbShapes.findOne('rj34kskdj43', function(err, res) {
-        if(err) reject(err);//reject(err);//throw new Error();
-
-          //console.log(res);
-          t.ok(true, 'test 1 passed');
-          resolve();
-        })
-      })
-      .then(function() {
-        return new Promise(function(resolve, reject) {
-          dbShapes.findAll(function(err, res) {
-            if(err) reject(err);
-
-            console.log(res);
-            t.ok(true, 'test 2 passed');
-
-            resolve();
-          });
-        });
-      })
-      .then(function() {
-        t.end();
-        SeedDb.database.close();
-      })
+      t.test('Testing Shapes methods', subTest_CreateShape);
     })
 });
 
 function subTest_CreateShape(t) {
-  //console.log(db);
-  t.plan(3 + 2);
-
+  //dbShapes.createIndex({ "canvasShapes._id": true });
   t.ok(dbShapes && typeof dbShapes === 'object', 'Canvas Session manager has loaded');
   t.ok(dbShapes.init && typeof dbShapes.init === 'function', 'DbShapes has init method');
 
-  dbShapes.init({}, 'session1');
+  dbShapes.init({}, SESSION_ID);
 
-  t.ok(dbShapes.canvasSessionId && dbShapes.canvasSessionId === 'session1', 'Id "session1" found');
+  t.ok(dbShapes.canvasSessionId && dbShapes.canvasSessionId === SESSION_ID, 'Id ' + SESSION_ID +  ' found');
 
   new Promise(function(resolve, reject) {
-    dbShapes.findOne('rj34kskdj43', function(err, res) {
-    if(err) reject(err);//reject(err);//throw new Error();
+    t.ok(dbShapes.findAll && typeof dbShapes.findAll === 'function', 'findAll method exists');
 
-      //console.log(res);
-      t.ok(true, 'test 1 passed');
-      resolve();
+      dbShapes.findAll(SESSION_ID, function(err, res) {
+        if(err) reject(err);
+
+        console.log('findAll', res);
+
+        t.ok(typeof res === typeof [] && res.length === 0, 'findAll returned');
+
+        resolve();
+      });
+  })
+  .then(function() {
+    t.ok(dbShapes.findOne && typeof dbShapes.findOne === 'function', 'findOne method exists');
+
+    return new Promise(function(resolve, reject) {
+
+      dbShapes.findOne(SESSION_ID, 'rj34kskdj43', function(err, res) {
+        if(err) reject(err);//reject(err);//throw new Error();
+
+        console.log('findOne', res);
+        t.ok(!res, 'findOne returned false');
+        resolve();
+      })
     })
   })
   .then(function() {
+    t.ok(dbShapes.addOne && typeof dbShapes.addOne === 'function', 'addOne method exists');
+    var rect = {
+      _id: 'rj34kskdj73',
+      userId: 'John0',
+      borderStyle: null,
+      width: 300,
+      height: 400,
+      layerLevel: 6,
+      position: { x: 400, y: 500 },
+      rotation: 30,
+      fillColor: '0x788945',
+      objectType: 'Rectangle'
+    }
     return new Promise(function(resolve, reject) {
-      dbShapes.findAll(function(err, res) {
+      dbShapes.addOne(SESSION_ID, rect, function(err, res) {
         if(err) reject(err);
 
-        console.log(res);
-        t.ok(true, 'test 2 passed');
+        console.log('addOne', res);
+
+        t.ok(res && res._id && res._id === 'rj34kskdj73', 'addOne added an shape object');
+
         resolve();
       });
     });
   })
+  .then(function() {
+    t.ok(dbShapes.addAll && typeof dbShapes.addAll === 'function', 'addAll method exists');
 
+    var shapes = [
+      {
+        _id: 'rj34kskdjP3',
+        userId: 'John0',
+        borderStyle: null,
+        width: 300,
+        height: 400,
+        layerLevel: 6,
+        position: { x: 400, y: 500 },
+        rotation: 30,
+        fillColor: '0x788945',
+        objectType: 'Rectangle'
+      },
+      {
+        _id: '1sdhfjk34',
+        userId: 'John0',
+        borderStyle: null,
+        width: 500,
+        height: 700,
+        layerLevel: 2,
+        position: { x: 400, y: 500 },
+        rotation: 30,
+        fillColor: '0x788945',
+        objectType: 'Rectangle'
+      },
+      {
+        _id: 'sdfhjsdkf34',
+        userId: 'John0',
+        borderStyle: { 'prop1': 'solid', 'prop2': 'red' },
+        width: 300,
+        height: 400,
+        layerLevel: 2,
+        position: { x: 600, y: 500 },
+        rotation: 30,
+        fillColor: '0x788945',
+        objectType: 'Ellipse'
+      }
+    ]
+    return new Promise(function(resolve, reject) {
+      dbShapes.addAll(SESSION_ID, shapes, function(err, res) {
+        if(err) reject(err);
 
-  // var rect = {
-  //   shapeId: 'rj34kskdj43',
-  //   userId: 'John0',
-  //   borderStyle: null,
-  //   width: 300,
-  //   height: 400,
-  //   layerLevel: 6,
-  //   position: { x: 400, y: 500 },
-  //   rotation: 30,
-  //   fillColor: '0x788945',
-  //   objectType: 'Rectangle'
-  // }
+        console.log('addAll', res);
 
-  // dbShapes.addOne(rect, function(err, result) {
-  //   if(err) reject(err);
+        t.ok(typeof res === typeof [] && res.length === 4, 'addAll returned array with 4 shapes');
 
-  //   t.ok(result && result.length, 'addOne added ' + result[0]);
+        resolve();
+      });
+    });
+  })
+  .then(function() {
+    return new Promise(function(resolve, reject) {
 
-  //   resolve();
-  // });
-  // new Promise(function(resolve, reject) {
-  //   t.ok(dbShapes.addOne, 'addOne method exists');
+      dbShapes.findOne(SESSION_ID, 'sdfhjsdkf34', function(err, res) {
+        if(err) reject(err);
 
-  //   var rect = {
-  //     shapeId: 'rj34kskdj43',
-  //     userId: 'John0',
-  //     borderStyle: null,
-  //     width: 300,
-  //     height: 400,
-  //     layerLevel: 6,
-  //     position: { x: 400, y: 500 },
-  //     rotation: 30,
-  //     fillColor: '0x788945',
-  //     objectType: 'Rectangle'
-  //   }
+        console.log('find sdfhjsdkf34', res);
+        t.ok(typeof res === typeof {} && res._id && res._id === 'sdfhjsdkf34', 'findOne returned object with id sdfhjsdkf34');
+        resolve(res);
+      })
+    })
+  })
+  .then(function(canvasObject) {
+    t.ok(dbShapes.updateOne && typeof dbShapes.updateOne === 'function', 'updateOne method exists');
+    t.ok(canvasObject && canvasObject._id && canvasObject._id === 'sdfhjsdkf34', 'Got Shape with Id: ' + 'sdfhjsdkf34')
+    var shape = {
+      _id: 'sdfhjsdkf34',
+      userId: 'John0',
+      borderStyle: null,
+      width: 600,
+      height: 600,
+      layerLevel: 2,
+      position: { x: 800, y: 100 },
+      rotation: 0,
+      fillColor: '0xFF00FF',
+      objectType: 'Ellipse'
+    }
 
-  //   dbShapes.addOne(rect, function(err, result) {
-  //     if(err) reject(err);
+    return new Promise(function(resolve, reject) {
+      dbShapes.updateOne(SESSION_ID, canvasObject._id, shape, function(err, res) {
+        if(err) reject(err);
 
-  //     t.ok(result && result.length, 'addOne added ' + result[0]);
+        console.log('updateOne', res);
 
-  //     resolve();
-  //     //callback();
-  //   });
-  // })
-  // .then(function() {
-  //   t.ok(dbShapes.findOne && typeof dbShapes.findOne === 'function', 'findOne method exists');
+        t.ok(typeof res === typeof shape && res._id && res._id === shape._id, 'update returned a shape object');
+        for(var property in shape) {
+          if(shape.hasOwnProperty(property)) {
+            t.notOk(res[property] === undefined || res[property] != shape[property], 'Property: ' + property + ' res[property]' + res[property] + ', shape[property]: ' + shape[property]);
+          }
+        }
+        resolve();
+      });
+    });
+  })
+  .then(function() {
+    var shape = {
+      _id: 'sdfhjsdkf34',
+      userId: 'John0',
+      borderStyle: null,
+      width: 600,
+      height: 600,
+      layerLevel: 2,
+      position: { x: 800, y: 100 },
+      rotation: 0,
+      fillColor: '0xFF00FF',
+      objectType: 'Ellipse'
+    }
 
-  //   dbShapes.findOne('rj34kskdj43', function(err, res) {
-  //     if(err) reject(err);//throw new Error();
+    return new Promise(function(resolve, reject) {
+      dbShapes.updateOne(SESSION_ID, 'dfhjsdk', [], function(err, result) {
+        if(err) reject(err);
 
-  //     t.ok(res && res.length === 1, 'findOne returned one result');
-
-  //     resolve();
-  //   })
-  // });
-
-  // var testcases = [
-  //   function(callback) {
-  //     return function() {
-  //       t.ok(dbShapes.findOne && typeof dbShapes.findOne === 'function', 'findOne method exists');
-
-  //       dbShapes.findOne('rj34kskdj43', function(err, res) {
-  //         if(err) throw new Error(err);//reject(err);//throw new Error();
-
-  //         t.ok(res && res.length === 1, 'findOne returned one result');
-
-  //         //resolve();
-  //         callback();
-  //       })
-  //     }
-  //   },
-  //   function(callback) {
-  //     return function() {
-  //       t.ok(dbShapes.findSome && typeof dbShapes.findSome === 'function', 'findSome method exists');
-
-  //       dbShapes.findOne('rj34kskdj43', function(err, res) {
-  //         if(err) throw new Error(err);//reject(err);//throw new Error();
-
-  //         t.ok(res && res.length === 1, 'findSome returned one result');
-
-  //         //resolve();
-  //         callback();
-  //       })
-  //     }
-  //   },
-  //   function(callback) {
-  //     return function() {
-  //       t.ok(dbShapes.findAll && typeof dbShapes.findAll === 'function', 'findAll method exists');
-
-  //       dbShapes.findAll(function(err, result) {
-  //         if(err) throw new Error(err);//reject(err);
-
-  //         console.log(result);
-
-  //         t.ok(result && result.length, 'findAll returned results');
-  //         t.end();
-  //         //resolve();
-  //         callback();
-  //       })
-  //     }
-  //   }
-  // ];
+        t.ok(result === null, 'Result is null, since Shape does not exist');
+        resolve();
+      })
+    })
+  })
+  .then(function() {
+    t.end();
+    SeedDb.database.close();
+  })
+  .catch(function(err) {
+    console.log(err);
+    t.end();
+    SeedDb.database.close();
+  })
 }
+
+
 
 
 
