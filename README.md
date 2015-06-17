@@ -30,7 +30,7 @@ Installing and Setting up Mongod database:
 
  3) Inside the server folder in the OpenSketch folder, run 
  ```bash
- $npm start
+ $ npm start
  ```
  Note: Make sure 2 directories (mongoBinaries and logs) are present in the server directory
  
@@ -38,11 +38,11 @@ Installing and Setting up Mongod database:
 
  4 a) For developlment, to stop MongoDb running, run 
  ```bash
- $npm stop
+ $ npm stop
  ```
  4 b) When on production server, to stop MongoDb, run
  ```bash
- $npm run stopProd
+ $ npm run stopProd
  ```
 Project Structure
 ====================
