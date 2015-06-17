@@ -23,19 +23,19 @@ module.exports = function(io, framework,done){
     console.log('in update user list');
     var Usertab =  find('.cd-tabs-content li[data-content=Users]');
     var UsertabName = find('a[data-content=Users]');
-    
+
     UsertabName.innerHTML = 'Users('+msg+')';
-    
-    var UserList = find('.userList');   
+
+    var UserList = find('.userList');
     if(UserList){
       UserList.innerHTML = "";
     }else{
-      UserList = document.createElement('div'); 
+      UserList = document.createElement('div');
       UserList.className = 'userList';
     }
     for(var i = 0; i< users.length; i++){
-      var user = document.createElement('div'); 
-      user.innerHTML = 'Name: '+users[i].name + ' ID: '+users[i]._id;
+      var user = document.createElement('div');
+      user.innerHTML = 'Name: '+ users[i].username + '<br /> ID: '+users[i]._id;
       UserList.appendChild(user);
     }
     Usertab.appendChild(UserList);
@@ -48,7 +48,7 @@ module.exports = function(io, framework,done){
     var Chattab =  find('.chatMessageBox .chatMessages');
 
 
-    var li =document.createElement('li');
+    var li = document.createElement('li');
     li.innerHTML = msg;
     Chattab.appendChild(li);
     //adjust all users priority
