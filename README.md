@@ -18,7 +18,7 @@ $ npm install
 $ grunt  # Server Folder
 ```
 
-MongoDB:
+##MongoDB:
 
 Installing and Setting up Mongod database:
 
@@ -36,11 +36,14 @@ Installing and Setting up Mongod database:
  
  Note: if you are running on windows, just run "npm run startWin" in a new git console (windows cannot run background instances the same way unix/linux can and setting up a service requires more work then is worth it)
 
- 4) To stop MongoDb, run 
+ 4 a) For developlment, to stop MongoDb running, run 
  ```bash
  $npm stop
  ```
- 
+ 4 b) When on production server, to stop MongoDb, run
+ ```bash
+ $npm run stopProd
+ ```
 Project Structure
 ====================
 
