@@ -29,6 +29,7 @@ Section.prototype = {
     this.toolbar = new Toolbar({
       whiteboard: '#whiteboard-container',
       tools: {
+        select: '#tool-select',
         pencil: '#tool-pencil',
         eraser: '#tool-eraser',
         fill: '#tool-fill',

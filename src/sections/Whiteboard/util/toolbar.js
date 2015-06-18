@@ -1,5 +1,6 @@
 var PIXI = require('pixi');
 var find = require('dom-select');
+var createSelect = require('./tools/select');
 var createPencil = require('./tools/pencil');
 var createEraser = require('./tools/eraser');
 var createFill = require('./tools/fill');
@@ -15,23 +16,35 @@ module.exports = toolbar;
 function toolbar(elements) {
   var el;
   var imgs = [];
+  var _this = this;
   this.tools = {};
   this.container = find(elements.whiteboard);
   PIXI.dontSayHello = true;
 
-  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75, 
-                                          document.body.offsetHeight - 60, 
+  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
+                                          document.body.offsetHeight - 60,
                                           { antialias: true });
-
 
   this.container.appendChild(this.renderer.view);
   this.stage = new PIXI.Stage(0xFFFFFF, true);
-  this.renderer.render(this.stage);
+
+  animate();
+
+  function animate() {
+    requestAnimFrame(animate);
+    _this.renderer.render(_this.stage);
+    //this.renderer.render(this.stage);
+  }
+  //this.renderer.render(this.stage);
 
   var settings = {
     container: this.container,
     renderer: this.renderer,
-    stage: this.stage
+    stage: this.stage,
+    //selectedTool: this.selectedTool
+    selectedTool: function() {
+      return this.selectedTool;
+    }.bind(this)
   };
 
   for(var tool in elements.tools) {
@@ -42,6 +55,9 @@ function toolbar(elements) {
     el.addEventListener('click', function(e) {
       this.className = 'tool-selected';
 
+      // Store selected tool
+      _this.selectedTool = e.target.id;
+
       imgs.forEach(function(img) {
         if(img !== this)
           img.className = "";
@@ -49,6 +65,11 @@ function toolbar(elements) {
     });
 
     switch(tool) {
+      case 'select':
+        //this.selectedTool = 'tool-select';
+        console.log('tool selected')
+        createSelect(settings, el);
+        break;
       case 'pencil':
         this.pencil = createPencil(settings, el);
         break;

@@ -7,22 +7,33 @@ module.exports = function(info, el) {
   var isDown = false;
   var settings = {
     el: el,
-    color: 0xFFFFFF,
+    color: 0x000000,
     radius: 10
   };
 
   function mousedown(data) {
     isDown = true;
+
+    //console.dir(data.target);
+    var target = data.target;
+    if(target.fillColor) {
+      target.fillColor = settings.color;
+      target.graphicsData[0].fillColor = settings.color;
+    }
+    //target.fillColor = target.
+    //if(data)
   }
 
   function mousemove(data) {
+
   }
 
-  function mouseup() {
+  function mouseup(data) {
     isDown = false;
+
     stage.setBackgroundColor(settings.color);
-    renderer.render(stage);
-    console.log(stage);
+    //renderer.render(stage);
+    //console.log(stage);
   }
 
   function activate() {
