@@ -1,5 +1,5 @@
 var $ = require('jquery');
-
+var EVENT = require('../../../model/model').socketEvents;
 module.exports = {
   init: function(req, socket, done) {
     var _this = this;
@@ -35,8 +35,15 @@ module.exports = {
     console.log(newMsg);
     this.chatMessages.appendChild(newMsg[0]);
     this.chatMessages.scrollTop = this.chatMessages.scrollHeight;  
-  },
 
+  },
+// announcement for user leaving and joining session  
+  addAnnouncement: function(msg){
+    var ann = $('<div id="msgContainer"><div id="announcement">'+msg+'</div></div>');
+    console.log(ann);
+    this.chatMessages.appendChild(ann[0]);
+    this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
+  },
   // All the events defined here happen after session has been validated and stored in the Db
   // Ensure we init Whiteboard after validating socket in whiteboard
   socketOnEventHandlers: function() {
@@ -44,9 +51,14 @@ module.exports = {
     console.log('attached socket', _this.socket);
     console.log('Chat box socket handlers set');
 
-    _this.socket.on('chatMessage', function(data) {
+    _this.socket.on(EVENT.chatMessage, function(data) {
       console.log('chat msg recieved', data);
       _this.addMsg(data);
+    });
+
+    _this.socket.on(EVENT.announcement, function(msg){
+      console.log('announcement received', msg); 
+      _this.addAnnouncement(msg);
     });
   }
 };

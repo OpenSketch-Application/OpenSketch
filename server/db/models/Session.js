@@ -7,7 +7,7 @@ var User = require('./User');
 var CanvasSessionSchema = new mongoose.Schema(
   {
     _id: String,
-    users: Array,
+    users: [User],
     dateCreated: Date,
     dateUpdated: Date,
     // canDraw: Boolean,
