@@ -28,8 +28,9 @@ function activate(settings) {
     data.originalEvent.preventDefault();
     movingSelf = true;
     this.data = data;
-
     originalCoords = data.getLocalPosition(this);
+    //finalGraphics = new PIXI.Graphics();
+
     //curStageIndex = stage.children.length;
 
     // SocketObject.emitDrawObject({
@@ -48,21 +49,33 @@ function activate(settings) {
 
   stage.mousemove = function(data) {
     if(isDown) {
-      var graphics = new PIXI.Graphics();
       var localPos = data.getLocalPosition(this);
+      var topLeft = {};
+
+
+      //console.log(originalCoords);
+      console.log(finalGraphics);
+
       var newDimensions = {
         width: localPos.x - originalCoords.x,
         height: localPos.y - originalCoords.y
       };
 
-      //console.log(newDimensions);
+      // Ensure height and width are positive
+      if(newDimensions.width < 0) newDimensions.width *= -1;
+      if(newDimensions.height < 0) newDimensions.height *= -1;
 
-      if(finalGraphics) stage.removeChild(finalGraphics);
+      topLeft.x = Math.min(originalCoords.x, localPos.x);
+      topLeft.y = Math.min(localPos.y, originalCoords.y);
 
-      finalGraphics = Rect.makeRect(originalCoords, newDimensions, 0xFF0000, curStageIndex);
+      if(finalGraphics) {
+        stage.removeChild(finalGraphics);
+      }
+
+      finalGraphics = Rect.makeRect(topLeft, newDimensions, 0xFF0000, curStageIndex);
+      stage.addChild(finalGraphics);
 
       finalGraphics.objectAdded = drawBegan;
-      stage.addChild(finalGraphics);
 
       //SocketObject.emitDrawingObject(finalGraphics);
 
