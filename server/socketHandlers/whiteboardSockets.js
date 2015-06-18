@@ -41,7 +41,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 };
 //CHAT
 whiteboardSockets.chatMessageCB = function(socket,nsp){
- return function(message){
+ return function(message) {
         //socket emit chat to other users
         socket.broadcast.emit(EVENT.chatMessage, {
           'user': message.user,
@@ -49,6 +49,7 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
         });
         console.log('msg received', message);
         //add chat to db //but maybe we don't need to keep chat messages stored?
+
       };
 
 };

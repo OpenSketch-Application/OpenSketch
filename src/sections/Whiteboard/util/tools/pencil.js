@@ -6,7 +6,7 @@ module.exports = function(info, el) {
   var renderer = info.renderer;
   var isDown = false;
   var prevPos = { x: null, y: null };
-  
+
   var settings = {
     el: el,
     color: 0x000000,
@@ -29,7 +29,7 @@ module.exports = function(info, el) {
       prevPos.x = data.global.x;
       prevPos.y = data.global.y;
       stage.addChild(graphics);
-      renderer.render(stage);
+      //renderer.render(stage);
     }
   }
 

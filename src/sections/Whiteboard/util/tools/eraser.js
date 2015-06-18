@@ -38,7 +38,7 @@ module.exports = function(info, el) {
       graphics.drawCircle(prevX, prevY, settings.radius);
       graphics.endFill();
       stage.addChild(graphics);
-      renderer.render(stage);
+      //renderer.render(stage);
 
       if(Math.abs(currX - prevX) > 10){
         prevX += xIncrement;

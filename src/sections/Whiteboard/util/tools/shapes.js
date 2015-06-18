@@ -1,82 +1,100 @@
 var PIXI = require('pixi');
+var Rect = require('../shapes/Rectangle');
+var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 
 module.exports = function(settings, el) {
   el.addEventListener('click', function(data) {
     console.log('Selected Shapes...');
+    //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
 
-    selectPressed = true;
-    activate(settings.stage, settings.renderer);
+    Rect.set(settings.stage, settings.renderer);
+    activate(settings);
   });
 };
 
-function activate(stage, renderer) {
-  var color = 0x420FA0;
-  var path = [];
+function activate(settings) {
   // var isActive = true;
   var isDown = false;
-  var posOld;
-  var stageIndex = 0;
-  var lines = 0;
+  var originalCoords;
+  var curStageIndex = 0;
+  var drawBegan = false;
+  var finalGraphics;
+  var inverse;
+  var stage = settings.stage;
+  var renderer = settings.renderer;
 
   stage.mousedown = function(data) {
-
-    //if(!isActive) return;
     isDown = true;
-    lines = 0;
-    path = [];
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    stageIndex = stage.children.length - 1;
-    //graphics.moveTo(data.global.x, data.global.y);
+    data.originalEvent.preventDefault();
+    movingSelf = true;
+    this.data = data;
+
+    originalCoords = data.getLocalPosition(this);
+    //curStageIndex = stage.children.length;
+
+    // SocketObject.emitDrawObject({
+    //   objectType: 'rectangle',
+    //   startCoords: originalCoords,
+    //   dimensions: {
+    //     width: 1,
+    //     height: 1
+    //   },
+    //   color: 0xFF0000,
+    //   stageIndex: curStageIndex + 1
+    // });
+
+    console.log("drawing");
   };
 
   stage.mousemove = function(data) {
-    //if(!isActive) return;
-    if(!isDown) return;
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-    //path.push(data.global.y);
-    //var newPosition = this.data.getLocalPosition(this.parent);
-    graphics.moveTo(posOld[0], posOld[1]);
-    //console.log(data.global.x, data.global.y);
-    graphics.lineTo(data.global.x, data.global.y);
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    lines++;
-    stage.addChild(graphics);
+    if(isDown) {
+      var graphics = new PIXI.Graphics();
+      var localPos = data.getLocalPosition(this);
+      var newDimensions = {
+        width: localPos.x - originalCoords.x,
+        height: localPos.y - originalCoords.y
+      };
 
-    renderer.render(stage);
+      //console.log(newDimensions);
+
+      if(finalGraphics) stage.removeChild(finalGraphics);
+
+      finalGraphics = Rect.makeRect(originalCoords, newDimensions, 0xFF0000, curStageIndex);
+
+      finalGraphics.objectAdded = drawBegan;
+      stage.addChild(finalGraphics);
+
+      //SocketObject.emitDrawingObject(finalGraphics);
+
+      drawBegan = true;
+    }
   };
 
-  stage.mouseup = function() {
+  stage.mouseup = function(data) {
+    drawBegan = false;
     isDown = false;
+    movingSelf = false;
 
-    if(!path.length) return;
-    //graphics.lineStyle(5, 0xFF0000);
-    //graphics.moveTo(path[0][0], path[0][1]);
-    //graphics.drawPolygon(path);
-    while(lines) {
-      stage.removeChildAt(stageIndex + lines);
-      lines--;
+    if(finalGraphics) {
+      // set move Mouse Events on the final shape created
+      setMoveShapeListeners(finalGraphics, settings);
     }
 
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
+    finalGraphics = null;
+    // var graphics = new PIXI.Graphics();
+    //SocketObject.emitDrawObject(finalGraphics);
 
-    graphics.drawPolygon(path);
+    //if(finalGraphics) {
+    //  console.log("Final", finalGraphics.getBounds());
+    //  finalGraphics.interactive = true;
 
-    graphics.interactive = true;
+    //  moveObject(finalGraphics);
+    //}
 
-    graphics.hitArea = graphics.getBounds();
+    //socket.emit('add rectangle', );
+    //console.log(finalGraphics);
 
-    // moveObject(renderer, stage, graphics, { x: graphics.hitArea.x, y: graphics.hitArea.y });
-
-    stage.addChild(graphics);
-
-    // CanvasObjects.push({
-    //   _id: CanvasObjects.length + 1,
-    //   type: 'pencil',
-    //   coords: path
-    // });
-
-    renderer.render(stage);
+    //renderer.render(stage);
+    //SocketObject.emitObjectAddDone(finalGraphics);
   };
 }

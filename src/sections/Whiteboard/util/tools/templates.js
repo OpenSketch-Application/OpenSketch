@@ -44,7 +44,7 @@ function activate(stage, renderer) {
     lines++;
     stage.addChild(graphics);
 
-    renderer.render(stage);
+    //renderer.render(stage);
   };
 
   stage.mouseup = function() {
@@ -77,6 +77,6 @@ function activate(stage, renderer) {
     //   coords: path
     // });
 
-    renderer.render(stage);
+    //renderer.render(stage);
   };
 }
