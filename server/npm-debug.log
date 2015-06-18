@@ -1,0 +1,35 @@
+0 info it worked if it ends with ok
+1 verbose cli [ '/usr/local/bin/node', '/usr/local/bin/npm', 'stop' ]
+2 info using npm@2.7.4
+3 info using node@v0.13.0-pre
+4 verbose run-script [ 'prestop', 'stop', 'poststop' ]
+5 info prestop opensketch-server@1.0.0
+6 info stop opensketch-server@1.0.0
+7 verbose unsafe-perm in lifecycle true
+8 info opensketch-server@1.0.0 Failed to exec stop script
+9 verbose stack Error: opensketch-server@1.0.0 stop: `ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[0-9]+' | xargs kill`
+9 verbose stack Exit status 123
+9 verbose stack     at EventEmitter.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/lifecycle.js:213:16)
+9 verbose stack     at EventEmitter.emit (events.js:112:17)
+9 verbose stack     at ChildProcess.<anonymous> (/usr/local/lib/node_modules/npm/lib/utils/spawn.js:14:12)
+9 verbose stack     at ChildProcess.emit (events.js:112:17)
+9 verbose stack     at maybeClose (child_process.js:1017:16)
+9 verbose stack     at Process.ChildProcess._handle.onexit (child_process.js:1089:5)
+10 verbose pkgid opensketch-server@1.0.0
+11 verbose cwd /home/jum/practice/prj666/OpenSketch/server
+12 error Linux 3.2.0-4-amd64
+13 error argv "/usr/local/bin/node" "/usr/local/bin/npm" "stop"
+14 error node v0.13.0-pre
+15 error npm  v2.7.4
+16 error code ELIFECYCLE
+17 error opensketch-server@1.0.0 stop: `ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[0-9]+' | xargs kill`
+17 error Exit status 123
+18 error Failed at the opensketch-server@1.0.0 stop script 'ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[0-9]+' | xargs kill'.
+18 error This is most likely a problem with the opensketch-server package,
+18 error not with npm itself.
+18 error Tell the author that this fails on your system:
+18 error     ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[0-9]+' | xargs kill
+18 error You can get their info via:
+18 error     npm owner ls opensketch-server
+18 error There is likely additional logging output above.
+19 verbose exit [ 1, true ]
