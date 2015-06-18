@@ -28,7 +28,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                  if(err) console.log(err);
                  else{
                    console.log(session);
-                   socket.broadcast.emit(EVENT.announcement, socket.id + ' has joined the session');
+                   socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
                    socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
                  }
@@ -59,25 +59,24 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
     sessionid = sessionid[sessionid.length - 1];
     console.log('disconn ',socket.id);
     //remove user from db
-    Session.findOne({canvasId : sessionid}, function(err,obj){
+    Session.findById(sessionid, function(err,session){
       if(err){
-
-      } else if(obj) {
+        console.log('error');
+      } else if(session) {
         //delete user
-       if(obj.users){
-         if(obj.users.id(socket.id)!=null){
-           obj.users.id(socket.id).remove();
+       if(session.users){
+         if(session.users.id(socket.id)!=null){
+           session.users.id(socket.id).remove();
          }
        }
 
-       console.log(obj.users.length,obj.maxUsers);
-       socket.broadcast.emit(EVENT.announcement, socket.id + ' has left the session');
-       socket.broadcast.emit(EVENT.updateUserList, obj.users.length+'/'+obj.maxUsers,obj.users);
-       socket.emit(EVENT.updateUserList,obj.users.length+'/'+obj.maxUsers,obj.users);
+       socket.broadcast.emit(EVENT.announcement, socket.users.id(socket.id).username + ' has left the session');
+       socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers,session.users);
+       socket.emit(EVENT.updateUserList,session.users.length+'/'+session.sessionProperties.maxUsers,session.users);
 
-       obj.save(function(err){
+       session.save(function(err){
            if(err) console.log(err);
-           else console.log(obj);
+           else console.log(session);
         });
       }
     });
