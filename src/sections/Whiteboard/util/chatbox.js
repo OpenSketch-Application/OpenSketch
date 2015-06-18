@@ -37,12 +37,13 @@ module.exports = {
     this.chatMessages.scrollTop = this.chatMessages.scrollHeight;  
 
   },
-  
+// announcement for user leaving and joining session  
   addAnnouncement: function(msg){
     var ann = $('<div id="msgContainer"><div id="announcement">'+msg+'</div></div>');
+    console.log(ann);
     this.chatMessages.appendChild(ann[0]);
     this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
-  }
+  },
   // All the events defined here happen after session has been validated and stored in the Db
   // Ensure we init Whiteboard after validating socket in whiteboard
   socketOnEventHandlers: function() {
@@ -57,7 +58,7 @@ module.exports = {
 
     _this.socket.on(EVENT.announcement, function(msg){
       console.log('announcement received', msg); 
-      this.addAnnouncement(msg);
+      _this.addAnnouncement(msg);
     });
   }
 };

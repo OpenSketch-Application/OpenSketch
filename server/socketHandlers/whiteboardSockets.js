@@ -65,16 +65,18 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
         console.log('error');
       } else if(session) {
         //delete user
+       var removedUser;
        if(session.users){
          if(session.users.id(socket.id)!=null){
+           removedUser = session.users.id(socket.id);
            session.users.id(socket.id).remove();
          }
        }
-
-       socket.broadcast.emit(EVENT.announcement, socket.users.id(socket.id).username + ' has left the session');
-       socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers,session.users);
-       socket.emit(EVENT.updateUserList,session.users.length+'/'+session.sessionProperties.maxUsers,session.users);
-
+       if(removedUser != undefined){
+         socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has left the session');
+         socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers,session.users);
+         socket.emit(EVENT.updateUserList,session.users.length+'/'+session.sessionProperties.maxUsers,session.users);
+       }
        session.save(function(err){
            if(err) console.log(err);
            else console.log(session);
