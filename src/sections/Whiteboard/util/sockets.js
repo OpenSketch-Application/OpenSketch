@@ -38,6 +38,7 @@ module.exports = function(io, framework,done){
       user.innerHTML = 'Name: '+ users[i].username + '<br /> ID: '+users[i]._id;
       UserList.appendChild(user);
     }
+
     Usertab.appendChild(UserList);
 
   });
@@ -46,7 +47,6 @@ module.exports = function(io, framework,done){
     //update user list clientside
     //update chat tab with msg
     var Chattab =  find('.chatMessageBox .chatMessages');
-
 
     var li = document.createElement('li');
     li.innerHTML = msg;
