@@ -4,7 +4,10 @@ var createSelect = require('./tools/select');
 var createPencil = require('./tools/pencil');
 var createEraser = require('./tools/eraser');
 var createFill = require('./tools/fill');
+var createLine = require('./tools/line');
 var createShapes = require('./tools/shapes');
+
+//var createRect = require()
 var createText = require('./tools/text');
 var createTable = require('./tools/table');
 var createImport = require('./tools/import');
@@ -54,7 +57,7 @@ function toolbar(elements) {
 
     el.addEventListener('click', function(e) {
       this.className = 'tool-selected';
-
+      console.log(el);
       // Store selected tool
       _this.selectedTool = e.target.id;
 
@@ -67,7 +70,6 @@ function toolbar(elements) {
     switch(tool) {
       case 'select':
         //this.selectedTool = 'tool-select';
-        console.log('tool selected')
         createSelect(settings, el);
         break;
       case 'pencil':
@@ -80,10 +82,17 @@ function toolbar(elements) {
         this.fill = el;
         createFill(settings, el);
         break;
-      case 'shapes':
-        this.shapes = el;
-        createShapes(settings, el);
+      case 'line':
+        this.line = el;
+        createLine(settings, el);
         break;
+      case 'ellipse':
+        this.ellipse = el;
+        //createShapes(settings, el);
+        break;
+      case 'rectangle':
+        this.rectangle = el;
+        createShapes(settings, el);
       case 'text':
         this.text = el;
         createText(settings, el);

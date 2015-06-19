@@ -33,11 +33,12 @@ Section.prototype = {
         pencil: '#tool-pencil',
         eraser: '#tool-eraser',
         fill: '#tool-fill',
-        shapes: {
-          'el': '#tool-shapes',
-          'circle': '',
-          'rectangle': '',
-        },
+        //shapes: {
+        shapes: '#tool-shapes',
+        line: '#tool-shapes-line',
+        ellipse: '#tool-shapes-ellipse',
+        rectangle: '#tool-shapes-rectangle',
+        //},
         text: '#tool-text',
         table: '#tool-table',
         templates: {
