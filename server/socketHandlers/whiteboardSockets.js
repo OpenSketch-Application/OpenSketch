@@ -122,7 +122,6 @@ whiteboardSockets.sendDrawingCB = function(socket,nspWb){
   return function(info){
     //add drawing to db
     //emit drawing to other users
-    console.log(info);
     socket.broadcast.emit('sendDrawing',info);
     
   };
