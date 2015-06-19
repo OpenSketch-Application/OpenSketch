@@ -31,9 +31,7 @@ function activate(settings) {
     this.data = data;
     originalCoords = data.getLocalPosition(this);
 
-    //curStageIndex = stage.children.length;
-    //graphics.lineTo(originalCoords.x, originalCoords.y);
-    //stage.addChild(graphics);
+
     // SocketObject.emitDrawObject({
     //   objectType: 'rectangle',
     //   startCoords: originalCoords,
@@ -52,35 +50,9 @@ function activate(settings) {
     if(isDown) {
       var localPos = data.getLocalPosition(this);
       var topLeft = {};
+      var childIndex = 0;
 
-
-      //console.log(originalCoords);
-      console.log(graphics);
-
-      // var newDimensions = {
-      //   width: localPos.x - originalCoords.x,
-      //   height: localPos.y - originalCoords.y
-      // };
-      if(graphics) {
-        stage.removeChild(graphics);
-      }
-
-      graphics = Line.makeShape(localPos, {});
-      // Ensure height and width are positive
-      //if(newDimensions.width < 0) newDimensions.width *= -1;
-      //if(newDimensions.height < 0) newDimensions.height *= -1;
-
-      // topLeft.x = Math.min(originalCoords.x, localPos.x);
-      // topLeft.y = Math.min(localPos.y, originalCoords.y);
-
-      // if(graphics) {
-      //   stage.removeChild(graphics);
-      // }
-
-      //graphics = Line.makeShape(topLeft, newDimensions, settings);
-      stage.addChild(graphics);
-
-      //graphics.objectAdded = drawBegan;
+      Line.reDrawShape(originalCoords, localPos, {});
 
       //SocketObject.emitDrawingObject(graphics);
 
@@ -93,11 +65,7 @@ function activate(settings) {
     isDown = false;
     movingSelf = false;
 
-    // if(graphics) {
-    //   // set move Mouse Events on the final shape created
-    //   setMoveShapeListeners(graphics, settings);
-    // }
-
+    Line.getShape();
     graphics = null;
     // var graphics = new PIXI.Graphics();
     //SocketObject.emitDrawObject(graphics);
