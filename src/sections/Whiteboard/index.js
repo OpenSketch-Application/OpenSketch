@@ -49,7 +49,7 @@ Section.prototype = {
         import: '#tool-import',
         color: '#tool-color'
       }
-    });
+    },socket);
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))

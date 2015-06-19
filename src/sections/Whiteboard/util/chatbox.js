@@ -55,6 +55,11 @@ module.exports = {
       console.log('chat msg recieved', data);
       _this.addMsg(data);
     });
+    _this.socket.on(EVENT.updateChatList, function(data) {
+      for(var i = 0;i<data.length;i++){
+        _this.addMsg(data[i]);
+      }
+    });
 
     _this.socket.on(EVENT.announcement, function(msg){
       console.log('announcement received', msg); 

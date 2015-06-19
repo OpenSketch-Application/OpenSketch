@@ -25,10 +25,23 @@ module.exports = function(info, el) {
     if(isDown) {
       graphics = new PIXI.Graphics().lineStyle(settings.strokeWeight, settings.color);
       graphics.moveTo(prevPos.x, prevPos.y);
+      var prevX = prevPos.x;
+      var prevY = prevPos.y;
+
       graphics.lineTo(data.global.x, data.global.y);
       prevPos.x = data.global.x;
       prevPos.y = data.global.y;
       stage.addChild(graphics);
+
+      var shapeinfo = {
+        x1: prevX,
+        y1: prevY,
+        x2: data.global.x,
+        y2: data.global.y,
+        color: settings.color,
+        strokeWeight: settings.strokeWeight
+      };
+      info.socket.emit('sendDrawing',shapeinfo);
       //renderer.render(stage);
     }
   }

@@ -13,15 +13,16 @@ var createTable = require('./tools/table');
 var createImport = require('./tools/import');
 var createColor = require('./tools/color');
 var createTemplates = require('./tools/templates');
-
+var setDrawingSockets = require('./drawingSockets');
 module.exports = toolbar;
 
-function toolbar(elements) {
+function toolbar(elements,socket) {
   var el;
   var imgs = [];
   var _this = this;
   this.tools = {};
   this.container = find(elements.whiteboard);
+  this.socket = socket;
   PIXI.dontSayHello = true;
 
   this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
@@ -29,9 +30,16 @@ function toolbar(elements) {
                                           { antialias: true });
 
   this.container.appendChild(this.renderer.view);
-  this.stage = new PIXI.Stage(0xFFFFFF, true);
-
+  _this.stage = new PIXI.Stage(0xFFFFFF, true);
   animate();
+  setDrawingSockets(socket,_this.stage);
+  socket.on('sendDrawing',function(info){
+       graphics = new PIXI.Graphics().lineStyle(info.strokeWeight, info.color);
+       graphics.moveTo(info.x1, info.y1);
+       graphics.lineTo(info.x2, info.y2);
+       _this.stage.addChild(graphics);
+  
+    });
 
   function animate() {
     requestAnimFrame(animate);
@@ -39,17 +47,17 @@ function toolbar(elements) {
     //this.renderer.render(this.stage);
   }
   //this.renderer.render(this.stage);
-
-  var settings = {
+    var settings = {
     container: this.container,
     renderer: this.renderer,
     stage: this.stage,
+    socket: this.socket,
     //selectedTool: this.selectedTool
     selectedTool: function() {
       return this.selectedTool;
     }.bind(this)
   };
-
+  
   for(var tool in elements.tools) {
     el = find(typeof elements.tools[tool] === 'string' ?
                      elements.tools[tool] : elements.tools[tool].el);
@@ -117,4 +125,6 @@ function toolbar(elements) {
         break;
     }
   }
+
+  //setDrawingSockets(this.stage,this.socket);
 }

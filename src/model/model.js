@@ -11,6 +11,7 @@ module.exports = {
     'joinSession': 'joinSession',
     'validateSession': 'validateSession',
     'updateUserList': 'updateUserList',
+    'updateChatList': 'updateChatList',
     'getSocketID': 'getSocketID',
     'createSession': 'createSession',
     'badSession': 'badSession',
