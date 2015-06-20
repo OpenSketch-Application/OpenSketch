@@ -56,11 +56,7 @@ Section.prototype = {
         import: '#tool-import',
         color: '#tool-color'
       }
-<<<<<<< HEAD
     }, AppState);
-=======
-    },socket);
->>>>>>> ce4592d011ba148b6126956249e4f5e4d4cd343d
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))

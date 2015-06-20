@@ -17,13 +17,12 @@ var setDrawingSockets = require('./drawingSockets');
 module.exports = toolbar;
 
 function toolbar(elements, AppState) {
-
   var el;
   var imgs = [];
   var _this = this;
   this.tools = {};
   this.container = find(elements.whiteboard);
-  this.socket = socket;
+  this.socket = AppState.Socket;
   PIXI.dontSayHello = true;
 
   this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
@@ -33,8 +32,7 @@ function toolbar(elements, AppState) {
   this.container.appendChild(this.renderer.view);
   _this.stage = new PIXI.Stage(0xFFFFFF, true);
   animate();
-  setDrawingSockets(socket,_this.stage);
-
+  setDrawingSockets(_this.socket,_this.stage);
 
   function animate() {
     requestAnimFrame(animate);
