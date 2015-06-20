@@ -1,4 +1,5 @@
 var PIXI = require('pixi');
+var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(info, el) {
   var userID = info.userID;
@@ -41,7 +42,7 @@ module.exports = function(info, el) {
         color: settings.color,
         strokeWeight: settings.strokeWeight
       };
-      info.socket.emit('sendDrawing',shapeinfo);
+      info.socket.emit(EVENT.sendPencil,shapeinfo);
       //renderer.render(stage);
     }
   }

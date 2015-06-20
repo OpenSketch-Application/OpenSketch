@@ -48,7 +48,7 @@ module.exports = function(io,DB) {
       socket.on(EVENT.joinSession, wbLogic.joinSessionCB(socket, nspWb));
       socket.on(EVENT.chatMessage, wbLogic.chatMessageCB(socket, nspWb));
       socket.on('disconnect', wbLogic.disconnectCB(socket, nspWb));
-      socket.on(EVENT.sendDrawing, wbLogic.sendDrawingCB(socket, nspWb));
+      socket.on(EVENT.sendPencil, wbLogic.sendPencilCB(socket, nspWb));
     };
   }
 

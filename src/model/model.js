@@ -20,6 +20,9 @@ module.exports = {
     // Pixi/Canvas Draw Events
     'objectModified':'objectModified',
     'objectAdded':'objectAdded',
-    'objectDeleted': 'objectDeleted'
+    'objectDeleted': 'objectDeleted',
+
+    'sendPencil' : 'sendPencil',
+    'sendLine' : 'sendLine'
   }
 };

@@ -118,11 +118,11 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
 };
 
 //DRAW
-whiteboardSockets.sendDrawingCB = function(socket,nspWb){
+whiteboardSockets.sendPencilCB = function(socket,nspWb){
   return function(info){
     //add drawing to db
     //emit drawing to other users
-    socket.broadcast.emit('sendDrawing',info);
+    socket.broadcast.emit(EVENT.sendPencil,info);
     
   };
 };

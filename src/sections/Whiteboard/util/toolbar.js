@@ -33,13 +33,7 @@ function toolbar(elements,socket) {
   _this.stage = new PIXI.Stage(0xFFFFFF, true);
   animate();
   setDrawingSockets(socket,_this.stage);
-  socket.on('sendDrawing',function(info){
-       graphics = new PIXI.Graphics().lineStyle(info.strokeWeight, info.color);
-       graphics.moveTo(info.x1, info.y1);
-       graphics.lineTo(info.x2, info.y2);
-       _this.stage.addChild(graphics);
   
-    });
 
   function animate() {
     requestAnimFrame(animate);
