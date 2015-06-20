@@ -31,6 +31,8 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                    socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
                    socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
+
+                   socket.emit(EVENT.updateChatList,session.messages);
                  }
               });
             }
@@ -43,11 +45,40 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 whiteboardSockets.chatMessageCB = function(socket,nsp){
  return function(message) {
         //socket emit chat to other users
-        socket.broadcast.emit(EVENT.chatMessage, {
-          'user': message.user,
-          'msg': message.msg
+        //
+        var  sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
+    
+        Session.findById(sessionid, function(err, session){
+          if(err){
+            throw new Error('Error retrieving Session');
+          }
+          else if(session._id){
+            //push user to db
+
+            if(session.users.length < session.sessionProperties.maxUsers){
+              session.messages.push({
+                userID : socket.id,
+                user: message.user, 
+                msg: message.msg
+              });
+
+              session.save(function(err){
+                 if(err) console.log(err);
+                 else{
+                   console.log('saved msg');
+                  
+                 }
+              });
+            }
+          }
         });
-        console.log('msg received', message);
+        socket.broadcast.emit(EVENT.chatMessage, {
+               'user': message.user,
+               'msg': message.msg
+        });
+
+                console.log('msg received', message);
         //add chat to db //but maybe we don't need to keep chat messages stored?
 
       };
@@ -87,10 +118,12 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
 };
 
 //DRAW
-whiteboardSockets.sendDrawingCB = function(){
-  return function(user, CanvasShape){
+whiteboardSockets.sendPencilCB = function(socket,nspWb){
+  return function(info){
     //add drawing to db
     //emit drawing to other users
+    socket.broadcast.emit(EVENT.sendPencil,info);
+    
   };
 };
 
