@@ -11,6 +11,10 @@ var socketSetup = require('./util/sockets');
 var ChatboxManager = require('./util/chatbox');
 var Toolbar = require('./util/toolbar');
 
+// A model object can all use it to store Application state properties
+// Mostly information retrieved on-mass from Database
+var AppState = require('../../model/AppState');
+
 module.exports = Section;
 
 function Section() {}
@@ -18,12 +22,15 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
-    var socket = socketSetup(io,framework,done);
+    AppState.Socket = socketSetup(io, framework, done);
     var content = find('#content');
+
     this.section = document.createElement('div');
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.appendChild(this.section);
+
     // states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
+
     createTabs();
 
     this.toolbar = new Toolbar({
@@ -49,7 +56,7 @@ Section.prototype = {
         import: '#tool-import',
         color: '#tool-color'
       }
-    });
+    }, AppState);
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
@@ -57,8 +64,12 @@ Section.prototype = {
                            .parsers(require('f1-dom'))
                            .init('init');
 
-    ChatboxManager.init(req, socket, done);
+    ChatboxManager.init(AppState);
+    /*
+      new ChatBox({
 
+      })
+     */
     done();
   },
 

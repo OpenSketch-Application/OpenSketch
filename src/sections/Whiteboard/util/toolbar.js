@@ -16,7 +16,7 @@ var createTemplates = require('./tools/templates');
 
 module.exports = toolbar;
 
-function toolbar(elements) {
+function toolbar(elements, AppState) {
   var el;
   var imgs = [];
   var _this = this;
@@ -39,15 +39,16 @@ function toolbar(elements) {
     //this.renderer.render(this.stage);
   }
   //this.renderer.render(this.stage);
-
+  // AppState.Canvas.Tools
+  //var settings = AppState.Canvas.Tools;
   var settings = {
     container: this.container,
     renderer: this.renderer,
     stage: this.stage,
     //selectedTool: this.selectedTool
     selectedTool: function() {
-      return this.selectedTool;
-    }.bind(this)
+      return _this.selectedTool;
+    }
   };
 
   for(var tool in elements.tools) {
@@ -58,6 +59,7 @@ function toolbar(elements) {
     el.addEventListener('click', function(e) {
       this.className = 'tool-selected';
       console.log(el);
+
       // Store selected tool
       _this.selectedTool = e.target.id;
 

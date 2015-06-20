@@ -17,6 +17,7 @@ module.exports = function(info, el) {
     isDown = true;
     prevPos.x = data.global.x;
     prevPos.y = data.global.y;
+
   }
 
   function mousemove(data) {
