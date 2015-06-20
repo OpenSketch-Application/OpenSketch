@@ -58,6 +58,12 @@ Section.prototype = {
       }
     }, AppState);
 
+
+    // Canvas
+    // Tools
+    // Users
+    // Messages
+    // Shapes
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
                            .targets({ whiteboard: find('#whiteboard')})

@@ -5,7 +5,7 @@ var createPencil = require('./tools/pencil');
 var createEraser = require('./tools/eraser');
 var createFill = require('./tools/fill');
 var createLine = require('./tools/line');
-var createShapes = require('./tools/shapes');
+var createRectangle = require('./tools/rectangle');
 
 //var createRect = require()
 var createText = require('./tools/text');
@@ -25,46 +25,51 @@ function toolbar(elements, AppState) {
   this.socket = AppState.Socket;
   PIXI.dontSayHello = true;
 
-  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
+  AppState.Canvas.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
                                           document.body.offsetHeight - 60,
                                           { antialias: true });
 
-  this.container.appendChild(this.renderer.view);
-  _this.stage = new PIXI.Stage(0xFFFFFF, true);
+  this.container.appendChild(AppState.Canvas.renderer.view);
+  AppState.Canvas.stage = new PIXI.Stage(0xFFFFFF, true);
   animate();
-  setDrawingSockets(_this.socket,_this.stage);
+  setDrawingSockets(AppState.Socket, AppState.Canvas.stage);
 
   function animate() {
     requestAnimFrame(animate);
-    _this.renderer.render(_this.stage);
+    AppState.Canvas.renderer.render(AppState.Canvas.stage);
     //this.renderer.render(this.stage);
   }
   //this.renderer.render(this.stage);
 
-  // AppState.Canvas.Tools
-  //var settings = AppState.Canvas.Tools;
+  // AppState.Canvas.stage
+  // AppState.Canvas.renderer
   var settings = {
     container: this.container,
-    renderer: this.renderer,
-    stage: this.stage,
-    socket: this.socket,
+    renderer: AppState.Canvas.renderer,
+    stage: AppState.Canvas.stage,
+    socket: AppState.socket
     //selectedTool: this.selectedTool
-    selectedTool: function() {
-      return _this.selectedTool;
-    }
+    // selectedTool: function() {
+    //   return _this.selectedTool;
+    // }
   };
+  console.log(elements.tools);
 
   for(var tool in elements.tools) {
     el = find(typeof elements.tools[tool] === 'string' ?
                      elements.tools[tool] : elements.tools[tool].el);
     imgs.push(el);
+    console.log("tool:", tool);
 
     el.addEventListener('click', function(e) {
       this.className = 'tool-selected';
-      console.log(el);
+
 
       // Store selected tool
-      _this.selectedTool = e.target.id;
+      //_this.selectedTool = e.target.id;
+      AppState.Tools.selected = e.target.id;
+
+      //console.log(_this.selectedTool);
 
       imgs.forEach(function(img) {
         if(img !== this)
@@ -97,7 +102,9 @@ function toolbar(elements, AppState) {
         break;
       case 'rectangle':
         this.rectangle = el;
-        createShapes(settings, el);
+        console.log('rect picked');
+        createRectangle(AppState, el);
+        break;
       case 'text':
         this.text = el;
         createText(settings, el);

@@ -2,17 +2,18 @@ var PIXI = require('pixi');
 var Rect = require('../shapes/Rectangle');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 
-module.exports = function(settings, el) {
+module.exports = function(AppState, el) {
   el.addEventListener('click', function(data) {
-    console.log('Selected Shapes...');
-    //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
-
-    Rect.set(settings.stage, settings.renderer);
-    activate(settings);
+    console.log(el);
+    console.log('Selected Rectangle...');
+    //if(AppState.toolbar.toolSelected) return; // Return early if toolbar Select was picked
+    window.CANVAS_STAGE = AppState.stage;
+    Rect.set(AppState.Canvas.stage, AppState.Canvas.renderer);
+    activate(AppState);
   });
 };
 
-function activate(settings) {
+function activate(AppState) {
   // var isActive = true;
   var isDown = false;
   var originalCoords;
@@ -20,8 +21,8 @@ function activate(settings) {
   var drawBegan = false;
   var finalGraphics;
   var inverse;
-  var stage = settings.stage;
-  var renderer = settings.renderer;
+  var stage = AppState.Canvas.stage;
+  var renderer = AppState.Canvas.renderer;
 
   stage.mousedown = function(data) {
     isDown = true;
@@ -44,7 +45,7 @@ function activate(settings) {
     //   stageIndex: curStageIndex + 1
     // });
 
-    console.log("drawing");
+    //console.log("drawing");
   };
 
   stage.mousemove = function(data) {
@@ -54,7 +55,7 @@ function activate(settings) {
 
 
       //console.log(originalCoords);
-      console.log(finalGraphics);
+      //console.log(finalGraphics);
 
       var newDimensions = {
         width: localPos.x - originalCoords.x,
@@ -72,7 +73,7 @@ function activate(settings) {
         stage.removeChild(finalGraphics);
       }
 
-      finalGraphics = Rect.makeRect(topLeft, newDimensions, settings);
+      finalGraphics = Rect.makeRect(topLeft, newDimensions, AppState);
       stage.addChild(finalGraphics);
 
       finalGraphics.objectAdded = drawBegan;
@@ -90,7 +91,7 @@ function activate(settings) {
 
     if(finalGraphics) {
       // set move Mouse Events on the final shape created
-      setMoveShapeListeners(finalGraphics, settings);
+      setMoveShapeListeners(finalGraphics, AppState.Tools);
     }
 
     finalGraphics = null;

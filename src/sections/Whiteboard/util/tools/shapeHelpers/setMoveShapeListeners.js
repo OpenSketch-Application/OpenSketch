@@ -1,11 +1,13 @@
 'use strict';
 // Global AppState
-module.exports = function(graphics, settings) {
+module.exports = function(graphics, Tools) {
   var selected = false;
+  var original;
+
   graphics.mousedown = function(data) {
-    //console.log(settings.selected);
-    //window.settings = settings;
-    if(settings.selectedTool() === 'tool-select') {
+    //console.log(AppState.selected);
+    //window.AppState = AppState;
+    if(Tools.selectedTool === 'tool-select') {
       data.originalEvent.preventDefault();
 
       this.data = data;

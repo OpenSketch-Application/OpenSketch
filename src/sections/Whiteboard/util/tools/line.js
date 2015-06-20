@@ -2,9 +2,9 @@ var PIXI = require('pixi');
 var Line = require('../shapes/Line');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 
-module.exports = function(settings, el) {
+module.exports = function(AppState, el) {
   el.addEventListener('click', function(data) {
-    console.log('Selected Shapes...');
+    console.log('Selected Line...');
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
 
     Line.set(settings.stage, settings.renderer);
@@ -21,8 +21,8 @@ function activate(settings) {
   var drawBegan = false;
   var graphics;
   var inverse;
-  var stage = settings.stage;
-  var renderer = settings.renderer;
+  var stage = AppState.Canvas.stage;
+  var renderer = AppState.Canvas.renderer;
 
   stage.mousedown = function(data) {
     isDown = true;
