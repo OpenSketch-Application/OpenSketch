@@ -8,8 +8,12 @@ var Model = require('../../model/model');
 var states = require('./states');
 var createTabs = require('./util/tabs');
 var socketSetup = require('./util/sockets');
-var ChatboxManager = require('./util/chatbox');
+var Chatbox = require('./util/chatbox');
 var Toolbar = require('./util/toolbar');
+
+// A model object can all use it to store Application state properties
+// Mostly information retrieved on-mass from Database
+var AppState = require('../../model/AppState');
 
 module.exports = Section;
 
@@ -19,12 +23,15 @@ Section.prototype = {
 
   init: function(req, done) {
     console.log('start init');
-    var socket = socketSetup(io,framework,done);
+    AppState.Socket = socketSetup(io, framework, done);
     var content = find('#content');
+
     this.section = document.createElement('div');
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.appendChild(this.section);
+
     // states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
+
     createTabs();
 
     this.toolbar = new Toolbar({
@@ -34,11 +41,12 @@ Section.prototype = {
         pencil: '#tool-pencil',
         eraser: '#tool-eraser',
         fill: '#tool-fill',
-        shapes: {
-          'el': '#tool-shapes',
-          'circle': '',
-          'rectangle': '',
-        },
+        //shapes: {
+        shapes: '#tool-shapes',
+        line: '#tool-shapes-line',
+        ellipse: '#tool-shapes-ellipse',
+        rectangle: '#tool-shapes-rectangle',
+        //},
         text: '#tool-text',
         table: '#tool-table',
         templates: {
@@ -49,7 +57,7 @@ Section.prototype = {
         import: '#tool-import',
         color: '#tool-color'
       }
-    });
+    }, AppState);
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
@@ -57,10 +65,11 @@ Section.prototype = {
                            .parsers(require('f1-dom'))
                            .init('init');
 
-    ChatboxManager.init(req, socket, done);
+    Chatbox.init(AppState);
+
     console.log('end init');
     setTimeout(function(){
-      if(socket.nsp != '/home')
+      if(AppState.Socket.nsp != '/home')
         done();
       else{
        framework.go('/home');   
@@ -72,14 +81,12 @@ Section.prototype = {
   },
 
   animateIn: function(req, done) {
-    console.log('startanimatein');
 
     setTimeout(function() {
       this.animate.go('idle', function() {
         done();
       }.bind(this));
     }.bind(this), 800);
-    console.log('end animate in');
 
   },
 

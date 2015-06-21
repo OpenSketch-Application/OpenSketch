@@ -1,5 +1,8 @@
+'use strict';
+// Global AppState
 module.exports = function(graphics, settings) {
   var selected = false;
+  var original;
   graphics.mousedown = function(data) {
     //console.log(settings.selected);
     //window.settings = settings;

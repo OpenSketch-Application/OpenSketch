@@ -11,13 +11,13 @@ Rectangle.set = function(stage, renderer) {
   this.renderer = renderer;
 };
 
-Rectangle.makeRect = function(startCoords, dimensions, color, curStageIndex) {
+Rectangle.makeRect = function(startCoords, dimensions, style) {
   var graphics = new PIXI.Graphics();
   graphics.interactive = true;
 
-  graphics.beginFill(0xFFFFFF);
-  graphics.lineWidth = 2;
-  graphics.lineColor = 0x000000;
+  graphics.beginFill(0xFFFFFF); // style.fillColor
+  graphics.lineWidth = 2; // style.lineWidth
+  graphics.lineColor = 0x000000; // style.lineColor
 
   graphics.drawRect(
     startCoords.x,
