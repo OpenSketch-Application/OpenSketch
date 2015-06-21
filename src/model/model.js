@@ -9,9 +9,11 @@ module.exports = {
     'sendDrawing': 'sendDrawing',
     'chatMessage': 'chatMessage',
     'joinSession': 'joinSession',
+
     'validateSession': 'validateSession',
     'updateUserList': 'updateUserList',
     'updateChatList': 'updateChatList',
+
     'getSocketID': 'getSocketID',
     'createSession': 'createSession',
     'badSession': 'badSession',

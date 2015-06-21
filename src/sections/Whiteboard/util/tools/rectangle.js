@@ -6,9 +6,9 @@ module.exports = function(AppState, el) {
   el.addEventListener('click', function(data) {
     console.log(el);
     console.log('Selected Rectangle...');
-    //if(AppState.toolbar.toolSelected) return; // Return early if toolbar Select was picked
-    window.CANVAS_STAGE = AppState.stage;
+
     Rect.set(AppState.Canvas.stage, AppState.Canvas.renderer);
+
     activate(AppState);
   });
 };

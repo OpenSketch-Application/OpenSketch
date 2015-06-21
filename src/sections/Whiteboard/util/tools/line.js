@@ -5,15 +5,16 @@ var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 module.exports = function(AppState, el) {
   el.addEventListener('click', function(data) {
     console.log('Selected Line...');
+
+    AppState.Tools.toolSelected = AppState.Tools.line;
+
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
 
-    Line.set(settings.stage, settings.renderer);
-    activate(settings);
+    activate(AppState.Canvas.stage, AppState.Canvas.renderer, AppState.Tools.line);
   });
 };
 
-
-function activate(settings) {
+function activate(stage, renderer, LineTool) {
   // var isActive = true;
   var isDown = false;
   var originalCoords;
@@ -21,17 +22,20 @@ function activate(settings) {
   var drawBegan = false;
   var graphics;
   var inverse;
-  var stage = AppState.Canvas.stage;
-  var renderer = AppState.Canvas.renderer;
 
+  //Line.set(stage, renderer, LineTool);
+
+  // var stage = stage;
+  // var renderer = AppState.Canvas.renderer;
   stage.mousedown = function(data) {
     isDown = true;
     data.originalEvent.preventDefault();
     movingSelf = true;
     this.data = data;
-    originalCoords = data.getLocalPosition(this);
+    startCoords = data.getLocalPosition(this);
 
-
+    graphics = new PIXI.Graphics();
+    stage.addChild(this.graphics);
     // SocketObject.emitDrawObject({
     //   objectType: 'rectangle',
     //   startCoords: originalCoords,
@@ -48,28 +52,40 @@ function activate(settings) {
 
   stage.mousemove = function(data) {
     if(isDown) {
-      var localPos = data.getLocalPosition(this);
-      var topLeft = {};
-      var childIndex = 0;
+      var endCoords = data.getLocalPosition(this);
+      this.graphics.clear();
+      //this.makeShape(startCoords, endCoords, style);
 
-      Line.reDrawShape(originalCoords, localPos, {});
+      graphics.interactive = false;
+      graphics.lineWidth = 2;
+      graphics.lineColor = 0x000000;
+      graphics.moveTo(endCoords.x, endCoords.y);
+      graphics.lineTo(startCoords.x, startCoords.y);
+
+      stage.addChild(this.graphics);
 
       //SocketObject.emitDrawingObject(graphics);
-
-      drawBegan = true;
     }
   };
 
   stage.mouseup = function(data) {
-    drawBegan = false;
     isDown = false;
     movingSelf = false;
 
-    Line.getShape();
-    graphics = null;
+    graphics.interactive = true;
+    // Line.getShape();
+    // graphics = null;
+
     // var graphics = new PIXI.Graphics();
     //SocketObject.emitDrawObject(graphics);
 
     //SocketObject.emitObjectAddDone(graphics);
   };
+
+  stage.mouseout = function(data) {
+    isDown = false;
+    movingSelf = false;
+
+    graphics.clear();
+  }
 }

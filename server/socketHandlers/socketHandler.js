@@ -11,7 +11,7 @@ module.exports = function(io,DB) {
     return function(socket) {
 //      socket.on('createSession',createSessionCB(socket,nspHome));
 
-      socket.emit(EVENT.getSocketID,socket.id);
+      socket.emit(EVENT.getSocketID, socket.id);
 
       socket.on(EVENT.createSession, function(canvasSession) {
         //push canvasSession to db
@@ -44,7 +44,12 @@ module.exports = function(io,DB) {
     };
   }
   function wbHandler(nspWb) {
+    // Called only when a new namespace is created
+    console.log('USER JOIN WHITEBOARD called');
+
+    // All subsequent sockets are handled from here
     return function(socket) {
+      console.log('inside wbHandler, socket called', socket.id);
       socket.on(EVENT.joinSession, wbLogic.joinSessionCB(socket, nspWb));
       socket.on(EVENT.chatMessage, wbLogic.chatMessageCB(socket, nspWb));
       socket.on('disconnect', wbLogic.disconnectCB(socket, nspWb));
@@ -59,10 +64,26 @@ module.exports = function(io,DB) {
     socket.on(EVENT.validateSession, function(sessionid) {
       console.log('in validate');
       Session.findById(sessionid, function(err, session) {
-        if(err || !session || !session.users || session.users.length >= session.sessionProperties.maxUsers) {
+        if(err || !session) {
           socket.emit(EVENT.badSession);
-          console.log('full');
+          console.log('bad connection call, or invalid id');
+          return;
         }
+        else if(session.users) {
+          if(session.users.length >= session.sessionProperties.maxUsers) {
+            console.log('Session full');
+            return;
+          }
+
+          // At this point we should be ok that user is valid
+          // Once we have cookies we will implement more checks
+          socket.emit('validated', socket.id)
+
+        }
+        else {
+
+        }
+        // socket.emit()
       })
       // Session.findById(sessionid, function(err,obj){
       //    if(err) {

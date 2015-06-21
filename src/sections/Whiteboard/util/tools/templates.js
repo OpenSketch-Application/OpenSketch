@@ -19,7 +19,6 @@ function activate(stage, renderer) {
   var lines = 0;
 
   stage.mousedown = function(data) {
-
     //if(!isActive) return;
     isDown = true;
     lines = 0;

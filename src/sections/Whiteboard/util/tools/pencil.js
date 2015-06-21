@@ -1,27 +1,35 @@
 var PIXI = require('pixi');
 var EVENT = require('../../../../model/model').socketEvents;
 
-module.exports = function(info, el) {
-  var userID = info.userID;
-  var stage = info.stage;
-  var renderer = info.renderer;
+module.exports = function(AppState, el) {
+  el.addEventListener('click', function(data) {
+    console.log('Selected pencil...', AppState);
+
+    AppState.Tools.toolSelected = AppState.Tools.pencil;
+
+    //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
+
+    activate(AppState.Canvas.stage, AppState.Canvas.renderer, AppState.Socket, AppState.Tools.pencil);
+  });
+};
+
+// var userID = info.userID;
+
+function activate(stage, renderer, socket, PencilTool) {
   var isDown = false;
   var prevPos = { x: null, y: null };
-
   var settings = {
-    el: el,
     color: 0x000000,
     strokeWeight: 2
   };
 
-  function mousedown(data) {
+  stage.mousedown = function(data) {
     isDown = true;
     prevPos.x = data.global.x;
     prevPos.y = data.global.y;
-
   }
 
-  function mousemove(data) {
+  stage.mousemove = function(data) {
     var graphics;
 
     if(isDown) {
@@ -43,22 +51,13 @@ module.exports = function(info, el) {
         color: settings.color,
         strokeWeight: settings.strokeWeight
       };
-      info.socket.emit(EVENT.sendPencil,shapeinfo);
-      //renderer.render(stage);
+
+      socket.emit(EVENT.sendPencil,shapeinfo);
     }
   }
 
-  function mouseup() {
+  stage.mouseup = function() {
     isDown = false;
   }
+}
 
-  function activate() {
-    stage.mousedown = mousedown;
-    stage.mousemove = mousemove;
-    stage.mouseup = mouseup;
-  }
-
-  el.addEventListener('click', activate);
-
-  return settings;
-};
