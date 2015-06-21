@@ -18,6 +18,7 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
+    console.log('start init');
     var socket = socketSetup(io,framework,done);
     var content = find('#content');
     this.section = document.createElement('div');
@@ -57,19 +58,29 @@ Section.prototype = {
                            .init('init');
 
     ChatboxManager.init(req, socket, done);
-
-    done();
+    console.log('end init');
+    setTimeout(function(){
+      if(socket.nsp != '/home')
+        done();
+      else{
+       framework.go('/home');   
+      }
+    },1000);
   },
 
   resize: function(w, h) {
   },
 
   animateIn: function(req, done) {
+    console.log('startanimatein');
+
     setTimeout(function() {
       this.animate.go('idle', function() {
         done();
       }.bind(this));
     }.bind(this), 800);
+    console.log('end animate in');
+
   },
 
   animateOut: function(req, done) {

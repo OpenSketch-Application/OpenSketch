@@ -2,7 +2,7 @@ var find = require('dom-select');
 var EVENT = require('../../../model/model').socketEvents;
 var SERVERNAME = window.location.origin;
 
-module.exports = function(io, framework,done){
+module.exports = function(io, framework){
   var curSession = window.location.href;
   curSession = curSession.split('/');
   var end = curSession.length -1;
@@ -11,8 +11,9 @@ module.exports = function(io, framework,done){
 
   var socket = io.connect(SERVERNAME);
   socket.on(EVENT.badSession,function(){
-    framework.go('/home');
-    done();
+    console.log('start badsess');
+    socket.nsp = '/home';
+    console.log('end badsess');
   });
 
   socket.emit(EVENT.validateSession,curSessionId);
