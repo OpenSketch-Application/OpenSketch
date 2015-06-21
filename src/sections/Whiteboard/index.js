@@ -8,7 +8,7 @@ var Model = require('../../model/model');
 var states = require('./states');
 var createTabs = require('./util/tabs');
 var socketSetup = require('./util/sockets');
-var ChatboxManager = require('./util/chatbox');
+var Chatbox = require('./util/chatbox');
 var Toolbar = require('./util/toolbar');
 
 // A model object can all use it to store Application state properties
@@ -64,7 +64,7 @@ Section.prototype = {
                            .parsers(require('f1-dom'))
                            .init('init');
 
-    ChatboxManager.init(AppState);
+    Chatbox.init(AppState);
     /*
       new ChatBox({
 

@@ -98,6 +98,7 @@ function toolbar(elements, AppState) {
       case 'rectangle':
         this.rectangle = el;
         createShapes(settings, el);
+        break;
       case 'text':
         this.text = el;
         createText(settings, el);
