@@ -6,10 +6,14 @@ var $ = require('jquery');
 var framework = require('../../framework/index');
 var Model = require('../../model/model');
 var states = require('./states');
-var createTabs = require('./ui/tabs');
+var createTabs = require('./util/tabs');
 var socketSetup = require('./util/sockets');
 var ChatboxManager = require('./util/chatbox');
 var Toolbar = require('./util/toolbar');
+
+// A model object can all use it to store Application state properties
+// Mostly information retrieved on-mass from Database
+var AppState = require('../../model/AppState');
 
 module.exports = Section;
 
@@ -18,26 +22,30 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
-    var socket = socketSetup(io,framework,done);
-
+    AppState.Socket = socketSetup(io, framework, done);
     var content = find('#content');
+
     this.section = document.createElement('div');
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.appendChild(this.section);
-    states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
+
+    // states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
+
     createTabs();
 
     this.toolbar = new Toolbar({
       whiteboard: '#whiteboard-container',
       tools: {
+        select: '#tool-select',
         pencil: '#tool-pencil',
-        // eraser: '#tool-eraser',
+        eraser: '#tool-eraser',
         fill: '#tool-fill',
-        shapes: {
-          'el': '#tool-shapes',
-          'circle': '',
-          'rectangle': '',
-        },
+        //shapes: {
+        shapes: '#tool-shapes',
+        line: '#tool-shapes-line',
+        ellipse: '#tool-shapes-ellipse',
+        rectangle: '#tool-shapes-rectangle',
+        //},
         text: '#tool-text',
         table: '#tool-table',
         templates: {
@@ -48,7 +56,7 @@ Section.prototype = {
         import: '#tool-import',
         color: '#tool-color'
       }
-    });
+    }, AppState);
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
@@ -56,8 +64,12 @@ Section.prototype = {
                            .parsers(require('f1-dom'))
                            .init('init');
 
-    ChatboxManager.init(req, socket, done);
+    ChatboxManager.init(AppState);
+    /*
+      new ChatBox({
 
+      })
+     */
     done();
   },
 
@@ -65,9 +77,11 @@ Section.prototype = {
   },
 
   animateIn: function(req, done) {
-    this.animate.go('idle', function() {
-      done();
-    }.bind(this));
+    setTimeout(function() {
+      this.animate.go('idle', function() {
+        done();
+      }.bind(this));
+    }.bind(this), 800);
   },
 
   animateOut: function(req, done) {

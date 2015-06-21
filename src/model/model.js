@@ -11,9 +11,18 @@ module.exports = {
     'joinSession': 'joinSession',
     'validateSession': 'validateSession',
     'updateUserList': 'updateUserList',
+    'updateChatList': 'updateChatList',
     'getSocketID': 'getSocketID',
     'createSession': 'createSession',
     'badSession': 'badSession',
-    'announcement': 'announcement'
+    'announcement': 'announcement',
+
+    // Pixi/Canvas Draw Events
+    'objectModified':'objectModified',
+    'objectAdded':'objectAdded',
+    'objectDeleted': 'objectDeleted',
+
+    'sendPencil' : 'sendPencil',
+    'sendLine' : 'sendLine'
   }
 };

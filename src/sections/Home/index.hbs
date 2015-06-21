@@ -18,10 +18,10 @@
           <form>
             <div class="title">Create a Whiteboard</div>
             <div class="control">
-              <label>Username</label><input class="username" type="text" name="username" />
+              <label>Username</label><input id="inputName" class="username" type="text" name="username" />
             </div>
             <div class="control">
-              <label>Max Users</label><input type="number" size="2" min="1" max="20" name="maxUsers"/><br/>
+              <label>Max Users</label><input id="inputMax" type="number" size="2" min="1" max="20" name="maxUsers"/><br/>
             </div>
             <div class="control">
               <label>Participants can Chat</label>
@@ -37,7 +37,8 @@
                 <label for="roundedTwo"></label>
               </div>
             </div>
-            <div class="control">
+            <div class="control" >
+              <label id="errormsg"></label>
               <button class="btn">Create</button>
             </div>
           </form>

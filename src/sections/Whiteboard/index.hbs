@@ -6,9 +6,18 @@
       </div>
     </h1>
     <ul class="toolbar">
+      <li><img id="tool-select" src="" alt="Select" /></li>
       <li><img id="tool-pencil" src="images/pencil-icon.png" alt="pencil" /></li>
+      <li><img id="tool-eraser" src="images/eraser-icon.png" alt="eraser" /></li>
       <li><img id="tool-fill" src="images/bucket-icon.png" alt="bucket" /></li>
-      <li><img id="tool-shapes" src="images/shapes-icon.png" alt="shapes" /></li>
+      <li>
+        <img id="tool-shapes" src="images/shapes-icon.png" alt="shapes" />
+        <ul class="shapes">
+          <li id="tool-shapes-line"><div>L</div><!-- <img id="tool-shapes-line" src="" alt="line" /> --></li>
+          <li id="tool-shapes-rectangle"><div >R</div><!-- <img id="tool-shapes-rectangle" src="" alt="rect" /> --></li>
+          <li id="tool-shapes-ellipse"><div>E</div><!-- <img id="tool-shapes-ellipse" src="" alt="ellipse" /> --></li>
+        </ul>
+      </li>
       <li><img id="tool-text" src="images/text-icon.png" alt="text" /></li>
       <li><img id="tool-table" src="images/table-icon.png" alt="table" /></li>
       <li><img id="tool-import" src="images/import-icon.png" alt="import" /></li>
@@ -39,13 +48,14 @@
           <li data-content="Chat" class="selected">
             <!-- <h1 style="text-align:center;">I'm The Chat Tab!</h1> -->
             <div class="chatMessageBox">
+              <div class="chatMessages">
+
+              </div>
               <div class="messageInputUI">
-                <input type="text" />
+                <textarea></textarea>
                 <button>Send</button>
               </div>
-              <ul class="chatMessages">
-                <li>Messages:</li>
-              </ul>
+
             </div>
           </li>
 

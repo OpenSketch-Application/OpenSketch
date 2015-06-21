@@ -1,5 +1,5 @@
 'use strict';
-var Db = require('../../db/models/CanvasSession');
+var Session = require('../../db/models/Session');
 
 var Shapes = {
   socket: null, // Instanstiated on init
@@ -15,58 +15,166 @@ Shapes.init = function(socket, canvasSessionId) {
 };
 
 // Query or Retrieve methods
-Shapes.findOne = function(id, callback) {
-  Db
-    .find(
-      {'canvasId' : _this.canvasSessionId},
-      { 'canvasShapes': 1, '_id': id }
-    )
-    .exec(callback);
+Shapes.findOne = function(id, shapeId, callback) {
+  Session.findOne(
+    {
+      '_id': id
+    },
+    {
+      'canvasShapes' : {
+        $elemMatch: {
+          '_id' : shapeId
+        }
+      }
+    },
+    {
+      _id: false,
+      'canvasShapes': true
+    },
+    function(err, result) {
+      if(err) callback(err, result);
+
+      console.log(result);
+      callback(err, result.canvasShapes.length && result.canvasShapes[0]);
+    }
+  );
 };
 
-Shapes.findAll = function(callback) {
-  Db
-    .aggregate(
-      { $match: { 'canvasId' : _this.canvasSessionId } },
-      { $project: { _id: false, 'canvasShapes': true } }
-    )
-    .exec(function(err, res) {
-      if(err || !res[0] && !res[0].canvasShapes) callback(err, res);
-
-      callback(err, res[0].canvasShapes)
-    });
+Shapes.findAll = function(id, callback) {
+  Session.findById(id, function(err, session) {
+    callback(err, session.canvasShapes);
+  });
 };
 
 Shapes.findSome = function(criteria, callback) {
-  Db
+  Session
     .aggregate(
       { $match: { 'canvasId' : _this.canvasSessionId } },
       { $project: { _id: false, 'canvasShapes': true } }
     )
     .exec(function(err, res) {
-      if(err) callback(err, res);
+      if(err || !res[0] && !res[0].canvasShapes) throw new Error(err);
 
-      callback(err, res);
+      callback(err, res[0].canvasShapes);
     });
 };
 
 // db.canvassessions.aggregate({ $match: { 'canvasId' : 'session1' } },{ $project: { _id: false, 'canvasShapes': true } })
 
 // Insert / Create methods
-Shapes.addOne = function(canvasObject, callback) {
-  console.log(_this.canvasSessionId);
+Shapes.addOne = function(id, shape, callback) {
+  Session.findById(id, function(err, session) {
 
-  Db
+    session.canvasShapes.push(shape);
+
+    session.save(function(err) {
+      callback(err, shape);
+    })
+  })
+}
+
+Shapes.addAll = function(id, shapes, callback) {
+  if(!shapes.length) callback('addAll: Canvas Objects need to be in array', null);
+  Session.findById(id, function(err, session) {
+
+    session.canvasShapes.addToSet.apply(session.canvasShapes, shapes);
+
+    session.save(function(err) {
+      callback(err, session.canvasShapes);
+    })
+  })
+}
+
+Shapes.updateOne = function(id, shapeId, newShape, callback) {
+  Session
     .findOneAndUpdate(
-      { 'canvasId': _this.canvasSessionId },
-      { $push: { 'canvasShapes' : canvasObject } },
-      { 'new': true, 'upsert': true, 'select': { '_id': 0, 'canvasShapes': 1 } },
-      function(err, res) {
-        if(err) callback(err, []);
+      {
+        '_id': id,
+        'canvasShapes._id': shapeId
+      },
+      {
+        $set: {
+          'canvasShapes.$' : newShape
+        }
+      },
+      {
+        'new': true,
+        'select': {
+          '_id': false,
+          'canvasShapes': {
+            $elemMatch : {
+              '_id': newShape._id
+            }
+          }
+        }
+      },
+      function(err, result) {
+        if(err) callback(err, result);
 
-        callback(err, res.canvasShapes);
+        callback(err, result && result.canvasShapes.length && result.canvasShapes[0]);
       }
-    );
+    )
+}
+
+// .deleteOne()
+Shapes.deleteOne = function(id, shapeId, callback) {
+  Db.update(
+    {
+      '_id': id,
+      'canvasShapes._id': shapeId
+    },
+    {
+      $unset: { 'canvasShapes.$': '' }
+    },
+    function(err, result) {
+      if(err) callback(err, result);
+
+      callback(err, result);
+    }
+  )
+}
+
+
+/**
+ * [deleteSome description]
+ * @param  {[String]}   id         the _id of Session
+ * @param  {[Shape]}   properties  the
+ * @param  {Function} callback   [description]
+ * @callback (err, result)            [description]
+ * @result { ok: Boolean, nModified: Number, n: Number }
+ */
+Shapes.deleteSome = function(id, properties, callback) {
+  Db.update(
+    {
+      '_id': id,
+      'canvasShapes':  { $elemMatch : properties }
+    },
+    {
+      $unset: { 'canvasShapes.$': '' }
+    },
+    function(err, result) {
+      if(err) callback(err, result);
+
+      callback(err, result);
+    }
+  )
+}
+
+// .deleteAll()
+Shapes.deleteAll = function(id, callback) {
+  Db.update(
+    {
+      '_id': id
+    },
+    {
+      $unset: { 'canvasShapes': '' }
+    },
+    function(err, result) {
+      if(err) callback(err, result);
+
+      callback(err, result);
+    }
+  )
 }
 
 module.exports = Shapes;
@@ -137,7 +245,7 @@ Db.messages
   .deleteSome()
   .deleteAll()
 
-// db.canvassessions.update({ 'canvasId': 'session1' }, { $push: { 'canvasShapes': { shapeId: 'rj34kskdj43', userId: 'John0', borderStyle: null, width: 300, height: 400, layerLevel: 6, position: { x: 400, y: 500 }, rotation: 30, fillColor: '0x788945', objectType: 'Rectangle' }} })
+// db.canvassessions.update({ 'canvasId': 'session1' }, { $push: { 'canvasShapes': { shapeId: 'rj34kskdj43', shapeId: 'John0', borderStyle: null, width: 300, height: 400, layerLevel: 6, position: { x: 400, y: 500 }, rotation: 30, fillColor: '0x788945', objectType: 'Rectangle' }} })
 
 
 
