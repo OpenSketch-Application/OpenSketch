@@ -69,13 +69,14 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
                   
                  }
               });
-              socket.broadcast.emit(EVENT.chatMessage, {
+           }
+          }
+        });
+         socket.broadcast.emit(EVENT.chatMessage, {
                'user': message.user,
                'msg': message.msg
               });
-            }
-          }
-        });
+
         
                 console.log('msg received', message);
         //add chat to db //but maybe we don't need to keep chat messages stored?
