@@ -40,7 +40,7 @@ module.exports = function () {
     checkScrolling($('.cd-tabs nav'));
     $(window).on('resize', function(){
       checkScrolling($('.cd-tabs nav'));
-      tabContentWrapper.css('height', 'auto');
+      tabContentWrapper.css('height', '100%');
     });
     $('.cd-tabs nav').on('scroll', function(){ 
       checkScrolling($(this));
