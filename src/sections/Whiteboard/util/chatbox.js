@@ -7,7 +7,7 @@ module.exports = {
 
     var sendMessage = function() {
       var message = {
-        user: 'Emile',
+        user: Cookies.get('username'),
         msg: _this.inputBox.value
       };
 
@@ -30,16 +30,9 @@ module.exports = {
     _this.sendButton.addEventListener('click', function(e) {
       e.preventDefault();
 
-      var message = {
-        user: Cookies.get('username'),
-        msg: _this.inputBox.value
-      }
+      sendMessage();
+      _this.inputBox.value = "";
 
-      // Send messages to other participants
-      _this.socket.emit('chatMessage', message);
-
-      // Add message to current user's chatbox
-      _this.addMsg(message);
     });
     _this.inputBox.onkeydown = function(e) {
       if(e.keyCode == 13) {
