@@ -1,8 +1,9 @@
 'use strict';
 // Global AppState
-module.exports = function(graphics, settings) {
+module.exports = function(graphics, settings, option) {
   var selected = false;
   var original;
+  var movingSelf = false;
   graphics.mousedown = function(data) {
 
     if(settings.selectedTool() === 'tool-select') {

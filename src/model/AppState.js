@@ -7,8 +7,6 @@ module.exports = {
       canDraw: true,
       canChat: true
     },
-    Shapes: {
-    }
   },
   Tools: {
     selected: '', // Currently selected tool
@@ -48,6 +46,8 @@ module.exports = {
       table: {
       }
     }
+  },
+  Shapes: {
   },
   Users: {
     currentUser: {

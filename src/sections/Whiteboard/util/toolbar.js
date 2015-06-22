@@ -5,15 +5,18 @@ var createPencil = require('./tools/pencil');
 var createEraser = require('./tools/eraser');
 var createFill = require('./tools/fill');
 var createLine = require('./tools/line');
-var createShapes = require('./tools/shapes');
+var createRectangle = require('./tools/rectangle');
 
-//var createRect = require()
+var createEllipse = require('./tools/ellipse');
 var createText = require('./tools/text');
 var createTable = require('./tools/table');
 var createImport = require('./tools/import');
 var createColor = require('./tools/color');
 var createTemplates = require('./tools/templates');
 var setDrawingSockets = require('./drawingSockets');
+
+var dragndrop = require('./dragndrop');
+
 module.exports = toolbar;
 
 function toolbar(elements, AppState) {
@@ -30,8 +33,16 @@ function toolbar(elements, AppState) {
                                           { antialias: true });
 
   this.container.appendChild(this.renderer.view);
-  _this.stage = new PIXI.Stage(0xFFFFFF, true);
+  this.stage = new PIXI.Stage(0xFFFFFF, true);
+
+  AppState.Canvas.stage = this.stage;
+  AppState.Canvas.renderer = this.renderer;
+
+
+
+
   animate();
+
   setDrawingSockets(_this.socket,_this.stage);
 
   function animate() {
@@ -53,6 +64,8 @@ function toolbar(elements, AppState) {
       return _this.selectedTool;
     }
   };
+
+  dragndrop(settings, AppState);
 
   for(var tool in elements.tools) {
     el = find(typeof elements.tools[tool] === 'string' ?
@@ -78,9 +91,11 @@ function toolbar(elements, AppState) {
         createSelect(settings, el);
         break;
       case 'pencil':
-        this.pencil = createPencil(settings, el);
+        this.pencil = el;
+        createPencil(settings, el);
         break;
       case 'eraser':
+        this.eraser = el;
         this.eraser = createEraser(settings, el);
         break;
       case 'fill':
@@ -93,11 +108,11 @@ function toolbar(elements, AppState) {
         break;
       case 'ellipse':
         this.ellipse = el;
-        //createShapes(settings, el);
+        createEllipse(settings, el, AppState);
         break;
       case 'rectangle':
         this.rectangle = el;
-        createShapes(settings, el);
+        createRectangle(settings, el);
         break;
       case 'text':
         this.text = el;
@@ -109,7 +124,8 @@ function toolbar(elements, AppState) {
         break;
       case 'import':
         this.import = el;
-        createImport(settings, el);
+        //settings, el, AppState
+        createImport(settings, el, AppState);
         break;
       case 'color':
         this.color = el;
