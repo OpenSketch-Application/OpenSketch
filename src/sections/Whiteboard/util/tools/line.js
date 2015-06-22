@@ -2,7 +2,7 @@ var PIXI = require('pixi');
 var Line = require('../shapes/Line');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 
-module.exports = function(settings, el) {
+module.exports = function(settings, el, AppState) {
   el.addEventListener('click', function(data) {
     console.log('Selected Shapes...');
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
@@ -67,6 +67,8 @@ function activate(settings) {
 
     Line.getShape();
     graphics = null;
+
+    setMoveShapeListeners(graphics, settings, AppState);
     // var graphics = new PIXI.Graphics();
     //SocketObject.emitDrawObject(graphics);
 

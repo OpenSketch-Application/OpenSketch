@@ -22,7 +22,9 @@ Section.prototype = {
 
   init: function(req, done) {
     console.log('start init');
+
     AppState.Socket = socketSetup(io, framework, done);
+
     var content = find('#content');
 
     this.section = document.createElement('div');
@@ -69,7 +71,7 @@ Section.prototype = {
       if(AppState.Socket.nsp != '/home')
         done();
       else{
-       framework.go('/home');   
+       framework.go('/home');
       }
     },1000);
   },

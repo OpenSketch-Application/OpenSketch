@@ -28,7 +28,7 @@ module.exports = function(files, settings, AppState, event) {
 
     AppState.Canvas.stage.addChild(imageSprite);
 
-    setMoveShapeListeners(imageSprite, settings);
+    setMoveShapeListeners(imageSprite, settings, AppState);
   }
 };
 

@@ -2,17 +2,17 @@ var PIXI = require('pixi');
 var Rect = require('../shapes/Rectangle');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 
-module.exports = function(settings, el) {
+module.exports = function(settings, el, AppState) {
   el.addEventListener('click', function(data) {
     console.log('Selected Shapes...');
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
 
     //Rect.set(settings.stage, settings.renderer);
-    activate(settings);
+    activate(settings, AppState);
   });
 };
 
-function activate(settings) {
+function activate(settings, AppState) {
   // var isActive = true;
   var isDown = false;
   var originalCoords;
@@ -96,7 +96,7 @@ function activate(settings) {
     graphics.interactive = true;
 
     // set move Mouse Events on the final shape created
-    setMoveShapeListeners(graphics, settings);
+    setMoveShapeListeners(graphics, settings, AppState);
 
     //graphics = null;
     //var graphics = new PIXI.Graphics();

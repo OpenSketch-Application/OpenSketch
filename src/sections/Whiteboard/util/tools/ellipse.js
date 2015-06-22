@@ -8,11 +8,11 @@ module.exports = function(settings, el, AppState) {
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
 
     //Rect.set(settings.stage, settings.renderer);
-    activate(settings);
+    activate(settings, AppState);
   });
 };
 
-function activate(settings) {
+function activate(settings, AppState) {
   // var isActive = true;
   var isDown = false;
   var originalCoords;
@@ -89,7 +89,7 @@ function activate(settings) {
     graphics.interactive = true;
 
     // set move Mouse Events on the final shape created
-    setMoveShapeListeners(graphics, settings);
+    setMoveShapeListeners(graphics, settings, AppState);
 
     //graphics = null;
     //var graphics = new PIXI.Graphics();
