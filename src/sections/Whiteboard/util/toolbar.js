@@ -38,9 +38,6 @@ function toolbar(elements, AppState) {
   AppState.Canvas.stage = this.stage;
   AppState.Canvas.renderer = this.renderer;
 
-
-
-
   animate();
 
   setDrawingSockets(_this.socket,_this.stage);
@@ -139,6 +136,4 @@ function toolbar(elements, AppState) {
         break;
     }
   }
-
-  //setDrawingSockets(this.stage,this.socket);
 }

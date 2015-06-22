@@ -19,7 +19,7 @@ module.exports = function(files, settings, AppState, event) {
     }
     else {
       xPos = AppState.Canvas.renderer.width/2 - imageSprite.width/2;
-      yPos = AppState.Canvas.renderer.width/2 - imageSprite.width/2;
+      yPos = AppState.Canvas.renderer.height/2 - imageSprite.height/2;
     }
 
     imageSprite.x = xPos;
