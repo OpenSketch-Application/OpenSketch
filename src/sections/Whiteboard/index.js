@@ -21,14 +21,13 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
+    console.log('start init');
     AppState.Socket = socketSetup(io, framework, done);
     var content = find('#content');
 
     this.section = document.createElement('div');
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.appendChild(this.section);
-
-    // states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
 
     createTabs();
 
@@ -64,23 +63,24 @@ Section.prototype = {
                            .init('init');
 
     Chatbox.init(AppState);
-    /*
-      new ChatBox({
 
-      })
-     */
-    done();
+    console.log('end init');
+    setTimeout(function(){
+      if(AppState.Socket.nsp != '/home')
+        done();
+      else{
+       framework.go('/home');   
+      }
+    },1000);
   },
 
   resize: function(w, h) {
   },
 
   animateIn: function(req, done) {
-    setTimeout(function() {
       this.animate.go('idle', function() {
         done();
       }.bind(this));
-    }.bind(this), 800);
   },
 
   animateOut: function(req, done) {
