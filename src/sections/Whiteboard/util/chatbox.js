@@ -53,10 +53,10 @@ module.exports = {
   // Basic add message to chatbox
   addMsg: function(content) {
     console.log(content.user + 'msg about to be added', content.msg);
-    //var newMsg = $('<div id = "msgContainer">' +'<span style="font-weight: bold; font: 1em Arial;">'+ content.user + ':</span>&nbsp;&nbsp;' +
-     //               content.msg + '</div>');
-    var newMsg = $('<div id = "msgContainer">' +'<div id="name">'+ content.user + ':</div><div id="msg">' +
-                    content.msg + '</div><div style="clear: both;"></div></div>');
+    var newMsg = $('<div id = "msgContainer">' +'<span style="font-weight: bold; font: 1em Arial;">'+ content.user + ':</span>&nbsp;&nbsp;' +
+                    content.msg + '</div>');
+    //var newMsg = $('<div id = "msgContainer">' +'<div id="name">'+ content.user + ':</div><div id="msg">' +
+    //                content.msg + '</div><div style="clear: both;"></div></div>');
 
     console.log(this.chatMessages);
     console.log(newMsg);
