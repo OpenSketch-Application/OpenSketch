@@ -64,7 +64,7 @@ module.exports = function(io,DB) {
 
       console.log(socket.request.headers.cookie);
 
-      var userId = socket.request.headers.cookie.match(/userId:.*;/gi);
+      //var userId = socket.request.headers.cookie.match(/userId:.*;/gi);
 
       Session.findById(sessionid, function(err, session) {
         var userFound = false;
@@ -73,39 +73,18 @@ module.exports = function(io,DB) {
         if(err || !session || !session.users || session.users.length >= session.sessionProperties.maxUsers) {
           socket.emit(EVENT.badSession);
 
-          console.log('full');
+          //console.log('full');
         }
 
-        session.users.forEach(function(user) {
-          if(user._id === userId) {
-            userFound = true;
-          }
-        })
-
-        if(!userFound) socket.emit(EVENT.badSession);
-
-        // User.findOne(sessionId, userId, function(err, user) {
-        //   if(user._id !== userID) {
-        //     socket.emit(EVENT.badSession);
+        // session.users.forEach(function(user) {
+        //   if(user._id === userId) {
+        //     userFound = true;
         //   }
         // })
+
+        //if(!userFound) socket.emit(EVENT.badSession);
       })
 
-
-      // Session.findById(sessionid, function(err,obj){
-      //    if(err) {
-      //      console.log(err);
-      //      socket.emit(EVENT.badSession);
-      //    } else if(obj) {
-      //      console.log('found, len: ', obj.users.length);
-      //      if(obj.users.length >= obj.maxUsers){
-      //        socket.emit(EVENT.badSession);
-      //        console.log('full');
-      //      }
-      //    } else {
-      //      socket.emit(EVENT.badSession);
-      //    }
-      // });
     });
   });
 };
