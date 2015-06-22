@@ -22,6 +22,7 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
+    console.log('start init');
     AppState.Socket = socketSetup(io, framework, done);
     var content = find('#content');
 
@@ -63,12 +64,15 @@ Section.prototype = {
                            .init('init');
 
     Chatbox.init(AppState);
-    /*
-      new ChatBox({
 
-      })
-     */
-    done();
+    console.log('end init');
+    setTimeout(function(){
+      if(AppState.Socket.nsp != '/home')
+        done();
+      else{
+       framework.go('/home');   
+      }
+    },1000);
   },
 
   resize: function(w, h) {
