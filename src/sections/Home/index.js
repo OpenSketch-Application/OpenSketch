@@ -15,7 +15,8 @@ function getWhiteboardSession(socket,whiteboardId){
       if(isNaN(maxUsers) || maxUsers > 30 || maxUsers <=0) {
         maxUsers = 30;
       }
-
+      var name = find('.username').value;
+      Cookies.set('username',name);
       var sessionSettings = {};
       sessionSettings.id = whiteboardId;
       sessionSettings.canDraw = find('div.control #roundedTwo').checked;

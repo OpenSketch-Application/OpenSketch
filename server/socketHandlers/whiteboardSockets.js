@@ -1,4 +1,5 @@
 var Session = require('../db/models/Session');
+
 var EVENT = require('../../src/model/model').socketEvents;
 var whiteboardSockets = {};
 
@@ -48,21 +49,19 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
         //
         var  sessionid = socket.adapter.nsp.name.split('/');
         sessionid = sessionid[sessionid.length - 1];
-    
         Session.findById(sessionid, function(err, session){
           if(err){
             throw new Error('Error retrieving Session');
           }
           else if(session._id){
             //push user to db
-
+         
             if(session.users.length < session.sessionProperties.maxUsers){
               session.messages.push({
                 userID : socket.id,
                 user: message.user, 
                 msg: message.msg
               });
-
               session.save(function(err){
                  if(err) console.log(err);
                  else{
@@ -70,14 +69,14 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
                   
                  }
               });
+              socket.broadcast.emit(EVENT.chatMessage, {
+               'user': message.user,
+               'msg': message.msg
+              });
             }
           }
         });
-        socket.broadcast.emit(EVENT.chatMessage, {
-               'user': message.user,
-               'msg': message.msg
-        });
-
+        
                 console.log('msg received', message);
         //add chat to db //but maybe we don't need to keep chat messages stored?
 

@@ -1,5 +1,6 @@
 var $ = require('jquery');
 var EVENT = require('../../../model/model').socketEvents;
+var Cookies = require('cookies-js');
 module.exports = {
   init: function(AppState) {
     var _this = this;
@@ -18,7 +19,7 @@ module.exports = {
       console.log(_this.socket);
 
       var message = {
-        user: 'some user',
+        user: Cookies.get('username'),
         msg: _this.inputBox.value
       }
 
