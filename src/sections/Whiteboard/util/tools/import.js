@@ -1,82 +1,30 @@
 var PIXI = require('pixi');
+var importFileToPixi = require('./shapeHelpers/importFileToPixi');
 
-module.exports = function(settings, el) {
+module.exports = function(settings, el, AppState) {
   el.addEventListener('click', function(data) {
     console.log('Selected Import...');
 
     selectPressed = true;
-    activate(settings.stage, settings.renderer);
+
+    // Fire event on the hidden file input field
+    fileSelect.click(settings, AppState);
   });
+
+  console.log('importFileToPixi', importFileToPixi);
+  // Attach event handler for loading images from toolbox
+  var fileSelect = document.getElementById('imgImport');
+
+  fileSelect.addEventListener('change', function(e) {
+    console.log('file loaded');
+
+    console.log(this.files);
+
+    // Import the file into Canvas as a Sprite object
+    importFileToPixi(this.files, settings, AppState);
+
+  }, false);
 };
 
-function activate(stage, renderer) {
-  var color = 0x0000FF;
-  var path = [];
-  // var isActive = true;
-  var isDown = false;
-  var posOld;
-  var stageIndex = 0;
-  var lines = 0;
 
-  stage.mousedown = function(data) {
 
-    //if(!isActive) return;
-    isDown = true;
-    lines = 0;
-    path = [];
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    stageIndex = stage.children.length - 1;
-    //graphics.moveTo(data.global.x, data.global.y);
-  };
-
-  stage.mousemove = function(data) {
-    //if(!isActive) return;
-    if(!isDown) return;
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-    //path.push(data.global.y);
-    //var newPosition = this.data.getLocalPosition(this.parent);
-    graphics.moveTo(posOld[0], posOld[1]);
-    //console.log(data.global.x, data.global.y);
-    graphics.lineTo(data.global.x, data.global.y);
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    lines++;
-    stage.addChild(graphics);
-
-    //renderer.render(stage);
-  };
-
-  stage.mouseup = function() {
-    isDown = false;
-
-    if(!path.length) return;
-    //graphics.lineStyle(5, 0xFF0000);
-    //graphics.moveTo(path[0][0], path[0][1]);
-    //graphics.drawPolygon(path);
-    while(lines) {
-      stage.removeChildAt(stageIndex + lines);
-      lines--;
-    }
-
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-
-    graphics.drawPolygon(path);
-
-    graphics.interactive = true;
-
-    graphics.hitArea = graphics.getBounds();
-
-    // moveObject(renderer, stage, graphics, { x: graphics.hitArea.x, y: graphics.hitArea.y });
-
-    stage.addChild(graphics);
-
-    // CanvasObjects.push({
-    //   _id: CanvasObjects.length + 1,
-    //   type: 'pencil',
-    //   coords: path
-    // });
-
-    //renderer.render(stage);
-  };
-}

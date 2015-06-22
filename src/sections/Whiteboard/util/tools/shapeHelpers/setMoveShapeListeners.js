@@ -1,11 +1,11 @@
 'use strict';
 // Global AppState
-module.exports = function(graphics, settings) {
+module.exports = function(graphics, settings, option) {
   var selected = false;
   var original;
+  var movingSelf = false;
   graphics.mousedown = function(data) {
-    //console.log(settings.selected);
-    //window.settings = settings;
+
     if(settings.selectedTool() === 'tool-select') {
       data.originalEvent.preventDefault();
 
@@ -14,7 +14,6 @@ module.exports = function(graphics, settings) {
       this.alpha = 0.9;
       selected = true;
     }
-    //var graphicsData = this.graphicsData;
   };
 
   graphics.mousemove = function(data)
@@ -38,12 +37,10 @@ module.exports = function(graphics, settings) {
   graphics.mouseup = graphics.mouseupoutside = function(data) {
     selected = false;
     this.alpha = 1;
-    //this.dragging = false;
 
     // set the interaction data to null
     this.data = null;
     movingSelf = false;
-
     //SocketObject.emitObjectMoveDone(stage.getChildIndex(this));
   };
 };

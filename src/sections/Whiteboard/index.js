@@ -2,7 +2,6 @@ var fs = require('fs');
 var io = require('io');
 var f1 = require('f1');
 var find = require('dom-select');
-var $ = require('jquery');
 var framework = require('../../framework/index');
 var Model = require('../../model/model');
 var states = require('./states');

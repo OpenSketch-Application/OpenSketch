@@ -7,7 +7,7 @@ module.exports = function(settings, el) {
     console.log('Selected Shapes...');
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
 
-    Rect.set(settings.stage, settings.renderer);
+    //Rect.set(settings.stage, settings.renderer);
     activate(settings);
   });
 };
@@ -18,7 +18,7 @@ function activate(settings) {
   var originalCoords;
   var curStageIndex = 0;
   var drawBegan = false;
-  var finalGraphics;
+  var graphics;
   var inverse;
   var stage = settings.stage;
   var renderer = settings.renderer;
@@ -29,6 +29,7 @@ function activate(settings) {
     movingSelf = true;
     this.data = data;
     originalCoords = data.getLocalPosition(this);
+    graphics = new PIXI.Graphics();
     //finalGraphics = new PIXI.Graphics();
 
     //curStageIndex = stage.children.length;
@@ -52,9 +53,13 @@ function activate(settings) {
       var localPos = data.getLocalPosition(this);
       var topLeft = {};
 
+      graphics.clear();
+      graphics.interactive = false;
+      graphics.beginFill(0xFFFFFF); // style.fillColor
+      graphics.lineWidth = 2; // style.lineWidth
+      graphics.lineColor = 0x000000; // style.lineColor
 
       //console.log(originalCoords);
-      console.log(finalGraphics);
 
       var newDimensions = {
         width: localPos.x - originalCoords.x,
@@ -68,17 +73,18 @@ function activate(settings) {
       topLeft.x = Math.min(originalCoords.x, localPos.x);
       topLeft.y = Math.min(localPos.y, originalCoords.y);
 
-      if(finalGraphics) {
-        stage.removeChild(finalGraphics);
-      }
+      graphics.drawRect(
+        topLeft.x,
+        topLeft.y,
+        newDimensions.width,
+        newDimensions.height
+      );
 
-      finalGraphics = Rect.makeRect(topLeft, newDimensions, settings);
-      stage.addChild(finalGraphics);
+      //finalGraphics = Rect.makeRect(topLeft, newDimensions, settings);
+      stage.addChild(graphics);
 
-      finalGraphics.objectAdded = drawBegan;
 
       //SocketObject.emitDrawingObject(finalGraphics);
-
       drawBegan = true;
     }
   };
@@ -87,16 +93,16 @@ function activate(settings) {
     drawBegan = false;
     isDown = false;
     movingSelf = false;
+    graphics.interactive = true;
 
-    if(finalGraphics) {
-      // set move Mouse Events on the final shape created
-      setMoveShapeListeners(finalGraphics, settings);
-    }
+    // set move Mouse Events on the final shape created
+    setMoveShapeListeners(graphics, settings);
 
-    finalGraphics = null;
-    // var graphics = new PIXI.Graphics();
+    //graphics = null;
+    //var graphics = new PIXI.Graphics();
     //SocketObject.emitDrawObject(finalGraphics);
-
     //SocketObject.emitObjectAddDone(finalGraphics);
   };
+
+
 }

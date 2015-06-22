@@ -2,6 +2,8 @@ var Session = require('../db/models/Session');
 var User = require('../db/DbManagers/UserManager');
 var wbLogic = require('./whiteboardSockets');
 var EVENT = require('../../src/model/model').socketEvents;
+//var validateCookie = require();
+
 //var homeLogic = require('./homeSockets');
 module.exports = function(io,DB) {
   var home = io.of('/home');
@@ -56,28 +58,33 @@ module.exports = function(io,DB) {
   io.on('connection', function (socket) {
 
     console.log('connection made', socket.id);
+
     socket.on(EVENT.validateSession, function(sessionid) {
       console.log('in validate');
+
+      console.log(socket.request.headers.cookie);
+
+      //var userId = socket.request.headers.cookie.match(/userId:.*;/gi);
+
       Session.findById(sessionid, function(err, session) {
+        var userFound = false;
+        //session.users
+
         if(err || !session || !session.users || session.users.length >= session.sessionProperties.maxUsers) {
           socket.emit(EVENT.badSession);
-          console.log('full');
+
+          //console.log('full');
         }
+
+        // session.users.forEach(function(user) {
+        //   if(user._id === userId) {
+        //     userFound = true;
+        //   }
+        // })
+
+        //if(!userFound) socket.emit(EVENT.badSession);
       })
-      // Session.findById(sessionid, function(err,obj){
-      //    if(err) {
-      //      console.log(err);
-      //      socket.emit(EVENT.badSession);
-      //    } else if(obj) {
-      //      console.log('found, len: ', obj.users.length);
-      //      if(obj.users.length >= obj.maxUsers){
-      //        socket.emit(EVENT.badSession);
-      //        console.log('full');
-      //      }
-      //    } else {
-      //      socket.emit(EVENT.badSession);
-      //    }
-      // });
+
     });
   });
 };
