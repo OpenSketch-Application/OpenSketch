@@ -58,10 +58,16 @@ module.exports = function(info, el) {
     isDown = false;
   }
 
+  function mouseout(data) {
+    isDown = false;
+    graphics = undefined;
+  }
+
   function activate() {
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;
+    stage.mouseout = mouseout;
   }
 
   el.addEventListener('click', activate);

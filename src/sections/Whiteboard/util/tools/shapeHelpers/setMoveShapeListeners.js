@@ -6,7 +6,6 @@ module.exports = function(graphics, settings, option) {
   var movingSelf = false;
 
   graphics.mousedown = function(data) {
-
     if(settings.selectedTool() === 'tool-select') {
       data.originalEvent.preventDefault();
 

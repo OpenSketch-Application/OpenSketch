@@ -8,12 +8,12 @@ module.exports = function(settings, el, AppState) {
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
 
     Line.set(settings.stage, settings.renderer);
-    activate(settings);
+    activate(settings, AppState);
   });
 };
 
 
-function activate(settings) {
+function activate(settings, AppState) {
   // var isActive = true;
   var isDown = false;
   var originalCoords;
@@ -30,7 +30,7 @@ function activate(settings) {
     movingSelf = true;
     this.data = data;
     originalCoords = data.getLocalPosition(this);
-
+    graphics = new PIXI.Graphics();
 
     // SocketObject.emitDrawObject({
     //   objectType: 'rectangle',
@@ -49,13 +49,16 @@ function activate(settings) {
   stage.mousemove = function(data) {
     if(isDown) {
       var localPos = data.getLocalPosition(this);
-      var topLeft = {};
-      var childIndex = 0;
 
-      Line.reDrawShape(originalCoords, localPos, {});
+      graphics.clear();
 
+      graphics.lineWidth = 2;
+      graphics.lineColor = 0x000000;
+      graphics.moveTo(localPos.x, localPos.y);
+      graphics.lineTo(originalCoords.x, originalCoords.y);
+
+      stage.addChild(graphics);
       //SocketObject.emitDrawingObject(graphics);
-
       drawBegan = true;
     }
   };
@@ -64,14 +67,16 @@ function activate(settings) {
     drawBegan = false;
     isDown = false;
     movingSelf = false;
-
-    Line.getShape();
-    graphics = null;
+    graphics.interactive = true;
 
     setMoveShapeListeners(graphics, settings, AppState);
-    // var graphics = new PIXI.Graphics();
     //SocketObject.emitDrawObject(graphics);
 
     //SocketObject.emitObjectAddDone(graphics);
   };
+
+  stage.mouseout = function(data) {
+    isDown = false;
+    //graphics = undefined;
+  }
 }

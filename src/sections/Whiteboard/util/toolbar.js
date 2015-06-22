@@ -45,9 +45,8 @@ function toolbar(elements, AppState) {
   function animate() {
     requestAnimFrame(animate);
     _this.renderer.render(_this.stage);
-    //this.renderer.render(this.stage);
   }
-  //this.renderer.render(this.stage);
+
 
   // AppState.Canvas.Tools
   //var settings = AppState.Canvas.Tools;

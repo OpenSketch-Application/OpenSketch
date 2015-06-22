@@ -13,7 +13,7 @@ var Toolbar = require('./util/toolbar');
 // A model object can all use it to store Application state properties
 // Mostly information retrieved on-mass from Database
 var AppState = require('../../model/AppState');
-
+window.APP_STATE = AppState;
 module.exports = Section;
 
 function Section() {}

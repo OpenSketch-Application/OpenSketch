@@ -30,9 +30,10 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                    console.log(session);
                    socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
+
                    socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
 
-                   socket.emit(EVENT.updateChatList,session.messages);
+                   socket.emit(EVENT.updateChatList, session.messages);
                  }
               });
             }
@@ -48,7 +49,7 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
         //
         var  sessionid = socket.adapter.nsp.name.split('/');
         sessionid = sessionid[sessionid.length - 1];
-    
+
         Session.findById(sessionid, function(err, session){
           if(err){
             throw new Error('Error retrieving Session');
@@ -59,7 +60,7 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
             if(session.users.length < session.sessionProperties.maxUsers){
               session.messages.push({
                 userID : socket.id,
-                user: message.user, 
+                user: message.user,
                 msg: message.msg
               });
 
@@ -67,7 +68,7 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
                  if(err) console.log(err);
                  else{
                    console.log('saved msg');
-                  
+
                  }
               });
             }
@@ -123,7 +124,7 @@ whiteboardSockets.sendPencilCB = function(socket,nspWb){
     //add drawing to db
     //emit drawing to other users
     socket.broadcast.emit(EVENT.sendPencil,info);
-    
+
   };
 };
 

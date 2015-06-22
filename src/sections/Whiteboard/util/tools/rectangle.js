@@ -104,5 +104,8 @@ function activate(settings, AppState) {
     //SocketObject.emitObjectAddDone(finalGraphics);
   };
 
-
+  stage.mouseout = function(data) {
+    isDown = false;
+    graphics = undefined;
+  }
 }

@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "body-parser": "^1.12.4",
-    "cookies": "^0.5.0",
     "eases": "^1.0.6",
     "express": "^4.12.3",
     "f1-dom": "^2.2.0",
