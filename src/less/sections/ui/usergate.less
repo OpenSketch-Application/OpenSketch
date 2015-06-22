@@ -1,19 +1,88 @@
 #usergate {
-  position: absolute;
-  z-index: 2;
   width: 100%;
-  height: 100%;
-  background-color: black;
+
+  #shader {
+    position: absolute;
+    z-index: 1;
+    width: 100%;
+    height: 100%;
+    background-color: #111;
+  }
 
   #promptbox {
-    position: relative;
-    top: 20%;
-    left: 30%;
-    transform: translate(-50%, -50%);
-    width: 40%;
-    height: 60%;
-    background-color: white;
+    z-index: 2;
+    width: 650px;
+    height: 550px;
+    background-color: #545965;
     opacity: 1;
 
+    #header {
+      position: relative;
+      width: 100%;
+      background-color: #222b35;
+      vertical-align: middle;
+      img {
+        display: block;
+        margin: auto;
+        padding: 10px 0;
+        width: 40%;
+      }
+    }
+    #section {
+      .welcome {
+        width: 55%;
+        text-align: center;
+        font-size: 18px;
+        color: #eee;
+        margin: 20px auto;
+      }
+
+      .controls {
+        width: 80%;
+        margin: 0 auto;
+        text-align: center;
+        input {
+          .sans-serif-regular;
+          width: 40%;
+          height: 35px;
+          margin: 0px 10px;
+          padding: 8px 10px 0px 10px;
+          vertical-align: bottom;
+          text-align: center;
+          outline: none;
+          border: none;
+          box-sizing: border-box;
+          font-size: 18px;
+          background: transparent;
+          border-bottom: 2px solid #414653;
+          color: #cfcfcf;
+        }
+        button {
+          border: none;
+          outline: none;
+          background-color: #55c88c;
+          color: white;
+          font-size: 17px;
+          width: 70px;
+          height: 35px;
+        }
+        button:hover {
+          background: #3cb0fd;
+          background-image: linear-gradient(to bottom, #3cb0fd, #3498db);
+          text-decoration: none;
+        }
+      }
+      
+      .users {
+        #userList {
+            overflow: scroll;
+            margin: 35px auto;
+            width: 65%;
+            height: 275px;
+            display: block;
+            background-color: #f9fafb;
+        }
+      }
+    }
   }
 }

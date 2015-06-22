@@ -30,8 +30,6 @@ Section.prototype = {
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.appendChild(this.section);
 
-    // states.init.whiteboard.position[0] = document.body.offsetWidth * 1.5;
-
     createTabs();
 
     this.toolbar = new Toolbar({
@@ -81,13 +79,9 @@ Section.prototype = {
   },
 
   animateIn: function(req, done) {
-
-    setTimeout(function() {
       this.animate.go('idle', function() {
         done();
       }.bind(this));
-    }.bind(this), 800);
-
   },
 
   animateOut: function(req, done) {
