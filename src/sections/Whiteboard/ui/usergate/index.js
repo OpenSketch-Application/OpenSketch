@@ -24,13 +24,13 @@ Section.prototype = {
       var btnJoin = find('#btnJoin');
       this.shader = find('#shader');
 
-      states.init.promptbox.position[0] = window.outerWidth/2 - 650/2;
+      states.init.promptbox.position[0] = -650/2;
       states.init.promptbox.position[1] = -document.body.offsetHeight*1.5;
 
-      states.idle.promptbox.position[0] = window.outerWidth/2 - 650/2;
+      states.idle.promptbox.position[0] = -650/2;
       states.idle.promptbox.position[1] = window.outerHeight/2 - 550/1.65;
 
-      states.out.promptbox.position[0] = window.outerWidth/2 - 650/2;
+      states.out.promptbox.position[0] = -650/2;
 
       this.animate = new f1().states(states)
                              .transitions(require('./transitions'))

@@ -1,24 +1,24 @@
 
 .chatMessageBox {
   width: 100%;
+  height: 100%;
+  position: relative;
   .chatMessages {
     width: 100%;
-    height: 60%;
+    height: 75%;
+    padding: 10px;
     overflow-y: scroll;
-    position: absolute;
+    position: relative;
     > li {
       font-weight: bold;
     }
     #msgContainer {
       display: block;
       width: 95%;
-      margin: 5%;
-      margin-left: 0;
+      margin: 0 auto;
       padding: 5px;
-      padding-bottom: 10px;
       position: relative;
-      min-height: 10%;
-      border-bottom: 1px solid grey;
+      font-size: 1em;
     } 
    
     #announcement{
@@ -36,9 +36,7 @@
       margin-right: 15%;
       border-radius: 5px 15px;
       border-bottom: 1px solid grey;
-
     }
-
 
     #name{
       float: left;
@@ -53,43 +51,51 @@
      font-weight: bold;
      word-wrap: break-word;
      position: relative;
-     width: 60%;
+     width: 75%;
      background: black;
      padding: 5px;
      color: white;
      text-align: center;
      border-radius: 5px 15px;
     }
-    
-
   }
 
   .messageInputUI {
-    display: inline-block;
     margin: 0;
     padding: 0;
     width: 100%;
     position: absolute;
-    bottom: 15%;
-    height: 9%;
+    bottom: 3%;
+    height: 170px;
     transform: translateY(-50%);
-    border-top: 1px solid grey;
+    background-color: #efefef;
+    .divider {
+      width: 92%;
+      color: #999;
+      border: none;
+      border-top: 1px solid #bfbfbf;
+    }
     textarea {
+      .sans-serif-regular;
       background-color: #FFF;
-      height: 100%;
-      margin: 5%;
-      margin-bottom: 0;
-      width: 90%;
-        
+      height: 36%;
+      width: 85.5%;
+      display: block;
+      margin: 10px auto;
+      font-size: 0.9em;
+      padding: 10px;
+      border: 1px solid #999;
     }
     button {
-      margin: 0;
-      height: 2.6em;
-      margin-right: 2.5%;
+      outline: none;
+      margin-right: 4.5%;
+      border: none;
+      height: 40px;
+      width: 80px;
+      padding: 10px 20px;
       background-color: #000;
-      font-weight: bold;
       color: white;
-      font-family: inherit;
+      font-size: 0.9em;
       float: right;
     }
   }
