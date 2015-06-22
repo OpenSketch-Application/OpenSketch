@@ -2,7 +2,7 @@ var find = require('dom-select');
 var EVENT = require('../../../model/model').socketEvents;
 var SERVERNAME = window.location.origin;
 var Cookies = require('cookies-js');
-module.exports = function(io, framework){
+module.exports = function(io, framework, AppState){
   var curSession = window.location.href;
   curSession = curSession.split('/');
   var end = curSession.length -1;
@@ -20,7 +20,7 @@ module.exports = function(io, framework){
   if(Cookies.get('username') != null){
     socket.emit(EVENT.joinSession,Cookies.get('username'),curSessionId);
   };
-  
+
   socket.on(EVENT.updateUserList,function(msg,users) {
     console.log('in update user list');
     var Usertab =  find('.cd-tabs-content li[data-content=Users]');
@@ -37,9 +37,14 @@ module.exports = function(io, framework){
     }
     for(var i = 0; i< users.length; i++){
       var user = document.createElement('div');
-      user.innerHTML = 'Name: '+ users[i].username; 
+
+      user.innerHTML = 'Name: '+ users[i].username;
+
       UserList.appendChild(user);
     }
+
+    AppState.Users.users = users;
+    AppState.Users.currentUser = users[users.length - 1];
 
     Usertab.appendChild(UserList);
 

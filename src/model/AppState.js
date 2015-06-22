@@ -1,40 +1,6 @@
 'user strict';
 
-function getShapeProperties() {
-  return {
-    _id: _this.curIndex,
-    userId: _this._userId,
-    layerLevel: _this.layerLevel,
-    rotation: _this.rotation,
-    objectType: _this.objectType,
-    interactive: _this.interactive
-  }
-}
-// Use test case to ensure userId, canvasID and Object Type are set
-function shapeHasher(userId, canvasId, objectType, offset, scrambler) {
-  return objectType + userId.substr(0,3) + canvasId.substr(3,3) + scrambler;
-}
-function addNew(shapeObject, canvasId, scrambler) {
-  // increment object type number
-  this._shapeTypes[shapeObject.objectType]++;
-
-  // Create Unique key
-  shapeObject._id = this[shapeObject.objectType] +
-                    shapeObject.userId.substr(0,3) +
-                    shapeObject.canvasId.substr(3,3) +
-                    scrambler;
-
-  if(shapeObject._id in this) {
-    console.log('shapeId exists already!');
-  }
-
-  // Set object in Shape Map
-  this[shapeObject._id] = shapeObject;
-
-  return shapeObject;
-}
-
-module.exports = {
+var AppState = {
   Canvas: {
     stage: null,
     renderer: null,
@@ -44,11 +10,11 @@ module.exports = {
       canChat: true
     },
     Shapes: {
-      _shapeTypes: {}
     },
+    _shapeTypes: {},
     getShapeProperties: getShapeProperties,
     hasher: shapeHasher,
-    addNew: addNew.bind(this.Shapes)
+    addNew: addNew
   },
   Tools: {
     selected: '', // Currently selected tool
@@ -90,15 +56,69 @@ module.exports = {
     }
   },
   Users: {
-    currentUser: {
-      canDraw: true,
-      canChat: true
-    },
+    currentUser: {},
     users: [] // index 0 is always for Head
   },
   Settings: {}, // General settings, ie. styles or themes
   Messages: [],
   Socket: null
 };
+
+function getShapeProperties() {
+  return {
+    _id: _this.curIndex,
+    userId: _this._userId,
+    layerLevel: _this.layerLevel,
+    rotation: _this.rotation,
+    objectType: _this.objectType,
+    interactive: _this.interactive
+  }
+}
+
+// Use test case to ensure userId, canvasID and Object Type are set
+function shapeHasher(userId, canvasId, objectType, offset, scrambler) {
+  return objectType + userId.substr(0,3) + canvasId.substr(3,3) + scrambler;
+}
+
+// userId: AppState.Users.currentUser._id,
+
+function addNew(objectType, graphics, scrambler) {
+  // increment object type number
+  var shapeNumRef = this._shapeTypes[objectType];
+  var shapeObject = {};
+  shapeObject.userId = AppState.Users.currentUser._id || 'unknown';
+  shapeObject.objectType = objectType;
+  shapeObject.graphics = graphics;
+
+  if(!isNaN(shapeNumRef)) {
+    shapeNumRef++;
+  }
+  else {
+    shapeNumRef = 0;
+  }
+
+  // shapeNumRef
+  scrambler = scrambler || "";
+
+  // Create Unique key
+  shapeObject._id = objectType +
+                    shapeNumRef +
+                    shapeObject.userId.substr(0,3) +
+                    scrambler;
+
+  if(shapeObject._id in this.Shapes) {
+    scrambler = Math.random() * 100;
+    shapeObject._id += scrambler;
+  }
+
+  // Set object in Shape Map
+  this.Shapes[shapeObject._id] = shapeObject;
+
+  this._shapeTypes[objectType] = shapeNumRef;
+
+  return shapeObject;
+}
+
+module.exports = AppState;
 
 

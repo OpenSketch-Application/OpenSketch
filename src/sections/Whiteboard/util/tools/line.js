@@ -12,7 +12,6 @@ module.exports = function(settings, el, AppState) {
   });
 };
 
-
 function activate(settings, AppState) {
   // var isActive = true;
   var isDown = false;
@@ -64,10 +63,14 @@ function activate(settings, AppState) {
   };
 
   stage.mouseup = function(data) {
-    drawBegan = false;
-    isDown = false;
     movingSelf = false;
     graphics.interactive = true;
+
+    if(isDown) {
+      AppState.Canvas.addNew('line', graphics);
+    }
+    drawBegan = false;
+    isDown = false;
 
     setMoveShapeListeners(graphics, settings, AppState);
     //SocketObject.emitDrawObject(graphics);

@@ -7,6 +7,9 @@ module.exports = function(settings, el, AppState) {
     console.log('Selected Shapes...');
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
 
+    // Set the selected tool on AppState
+    AppState.Tools.selected = 'rectangle';
+
     //Rect.set(settings.stage, settings.renderer);
     activate(settings, AppState);
   });
@@ -16,12 +19,13 @@ function activate(settings, AppState) {
   // var isActive = true;
   var isDown = false;
   var originalCoords;
-  var curStageIndex = 0;
   var drawBegan = false;
   var graphics;
-  var inverse;
   var stage = settings.stage;
   var renderer = settings.renderer;
+  //var Shapes = AppState.Canvas.Shapes;
+  var Canvas = AppState.Canvas;
+
 
   stage.mousedown = function(data) {
     isDown = true;
@@ -90,20 +94,41 @@ function activate(settings, AppState) {
   };
 
   stage.mouseup = function(data) {
+    var shapeObject;
+
+    // Flag that tells us that mouse button was pressed down before
+    if(isDown) {
+      // layerLevel: stage.children.length,
+      // x: graphics.x,
+      // y: graphics.y,
+      // width: graphics.width,
+      // height: graphics.height,
+      // fillColor: graphics.lineColor,
+      // rotation: graphics.rotation,
+      // borderWidth: graphics.lineWidth,
+      // borderColor: graphics.lineColor,
+      // objectType: 'rectangle',
+      // userId: 'wooMee',
+      // canvasID: 'session42'
+      shapeObject = Canvas.addNew('rectangle', graphics);
+
+      setMoveShapeListeners(graphics, shapeObject, AppState);
+
+      graphics.interactive = true;
+    }
+
     drawBegan = false;
     isDown = false;
     movingSelf = false;
-    graphics.interactive = true;
+
 
     // set move Mouse Events on the final shape created
-    setMoveShapeListeners(graphics, settings, AppState);
 
     //graphics = null;
     //var graphics = new PIXI.Graphics();
     //SocketObject.emitDrawObject(finalGraphics);
     //SocketObject.emitObjectAddDone(finalGraphics);
   };
-
   // stage.mouseout = function(data) {
   //   isDown = false;
   // }

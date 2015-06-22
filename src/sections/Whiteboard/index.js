@@ -22,7 +22,7 @@ Section.prototype = {
   init: function(req, done) {
     console.log('start init');
 
-    AppState.Socket = socketSetup(io, framework);
+    AppState.Socket = socketSetup(io, framework, AppState);
 
     var content = find('#content');
 

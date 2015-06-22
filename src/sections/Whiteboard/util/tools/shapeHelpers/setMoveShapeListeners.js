@@ -1,18 +1,25 @@
 'use strict';
+
 // Global AppState
-module.exports = function(graphics, settings, option) {
+module.exports = function(shapeObject, shapeObject, AppState) {
   var selected = false;
   var original;
   var movingSelf = false;
+  var Shapes = AppState.Canvas.Shapes;
+  var graphics = shapeObject.graphics;
+  var socket = AppState.Socket;
 
   graphics.mousedown = function(data) {
-    if(settings.selectedTool() === 'tool-select') {
+    if(AppState.Tools.selected === 'tool-select') {
       data.originalEvent.preventDefault();
 
       this.data = data;
       original = data.getLocalPosition(this);
       this.alpha = 0.9;
       selected = true;
+      graphics.selected = true;
+
+      // socket.emit('shapeSelected', shapeObject.properties());
     }
   };
 
@@ -37,7 +44,7 @@ module.exports = function(graphics, settings, option) {
   graphics.mouseup = graphics.mouseupoutside = function(data) {
     selected = false;
     this.alpha = 1;
-
+    graphics.selected = false;
     // set the interaction data to null
     this.data = null;
     movingSelf = false;

@@ -47,7 +47,6 @@ function toolbar(elements, AppState) {
     _this.renderer.render(_this.stage);
   }
 
-
   // AppState.Canvas.Tools
   //var settings = AppState.Canvas.Tools;
   var settings = {
