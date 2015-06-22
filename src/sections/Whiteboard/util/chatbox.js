@@ -4,6 +4,20 @@ var Cookies = require('cookies-js');
 module.exports = {
   init: function(AppState) {
     var _this = this;
+
+    var sendMessage = function() {
+      var message = {
+        user: 'Emile',
+        msg: _this.inputBox.value
+      };
+
+      // Send messages to other participants
+      _this.socket.emit('chatMessage', message);
+
+      // Add message to current user's chatbox
+      _this.addMsg(message);
+    };
+
     _this.socket = AppState.Socket;
     _this.users = AppState.Users;
 
@@ -15,8 +29,6 @@ module.exports = {
 
     _this.sendButton.addEventListener('click', function(e) {
       e.preventDefault();
-      console.log('input text', _this.inputBox.value);
-      console.log(_this.socket);
 
       var message = {
         user: Cookies.get('username'),
@@ -29,13 +41,22 @@ module.exports = {
       // Add message to current user's chatbox
       _this.addMsg(message);
     });
+    _this.inputBox.onkeydown = function(e) {
+      if(e.keyCode == 13) {
+        sendMessage();
+        this.value = "";
+        return false;
+      }
+    };
   },
 
   // Basic add message to chatbox
   addMsg: function(content) {
     console.log(content.user + 'msg about to be added', content.msg);
-    var newMsg = $('<div id = "msgContainer">' +'<div id="name">'+ content.user + ':  ' +
-                   '</div><div id="msg">'+ content.msg + '</div><div style="clear:both;"></div></div>');
+    //var newMsg = $('<div id = "msgContainer">' +'<span style="font-weight: bold; font: 1em Arial;">'+ content.user + ':</span>&nbsp;&nbsp;' +
+     //               content.msg + '</div>');
+    var newMsg = $('<div id = "msgContainer">' +'<div id="name">'+ content.user + ':</div><div id="msg">' +
+                    content.msg + '</div><div style="clear: both;"></div></div>');
 
     console.log(this.chatMessages);
     console.log(newMsg);
