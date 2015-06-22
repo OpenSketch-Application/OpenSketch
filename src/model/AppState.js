@@ -34,11 +34,7 @@ module.exports = {
         strokeColor: 0x000000,
         strokeWidth: 1,
         border:  {
-          style: ['solid','dotted','dashed'],
-          top: '',
-          left: '',
-          bottom: '',
-          right: ''
+          style: ['solid','dotted','dashed']
         }
       },
       ellipse: {
@@ -50,7 +46,6 @@ module.exports = {
 
       },
       table: {
-
       }
     }
   },
