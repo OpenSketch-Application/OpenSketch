@@ -1,17 +1,17 @@
 module.exports = {
     init: {
-        usergate: {
+        shader: {
             alpha: 1,
             position: [ 0, 0, 0 ]
         },
         promptbox: {
-            alpha: 0,
-            position: [ 0, 1000, 0 ]
+            alpha: 1,
+            position: [ 650, -1000, 0 ]
         }
     },
     idle: {
-        usergate: {
-            alpha: 0.8,
+        shader: {
+            alpha: 0.85,
             position: [ 0, 0, 0 ]
         },
         promptbox: {
@@ -20,13 +20,13 @@ module.exports = {
         }
     },
     out: {
-        usergate: {
+        shader: {
             alpha: 0,
             position: [ 0, 0, 0 ]
         },
         promptbox: {
-            alpha: 0,
-            position: [ 0, 0, 0 ]
+            alpha: 1,
+            position: [ 0, -1000, 0 ]
         }
     }
 };

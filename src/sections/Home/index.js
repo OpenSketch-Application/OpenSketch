@@ -7,6 +7,7 @@ var states = require('./states');
 module.exports = Section;
 var SERVERNAME = window.location.origin;
 var EVENT = model.socketEvents;
+var Cookies = require('cookies-js');
 
 function getWhiteboardSession(socket,whiteboardId){
       var max  = find('div.control input[name=maxUsers]').value;
@@ -66,6 +67,8 @@ Section.prototype = {
     this.section = document.createElement('div');
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.appendChild(this.section);
+    
+    var username = find('#inputName');
 
     states.out.home.position[1] = -document.body.offsetHeight;
 
@@ -79,7 +82,7 @@ Section.prototype = {
                            .parsers(require('f1-dom'))
                            .init('init');
 
-    find('#inputName').addEventListener('click', function(e) {
+    username.addEventListener('click', function(e) {
       this.className = "username";
     });
 
@@ -103,6 +106,7 @@ Section.prototype = {
       }else{
 
         WhiteboardId = getWhiteboardSession(socket,sid);
+        Cookies.set('created', WhiteboardId);
 
         if(WhiteboardId != undefined && WhiteboardId !=null){
           framework.go('/whiteboard/'+ WhiteboardId);

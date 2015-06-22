@@ -14,11 +14,12 @@
     "startMongoDb": "mongod --dbpath ./mongoBinaries --logpath ./logs/mongo_logs --fork;",
     "start": "npm run mkDbFolders; npm run startMongoDb",
     "startWin": "mongod --dbpath ./mongoBinaries --logpath ./logs/mongo_logs",
-    "stopProd" : "echo mjJL4574 | sudo -S mongod --shutdown --dbpath ./mongoBinaries",
+    "stopProd": "echo mjJL4574 | sudo -S mongod --shutdown --dbpath ./mongoBinaries",
     "stop": "ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[0-9]+' | xargs kill"
   },
   "dependencies": {
     "body-parser": "^1.12.4",
+    "cookies": "^0.5.0",
     "eases": "^1.0.6",
     "express": "^4.12.3",
     "f1-dom": "^2.2.0",
