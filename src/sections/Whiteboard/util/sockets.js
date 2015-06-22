@@ -1,7 +1,7 @@
 var find = require('dom-select');
 var EVENT = require('../../../model/model').socketEvents;
 var SERVERNAME = window.location.origin;
-
+var Cookies = require('cookies-js');
 module.exports = function(io, framework){
   var curSession = window.location.href;
   curSession = curSession.split('/');
@@ -11,15 +11,16 @@ module.exports = function(io, framework){
 
   var socket = io.connect(SERVERNAME);
   socket.on(EVENT.badSession,function(){
-    console.log('start badsess');
     socket.nsp = '/home';
-    console.log('end badsess');
   });
 
   socket.emit(EVENT.validateSession,curSessionId);
 
   socket = io.connect(SERVERNAME +curSession);
-  socket.emit(EVENT.joinSession,'testname',curSessionId);
+  if(Cookies.get('username') != null){
+    socket.emit(EVENT.joinSession,Cookies.get('username'),curSessionId);
+  };
+  
   socket.on(EVENT.updateUserList,function(msg,users) {
     console.log('in update user list');
     var Usertab =  find('.cd-tabs-content li[data-content=Users]');
@@ -36,7 +37,7 @@ module.exports = function(io, framework){
     }
     for(var i = 0; i< users.length; i++){
       var user = document.createElement('div');
-      user.innerHTML = 'Name: '+ users[i].username + '<br /> ID: '+users[i]._id;
+      user.innerHTML = 'Name: '+ users[i].username; 
       UserList.appendChild(user);
     }
 

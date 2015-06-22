@@ -9,7 +9,6 @@ var createTabs = require('./util/tabs');
 var socketSetup = require('./util/sockets');
 var Chatbox = require('./util/chatbox');
 var Toolbar = require('./util/toolbar');
-
 // A model object can all use it to store Application state properties
 // Mostly information retrieved on-mass from Database
 var AppState = require('../../model/AppState');
@@ -23,7 +22,7 @@ Section.prototype = {
   init: function(req, done) {
     console.log('start init');
 
-    AppState.Socket = socketSetup(io, framework, done);
+    AppState.Socket = socketSetup(io, framework);
 
     var content = find('#content');
 
