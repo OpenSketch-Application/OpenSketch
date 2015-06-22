@@ -31,9 +31,10 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                    console.log(session);
                    socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
+
                    socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
 
-                   socket.emit(EVENT.updateChatList,session.messages);
+                   socket.emit(EVENT.updateChatList, session.messages);
                  }
               });
             }
@@ -46,27 +47,27 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 whiteboardSockets.chatMessageCB = function(socket,nsp){
  return function(message) {
         //socket emit chat to other users
-        //
-        var  sessionid = socket.adapter.nsp.name.split('/');
+        var sessionid = socket.adapter.nsp.name.split('/');
         sessionid = sessionid[sessionid.length - 1];
+
         Session.findById(sessionid, function(err, session){
           if(err){
             throw new Error('Error retrieving Session');
           }
           else if(session._id){
             //push user to db
-         
+
             if(session.users.length < session.sessionProperties.maxUsers){
               session.messages.push({
                 userID : socket.id,
-                user: message.user, 
+                user: message.user,
                 msg: message.msg
               });
               session.save(function(err){
                  if(err) console.log(err);
                  else{
                    console.log('saved msg');
-                  
+
                  }
               });
            }
@@ -77,7 +78,7 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
                'msg': message.msg
               });
 
-        
+
                 console.log('msg received', message);
         //add chat to db //but maybe we don't need to keep chat messages stored?
 
@@ -123,7 +124,7 @@ whiteboardSockets.sendPencilCB = function(socket,nspWb){
     //add drawing to db
     //emit drawing to other users
     socket.broadcast.emit(EVENT.sendPencil,info);
-    
+
   };
 };
 

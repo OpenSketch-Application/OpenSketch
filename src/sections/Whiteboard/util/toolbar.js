@@ -45,9 +45,8 @@ function toolbar(elements, AppState) {
   function animate() {
     requestAnimFrame(animate);
     _this.renderer.render(_this.stage);
-    //this.renderer.render(this.stage);
   }
-  //this.renderer.render(this.stage);
+
 
   // AppState.Canvas.Tools
   //var settings = AppState.Canvas.Tools;
@@ -85,23 +84,23 @@ function toolbar(elements, AppState) {
     switch(tool) {
       case 'select':
         //this.selectedTool = 'tool-select';
-        createSelect(settings, el);
+        createSelect(settings, el, AppState);
         break;
       case 'pencil':
         this.pencil = el;
-        createPencil(settings, el);
+        createPencil(settings, el, AppState);
         break;
       case 'eraser':
         this.eraser = el;
-        this.eraser = createEraser(settings, el);
+        this.eraser = createEraser(settings, el, AppState);
         break;
       case 'fill':
         this.fill = el;
-        createFill(settings, el);
+        createFill(settings, el, AppState);
         break;
       case 'line':
         this.line = el;
-        createLine(settings, el);
+        createLine(settings, el, AppState);
         break;
       case 'ellipse':
         this.ellipse = el;
@@ -109,15 +108,15 @@ function toolbar(elements, AppState) {
         break;
       case 'rectangle':
         this.rectangle = el;
-        createRectangle(settings, el);
+        createRectangle(settings, el, AppState);
         break;
       case 'text':
         this.text = el;
-        createText(settings, el);
+        createText(settings, el, AppState);
         break;
       case 'table':
         this.table = el;
-        createTable(settings, el);
+        createTable(settings, el, AppState);
         break;
       case 'import':
         this.import = el;
@@ -126,11 +125,11 @@ function toolbar(elements, AppState) {
         break;
       case 'color':
         this.color = el;
-        createColor(settings, el);
+        createColor(settings, el, AppState);
         break;
       case 'templates':
         this.templates = el;
-        createTemplates(settings, el);
+        createTemplates(settings, el, AppState);
         break;
       default:
         break;

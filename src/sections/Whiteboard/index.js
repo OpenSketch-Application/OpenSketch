@@ -12,7 +12,7 @@ var Toolbar = require('./util/toolbar');
 // A model object can all use it to store Application state properties
 // Mostly information retrieved on-mass from Database
 var AppState = require('../../model/AppState');
-
+window.APP_STATE = AppState;
 module.exports = Section;
 
 function Section() {}
@@ -21,7 +21,9 @@ Section.prototype = {
 
   init: function(req, done) {
     console.log('start init');
+
     AppState.Socket = socketSetup(io, framework);
+
     var content = find('#content');
 
     this.section = document.createElement('div');
@@ -68,7 +70,7 @@ Section.prototype = {
       if(AppState.Socket.nsp != '/home')
         done();
       else{
-       framework.go('/home');   
+       framework.go('/home');
       }
     },1000);
   },

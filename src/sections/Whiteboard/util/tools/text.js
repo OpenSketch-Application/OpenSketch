@@ -79,4 +79,9 @@ function activate(stage, renderer) {
 
     //renderer.render(stage);
   };
+
+  stage.mouseout = function(data) {
+    isDown = false;
+    graphics = undefined;
+  }
 }

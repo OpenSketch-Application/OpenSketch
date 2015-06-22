@@ -32,8 +32,8 @@ module.exports = {
 
       sendMessage();
       _this.inputBox.value = "";
-
     });
+
     _this.inputBox.onkeydown = function(e) {
       if(e.keyCode == 13) {
         sendMessage();
@@ -48,6 +48,7 @@ module.exports = {
     console.log(content.user + 'msg about to be added', content.msg);
     var newMsg = $('<div id = "msgContainer">' +'<span style="font-weight: bold; font: 1em Arial;">'+ content.user + ':</span>&nbsp;&nbsp;' +
                     content.msg + '</div>');
+
     //var newMsg = $('<div id = "msgContainer">' +'<div id="name">'+ content.user + ':</div><div id="msg">' +
     //                content.msg + '</div><div style="clear: both;"></div></div>');
 
