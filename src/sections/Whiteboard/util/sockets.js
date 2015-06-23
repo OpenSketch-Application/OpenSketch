@@ -18,7 +18,8 @@ module.exports = function(io, framework, AppState){
   socket.emit(EVENT.validateSession,curSessionId);
 
   socket = io.connect(SERVERNAME +curSession);
-  if(Cookies.get('username') != null){
+
+  if(Cookies.get('username') != null && Cookies.get('created')!=null){
     socket.emit(EVENT.joinSession,Cookies.get('username'),curSessionId);
   };
 
@@ -38,8 +39,13 @@ module.exports = function(io, framework, AppState){
     }
     for(var i = 0; i< users.length; i++){
       var user = document.createElement('div');
+// <<<<<<< HEAD
 
-      user.innerHTML = 'Name: '+ users[i].username;
+//       user.innerHTML = 'Name: '+ users[i].username;
+
+// =======
+      user.className = "user";
+      user.innerHTML = users[i].username;
 
       UserList.appendChild(user);
     }

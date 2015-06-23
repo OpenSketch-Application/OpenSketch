@@ -16,6 +16,7 @@ module.exports = {
 
       // Add message to current user's chatbox
       _this.addMsg(message);
+
     };
 
     _this.socket = AppState.Socket;
@@ -29,11 +30,13 @@ module.exports = {
 
     _this.sendButton.addEventListener('click', function(e) {
       e.preventDefault();
+      if(_this.inputBox.value.trim() != "")
+        sendMessage();
 
-      sendMessage();
       _this.inputBox.value = "";
+      
     });
-
+    
     _this.inputBox.onkeydown = function(e) {
       if(e.keyCode == 13) {
         sendMessage();
@@ -49,8 +52,8 @@ module.exports = {
     var newMsg = $('<div id = "msgContainer">' +'<span style="font-weight: bold; font: 1em Arial;">'+ content.user + ':</span>&nbsp;&nbsp;' +
                     content.msg + '</div>');
 
-    //var newMsg = $('<div id = "msgContainer">' +'<div id="name">'+ content.user + ':</div><div id="msg">' +
-    //                content.msg + '</div><div style="clear: both;"></div></div>');
+    var newMsg = $('<div id = "msgContainer">' +'<div id="name">'+ content.user + ':</div><div id="msg">' +
+                    content.msg + '</div><div style="clear: both;"></div></div>');
 
     console.log(this.chatMessages);
     console.log(newMsg);
