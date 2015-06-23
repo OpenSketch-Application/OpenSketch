@@ -12,7 +12,7 @@ var AppState = {
     Shapes: {
     },
     _shapeTypes: {},
-    getShapeProperties: getShapeProperties,
+    getBaseProperties: getBaseProperties,
     hasher: shapeHasher,
     addNew: addNew
   },
@@ -20,39 +20,40 @@ var AppState = {
     selected: '', // Currently selected tool
     // Every new tool will have these defaults settings
     // Can be changed by user for her preferences
-    tools: {
-      importer: {
-        maxSize: 5
-      },
-      pencil: {
-        fillColor: 0x000000,
-        strokeWidth: 1
-      },
-      select: {
-        selectedObject: null
-      },
-      line: {
-        fillColor: 0x000000,
-        strokeWidth: 1
-      },
-      rectangle: {
-        fillColor: 0x000000,
-        strokeColor: 0x000000,
-        strokeWidth: 1,
-        border:  {
-          style: ['solid','dotted','dashed']
-        }
-      },
-      ellipse: {
-        fillColor: 0xFFFFFF,
-        strokeColor: 0x000000,
-        strokeWidth: 1
-      },
-      templates: {
-
-      },
-      table: {
+    importer: {
+      maxSize: 5
+    },
+    fill: {
+      fillColor: 0xFF0000
+    },
+    pencil: {
+      fillColor: 0x000000,
+      strokeWidth: 1
+    },
+    select: {
+      selectedObject: null
+    },
+    line: {
+      fillColor: 0x000000,
+      strokeWidth: 1
+    },
+    rectangle: {
+      fillColor: 0x000000,
+      strokeColor: 0x000000,
+      strokeWidth: 1,
+      border:  {
+        style: ['solid','dotted','dashed']
       }
+    },
+    ellipse: {
+      fillColor: 0xFFFFFF,
+      strokeColor: 0x000000,
+      strokeWidth: 1
+    },
+    templates: {
+
+    },
+    table: {
     }
   },
   Users: {
@@ -64,14 +65,14 @@ var AppState = {
   Socket: null
 };
 
-function getShapeProperties() {
+function getBaseProperties(shapeObject) {
   return {
-    _id: _this.curIndex,
-    userId: _this._userId,
-    layerLevel: _this.layerLevel,
-    rotation: _this.rotation,
-    objectType: _this.objectType,
-    interactive: _this.interactive
+    _id: shapeObject._id,
+    userId: shapeObject.userId,
+    layerLevel: shapeObject.layerLevel,
+    objectType: shapeObject.objectType,
+    rotation: shapeObject.graphics.rotation,
+    interactive: shapeObject.graphics.interactive
   }
 }
 
@@ -81,7 +82,6 @@ function shapeHasher(userId, canvasId, objectType, offset, scrambler) {
 }
 
 // userId: AppState.Users.currentUser._id,
-
 function addNew(objectType, graphics, scrambler) {
   // increment object type number
   var shapeNumRef = this._shapeTypes[objectType];

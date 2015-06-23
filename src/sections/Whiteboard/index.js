@@ -9,6 +9,8 @@ var createTabs = require('./util/tabs');
 var socketSetup = require('./util/sockets');
 var Chatbox = require('./util/chatbox');
 var Toolbar = require('./util/toolbar');
+var Cookies = require('cookies-js');
+
 // A model object can all use it to store Application state properties
 // Mostly information retrieved on-mass from Database
 var AppState = require('../../model/AppState');
@@ -65,7 +67,16 @@ Section.prototype = {
 
     Chatbox.init(AppState);
 
+
+    var close = find('#close-whiteboard');
+
+    close.addEventListener('click', function(e) {
+      e.preventDefault();
+      framework.go('/home');
+    }, false)
+
     console.log('end init');
+
     setTimeout(function(){
       if(AppState.Socket.nsp != '/home')
         done();
@@ -92,6 +103,10 @@ Section.prototype = {
 
   destroy: function(req, done) {
     console.log("Destroy!");
+
+    Cookies.expire('username');
+    Cookies.expire('create');
+
     this.section.parentNode.removeChild(this.section);
     done();
   }

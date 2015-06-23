@@ -6,22 +6,29 @@ module.exports = {
     'template': 'template file'
   },
   'socketEvents':{
-    'sendDrawing': 'sendDrawing',
+    // Announcements/Messages
     'chatMessage': 'chatMessage',
-    'joinSession': 'joinSession',
-    'validateSession': 'validateSession',
+    'announcement': 'announcement',
+
+    // User Joining/Leaving Events
     'updateUserList': 'updateUserList',
     'updateChatList': 'updateChatList',
+    'userLeft': 'userLeft',
+
+    // Session Creation/Validation Events
     'getSocketID': 'getSocketID',
+    'joinSession': 'joinSession',
+    'validateSession': 'validateSession',
     'createSession': 'createSession',
     'badSession': 'badSession',
-    'announcement': 'announcement',
+
 
     // Pixi/Canvas Draw Events
     'objectModified':'objectModified',
     'objectAdded':'objectAdded',
     'objectDeleted': 'objectDeleted',
 
+    'sendDrawing': 'sendDrawing',
     'sendPencil' : 'sendPencil',
     'sendLine' : 'sendLine'
   }

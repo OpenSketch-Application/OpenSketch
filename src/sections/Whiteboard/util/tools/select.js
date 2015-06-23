@@ -6,7 +6,7 @@ module.exports = function(settings, el, AppState) {
   // var _this = this;
   el.addEventListener('click', function(e) {
     console.log('click fired');
-
+    AppState.Tools.selected = 'select';
     return activate(settings.stage, settings.renderer, AppState);
   })
 

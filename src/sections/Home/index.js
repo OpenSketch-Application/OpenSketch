@@ -28,6 +28,7 @@ function getWhiteboardSession(socket,whiteboardId){
       console.log(sessionSettings);
       return sessionSettings.id;
 }
+
 function verifyForm(){
   console.log('in verify');
       var max  = find('div.control input[name=maxUsers]');
@@ -42,7 +43,7 @@ function verifyForm(){
       if(userName.value == ''){
          error.errors.push({msg:'Please Enter a Username',element: userName});
       }
-      
+
      console.log('error');
      if(error.errors.length > 0){
        return error;
@@ -50,7 +51,7 @@ function verifyForm(){
      else{
        return null;
      }
-      
+
 }
 
 function Section() {}
@@ -68,7 +69,7 @@ Section.prototype = {
     this.section = document.createElement('div');
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
     content.appendChild(this.section);
-    
+
     var username = find('#inputName');
 
     states.out.home.position[1] = -document.body.offsetHeight;
@@ -99,10 +100,10 @@ Section.prototype = {
         var errLabel = find('label#errormsg');
         errLabel.innerHTML = '';
         for(var i = 0; i<err.errors.length;i++){
-          el = err.errors[i].element;  
-          
+          el = err.errors[i].element;
+
           el.className = el.className + ' error';
-          errLabel.innerHTML = errLabel.innerHTML + err.errors[i].msg + '<br/>'; 
+          errLabel.innerHTML = errLabel.innerHTML + err.errors[i].msg + '<br/>';
         }
       }else{
 

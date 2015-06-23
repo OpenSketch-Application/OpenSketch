@@ -26,7 +26,6 @@ function activate(settings, AppState) {
   //var Shapes = AppState.Canvas.Shapes;
   var Canvas = AppState.Canvas;
 
-
   stage.mousedown = function(data) {
     isDown = true;
     data.originalEvent.preventDefault();

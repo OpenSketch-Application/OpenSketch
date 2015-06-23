@@ -23,7 +23,7 @@ Section.prototype = {
       this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
       content.appendChild(this.section);
 
-       
+
       var btnJoin = find('#btnJoin');
       var input = find('.controls input');
       this.shader = find('#shader');
@@ -46,16 +46,15 @@ Section.prototype = {
 
         var Name = input.value;
         console.log(Name);
-        Cookies.set('username',Name);
+        Cookies.set('username', Name);
         var curSession = window.location.href;
         curSession = curSession.split('/');
         var end = curSession.length -1;
         var curSessionId = curSession[end];
         curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
 
-
         var socket = io.connect(SERVERNAME +curSession);
-        socket.emit(EVENT.joinSession,Cookies.get('username'),curSessionId);
+        socket.emit(EVENT.joinSession, Name, curSessionId);
         this.animateOut();
       }.bind(this));
     }

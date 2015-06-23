@@ -1,5 +1,5 @@
-'use strict';
-
+//'use strict';
+//var PIXI = require('pixi');
 // Global AppState
 module.exports = function(shapeObject, shapeObject, AppState) {
   var selected = false;
@@ -10,8 +10,9 @@ module.exports = function(shapeObject, shapeObject, AppState) {
   var socket = AppState.Socket;
 
   graphics.mousedown = function(data) {
-    if(AppState.Tools.selected === 'tool-select') {
-      data.originalEvent.preventDefault();
+    data.originalEvent.preventDefault();
+    if(AppState.Tools.selected === 'select') {
+
 
       this.data = data;
       original = data.getLocalPosition(this);
@@ -20,6 +21,13 @@ module.exports = function(shapeObject, shapeObject, AppState) {
       graphics.selected = true;
 
       // socket.emit('shapeSelected', shapeObject.properties());
+    }
+    else if(AppState.Tools.selected === 'fill') {
+
+      this.clear();
+      console.log('fill Color: ' + AppState.Tools.fill.fillColor);
+      this.endFill(AppState.Tools.fill.fillColor);
+      AppState.Canvas.stage.addChild(this);
     }
   };
 
@@ -44,7 +52,7 @@ module.exports = function(shapeObject, shapeObject, AppState) {
   graphics.mouseup = graphics.mouseupoutside = function(data) {
     selected = false;
     this.alpha = 1;
-    graphics.selected = false;
+    //shapeObject.selected = false;
     // set the interaction data to null
     this.data = null;
     movingSelf = false;

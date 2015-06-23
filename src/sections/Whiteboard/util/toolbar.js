@@ -95,7 +95,7 @@ function toolbar(elements, AppState) {
         break;
       case 'fill':
         this.fill = el;
-        createFill(settings, el, AppState);
+        createFill(AppState, el);
         break;
       case 'line':
         this.line = el;
