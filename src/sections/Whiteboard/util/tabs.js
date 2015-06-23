@@ -31,9 +31,14 @@ module.exports = function () {
         selectedItem.addClass('selected');
         selectedContent.addClass('selected').siblings('li').removeClass('selected');
         //animate tabContentWrapper height when content changes 
-        tabContentWrapper.animate({
-          'height': slectedContentHeight
-        }, 200);
+        //tabContentWrapper.animate({
+        // 'height': slectedContentHeight
+        //}, 200);
+        if(content = 'Chat'){
+          var el = $('.chatMessages')[0];
+          
+          el.scrollTop = el.scrollHeight;
+        }
       }
     });
 

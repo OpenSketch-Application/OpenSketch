@@ -17,9 +17,10 @@ module.exports = function(io, framework){
   socket.emit(EVENT.validateSession,curSessionId);
 
   socket = io.connect(SERVERNAME +curSession);
-  if(Cookies.get('username') != null){
+
+  if(Cookies.get('username') != null && Cookies.get('created')!=null){
     socket.emit(EVENT.joinSession,Cookies.get('username'),curSessionId);
-  };
+  }
   
   socket.on(EVENT.updateUserList,function(msg,users) {
     console.log('in update user list');
@@ -37,7 +38,8 @@ module.exports = function(io, framework){
     }
     for(var i = 0; i< users.length; i++){
       var user = document.createElement('div');
-      user.innerHTML = 'Name: '+ users[i].username; 
+      user.className = "user";
+      user.innerHTML = users[i].username; 
       UserList.appendChild(user);
     }
 
