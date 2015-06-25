@@ -132,4 +132,13 @@ whiteboardSockets.sendPencilCB = function(socket,nspWb){
   };
 };
 
+whiteboardSockets.sendRectCB = function(socket, nspWb) {
+  return function(eventType, data) {
+    console.log(eventType);
+    console.log(data);
+    socket.broadcast.emit(EVENT.sendRect, 'add', data);
+  }
+}
+
+
 module.exports = whiteboardSockets;

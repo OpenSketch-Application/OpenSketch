@@ -17,6 +17,7 @@ module.exports = function(info, el, AppState) {
 
   function mousedown(data) {
     isDown = true;
+
     prevPos.x = data.global.x;
     prevPos.y = data.global.y;
 
@@ -63,6 +64,7 @@ module.exports = function(info, el, AppState) {
   }
 
   function activate() {
+    AppState.Tools.selected = 'pencil';
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;

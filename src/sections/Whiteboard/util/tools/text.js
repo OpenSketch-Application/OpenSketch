@@ -32,18 +32,18 @@ function activate(stage, renderer, AppState) {
 
   stage.mousemove = function(data) {
     //if(!isActive) return;
-    if(!isDown) return;
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-    //path.push(data.global.y);
-    //var newPosition = this.data.getLocalPosition(this.parent);
-    graphics.moveTo(posOld[0], posOld[1]);
-    //console.log(data.global.x, data.global.y);
-    graphics.lineTo(data.global.x, data.global.y);
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    lines++;
-    stage.addChild(graphics);
-
+    if(isDown) {
+      var graphics = new PIXI.Graphics().lineStyle(2, color);
+      //path.push(data.global.y);
+      //var newPosition = this.data.getLocalPosition(this.parent);
+      graphics.moveTo(posOld[0], posOld[1]);
+      //console.log(data.global.x, data.global.y);
+      graphics.lineTo(data.global.x, data.global.y);
+      posOld = [data.global.x, data.global.y];
+      path.push(posOld[0],posOld[1]);
+      lines++;
+      stage.addChild(graphics);
+    }
     //renderer.render(stage);
   };
 

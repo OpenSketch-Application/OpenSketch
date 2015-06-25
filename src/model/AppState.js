@@ -9,8 +9,8 @@ var AppState = {
       canDraw: true,
       canChat: true
     },
-    Shapes: {
-    },
+    Shapes: {},
+    //ActiveShapes: {}, // Locks for shapes being handled by multiple users
     _shapeTypes: {},
     getBaseProperties: getBaseProperties,
     hasher: shapeHasher,
@@ -38,12 +38,9 @@ var AppState = {
       strokeWidth: 1
     },
     rectangle: {
-      fillColor: 0x000000,
-      strokeColor: 0x000000,
-      strokeWidth: 1,
-      border:  {
-        style: ['solid','dotted','dashed']
-      }
+      fillColor: 0xFFFFFF,
+      lineColor: 0x000000,
+      lineWidth: 1
     },
     ellipse: {
       fillColor: 0xFFFFFF,
@@ -77,18 +74,28 @@ function getBaseProperties(shapeObject) {
 }
 
 // Use test case to ensure userId, canvasID and Object Type are set
-function shapeHasher(userId, canvasId, objectType, offset, scrambler) {
-  return objectType + userId.substr(0,3) + canvasId.substr(3,3) + scrambler;
+function addNew(ShapeObject) {
+  switch(ShapeObject.objectType) {
+    case 'rectangle':
+      break;
+    case 'pencil':
+      break;
+    case 'ellipse':
+      break;
+    case 'text':
+      break;
+  }
+  //shapeObject.objectType = objectType;
+  //shapeObject.graphics = graphics;
 }
 
 // userId: AppState.Users.currentUser._id,
-function addNew(objectType, graphics, scrambler) {
+function shapeHasher(shapeObject) {
   // increment object type number
   var shapeNumRef = this._shapeTypes[objectType];
-  var shapeObject = {};
-  shapeObject.userId = AppState.Users.currentUser._id || 'unknown';
-  shapeObject.objectType = objectType;
-  shapeObject.graphics = graphics;
+  //var shapeObject = {};
+  shapeObject.userId = shapeObject.userId || AppState.Users.currentUser._id;
+
 
   if(!isNaN(shapeNumRef)) {
     shapeNumRef++;
@@ -97,11 +104,8 @@ function addNew(objectType, graphics, scrambler) {
     shapeNumRef = 0;
   }
 
-  // shapeNumRef
-  scrambler = scrambler || "";
-
   // Create Unique key
-  shapeObject._id = objectType +
+  shapeObject._id = objectType.substr(0,3) +
                     shapeNumRef +
                     shapeObject.userId.substr(0,3) +
                     scrambler;
@@ -117,6 +121,11 @@ function addNew(objectType, graphics, scrambler) {
   this._shapeTypes[objectType] = shapeNumRef;
 
   return shapeObject;
+}
+
+
+function addSocketShape(shapeObject) {
+
 }
 
 module.exports = AppState;

@@ -39,11 +39,6 @@ module.exports = function(io, framework, AppState){
     }
     for(var i = 0; i< users.length; i++){
       var user = document.createElement('div');
-// <<<<<<< HEAD
-
-//       user.innerHTML = 'Name: '+ users[i].username;
-
-// =======
       user.className = "user";
       user.innerHTML = users[i].username;
 

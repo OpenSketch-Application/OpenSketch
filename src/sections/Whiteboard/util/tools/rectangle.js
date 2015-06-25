@@ -1,6 +1,7 @@
 var PIXI = require('pixi');
 var Rect = require('../shapes/Rectangle');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
+var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(settings, el, AppState) {
   el.addEventListener('click', function(data) {
@@ -21,18 +22,22 @@ function activate(settings, AppState) {
   var originalCoords;
   var drawBegan = false;
   var graphics;
+  var rect;
   var stage = settings.stage;
   var renderer = settings.renderer;
+  var socket = AppState.Socket;
   //var Shapes = AppState.Canvas.Shapes;
   var Canvas = AppState.Canvas;
 
   stage.mousedown = function(data) {
     isDown = true;
     data.originalEvent.preventDefault();
-    movingSelf = true;
-    this.data = data;
+    //movingSelf = true;
+    //this.data = data;
     originalCoords = data.getLocalPosition(this);
-    graphics = new PIXI.Graphics();
+
+    //graphics = new PIXI.Graphics();
+    rect = new Rect(AppState.Tools.rectangle);
     //finalGraphics = new PIXI.Graphics();
 
     //curStageIndex = stage.children.length;
@@ -56,37 +61,51 @@ function activate(settings, AppState) {
       var localPos = data.getLocalPosition(this);
       var topLeft = {};
 
-      graphics.clear();
-      graphics.interactive = false;
-      graphics.beginFill(0xFFFFFF); // style.fillColor
-      graphics.lineWidth = 2; // style.lineWidth
-      graphics.lineColor = 0x000000; // style.lineColor
+      // graphics.clear();
+      // graphics.interactive = false;
+      // graphics.beginFill(0xFFFFFF); // style.fillColor
+      // graphics.lineWidth = 2; // style.lineWidth
+      // graphics.lineColor = 0x000000; // style.lineColor
 
-      //console.log(originalCoords);
 
-      var newDimensions = {
-        width: localPos.x - originalCoords.x,
-        height: localPos.y - originalCoords.y
-      };
+
+      // //console.log(originalCoords);
+
+      var width = localPos.x - originalCoords.x;
+      var height = localPos.y - originalCoords.y;
 
       // Ensure height and width are positive
-      if(newDimensions.width < 0) newDimensions.width *= -1;
-      if(newDimensions.height < 0) newDimensions.height *= -1;
+      if(width < 0) width *= -1;
+      if(height < 0) height *= -1;
 
       topLeft.x = Math.min(originalCoords.x, localPos.x);
       topLeft.y = Math.min(localPos.y, originalCoords.y);
 
-      graphics.drawRect(
-        topLeft.x,
-        topLeft.y,
-        newDimensions.width,
-        newDimensions.height
-      );
+      rect.draw({
+        x: topLeft.x,
+        y: topLeft.y,
+        width: width,
+        height: height
+      }, AppState.Canvas.stage);
+
+      // //spriteGraphics = graphics;
+
+      // stage.addChild(graphics);
+
+      // graphics.drawRect(
+      //   0,
+      //   0,
+      //   newDimensions.width,
+      //   newDimensions.height
+      // );
+
+      // spriteGraphics = new PIXI.Sprite(graphics.generateTexture());
+      // spriteGraphics.position.x = topLeft.x;
+      // spriteGraphics.position.y = topLeft.y;
 
       //finalGraphics = Rect.makeRect(topLeft, newDimensions, settings);
-      stage.addChild(graphics);
-
-
+      //stage.addChild(spriteGraphics);
+      //graphics = null;
       //SocketObject.emitDrawingObject(finalGraphics);
       drawBegan = true;
     }
@@ -109,11 +128,14 @@ function activate(settings, AppState) {
       // objectType: 'rectangle',
       // userId: 'wooMee',
       // canvasID: 'session42'
-      shapeObject = Canvas.addNew('rectangle', graphics);
+      //shapeObject = Canvas.addNew('rectangle', graphics);
+      rect.addNew(AppState.Canvas.Shapes);
+      socket.emit(EVENT.sendRect, 'add', { rect: 'some Info' } );
 
-      setMoveShapeListeners(graphics, shapeObject, AppState);
-
-      graphics.interactive = true;
+      //setMoveShapeListeners(graphics, shapeObject, AppState);
+      //graphics.interactive = true;
+      //graphics = null;
+      rect = null;
     }
 
     drawBegan = false;

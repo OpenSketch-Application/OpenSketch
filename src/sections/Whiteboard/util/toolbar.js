@@ -40,7 +40,7 @@ function toolbar(elements, AppState) {
 
   animate();
 
-  setDrawingSockets(_this.socket,_this.stage);
+  setDrawingSockets(AppState);
 
   function animate() {
     requestAnimFrame(animate);
@@ -83,7 +83,7 @@ function toolbar(elements, AppState) {
     switch(tool) {
       case 'select':
         //this.selectedTool = 'tool-select';
-        createSelect(settings, el, AppState);
+        createSelect(AppState, el);
         break;
       case 'pencil':
         this.pencil = el;

@@ -1,15 +1,16 @@
 //'use strict';
 //var PIXI = require('pixi');
 // Global AppState
-module.exports = function(shapeObject, shapeObject, AppState) {
+module.exports = function(graphics, shapeObject, AppState) {
   var selected = false;
   var original;
   var movingSelf = false;
   var Shapes = AppState.Canvas.Shapes;
-  var graphics = shapeObject.graphics;
+  //var graphics = shapeObject.graphics;
   var socket = AppState.Socket;
 
   graphics.mousedown = function(data) {
+    //console.log('mouseDownRecieved on shape', data);
     data.originalEvent.preventDefault();
     if(AppState.Tools.selected === 'select') {
 
@@ -18,9 +19,10 @@ module.exports = function(shapeObject, shapeObject, AppState) {
       original = data.getLocalPosition(this);
       this.alpha = 0.9;
       selected = true;
-      graphics.selected = true;
+      //graphics.selected = true;
+      //console.log(AppState);
+      AppState.Tools.select.selectedObject = shapeObject;
 
-      // socket.emit('shapeSelected', shapeObject.properties());
     }
     else if(AppState.Tools.selected === 'fill') {
 
@@ -44,8 +46,6 @@ module.exports = function(shapeObject, shapeObject, AppState) {
         x: this.position.x,
         y: this.position.y
       };
-      //console.log(newPosition);
-      //SocketObject.emitMoveObject(newPos, stage.getChildIndex(this));
     }
   };
 

@@ -6,6 +6,7 @@ module.exports = function(settings, el, AppState) {
   el.addEventListener('click', function(data) {
     console.log('Selected Shapes...');
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
+    AppState.Tools.selected = 'line';
 
     Line.set(settings.stage, settings.renderer);
     activate(settings, AppState);

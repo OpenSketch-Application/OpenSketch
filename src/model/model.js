@@ -30,6 +30,7 @@ module.exports = {
 
     'sendDrawing': 'sendDrawing',
     'sendPencil' : 'sendPencil',
-    'sendLine' : 'sendLine'
+    'sendLine' : 'sendLine',
+    'sendRect' : 'sendRect'
   }
 };
