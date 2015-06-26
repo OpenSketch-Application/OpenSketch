@@ -35,6 +35,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                    socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
 
                    socket.emit(EVENT.updateChatList, session.messages);
+                   socket.emit(EVENT.updateCanvas, session.canvasShapes);
                  }
               });
             }
@@ -128,4 +129,25 @@ whiteboardSockets.sendPencilCB = function(socket,nspWb){
   };
 };
 
+whiteboardSockets.sendPencilDB = function(socket,nspWb){
+  return function(info){
+    //add drawing to db
+    //emit drawing to other users
+   // socket.broadcast.emit(EVENT.sendPencil,info);
+     sessionid = socket.adapter.nsp.name.split('/');
+    sessionid = sessionid[sessionid.length - 1];
+    
+    Session.findById(sessionid, function(err,session){
+      if(err){
+        console.log('error(sendPenciltoDb)');
+      }else if(session){
+        session.canvasShapes.push(info);
+        session.save(function(err){
+         if(err) console.log('error saving (sendpenciltodb)'); 
+        });
+      }
+    });
+
+  };
+};
 module.exports = whiteboardSockets;

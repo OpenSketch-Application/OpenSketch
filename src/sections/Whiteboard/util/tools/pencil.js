@@ -4,6 +4,7 @@ var EVENT = require('../../../../model/model').socketEvents;
 module.exports = function(info, el) {
   var userID = info.userID;
   var stage = info.stage;
+  var path = [];
   var renderer = info.renderer;
   var isDown = false;
   var prevPos = { x: null, y: null };
@@ -16,6 +17,7 @@ module.exports = function(info, el) {
 
   function mousedown(data) {
     isDown = true;
+    path = [];
     prevPos.x = data.global.x;
     prevPos.y = data.global.y;
 
@@ -29,7 +31,9 @@ module.exports = function(info, el) {
       graphics.moveTo(prevPos.x, prevPos.y);
       var prevX = prevPos.x;
       var prevY = prevPos.y;
-
+      
+      path.push(prevX);
+      path.push(prevY);
       graphics.lineTo(data.global.x, data.global.y);
       prevPos.x = data.global.x;
       prevPos.y = data.global.y;
@@ -50,6 +54,12 @@ module.exports = function(info, el) {
 
   function mouseup() {
     isDown = false;
+    shape = {};
+    shape.path = path;
+    shape.strokeWeight = settings.strokeWeight;
+    shape.color = settings.color;
+    info.socket.emit(EVENT.sendPencilDB,shape);
+
   }
 
   function mouseout(data) {

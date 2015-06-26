@@ -3,8 +3,9 @@ var PIXI = require('pixi');
 module.exports = function(settings, el) {
   el.addEventListener('click', function(data) {
     console.log('Selected Color...');
-
+    var color = prompt('Enter hex color ');
     selectPressed = true;
+    settings.color =parseInt("0x"+color);
     activate(settings.stage, settings.renderer);
   });
 };

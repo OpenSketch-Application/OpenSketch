@@ -12,6 +12,7 @@ module.exports = {
     'validateSession': 'validateSession',
     'updateUserList': 'updateUserList',
     'updateChatList': 'updateChatList',
+    'updateCanvas': 'updateCanvas',
     'getSocketID': 'getSocketID',
     'createSession': 'createSession',
     'badSession': 'badSession',
@@ -23,6 +24,8 @@ module.exports = {
     'objectDeleted': 'objectDeleted',
 
     'sendPencil' : 'sendPencil',
+    'sendPencilDB' : 'sendPencilDB',
+
     'sendLine' : 'sendLine'
   }
 };
