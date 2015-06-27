@@ -13,6 +13,7 @@ module.exports = function(settings, el, AppState) {
   });
 };
 
+
 function activate(settings, AppState) {
   // var isActive = true;
   var isDown = false;

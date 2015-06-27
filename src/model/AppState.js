@@ -31,6 +31,7 @@ var AppState = {
       strokeWidth: 1
     },
     select: {
+      mouseData: null,
       selectedObject: null
     },
     line: {

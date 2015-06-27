@@ -1,63 +1,41 @@
+'use strict';
 var PIXI = require('pixi');
 var Rect = require('../shapes/Rectangle');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(settings, el, AppState) {
+  var stage = AppState.Canvas.stage;
+  var Socket = AppState.Socket;
+  var Shapes = AppState.Canvas.Shapes;
+  var isDown = false;
+  var drawBegan = false;
+  var rect;
+  var originalCoords;
+
   el.addEventListener('click', function(data) {
+    data.preventDefault();
     console.log('Selected Shapes...');
-    //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
+    //if(settings.toolbar.toolSelected) return;
+    //// Return early if toolbar Select was picked
 
     // Set the selected tool on AppState
     AppState.Tools.selected = 'rectangle';
 
-    //Rect.set(settings.stage, settings.renderer);
     activate(settings, AppState);
   });
-};
 
-function activate(settings, AppState) {
-  // var isActive = true;
-  var isDown = false;
-  var originalCoords;
-  var drawBegan = false;
-  var graphics;
-  var rect;
-  var stage = settings.stage;
-  var renderer = settings.renderer;
-  var socket = AppState.Socket;
-  //var Shapes = AppState.Canvas.Shapes;
-  var Canvas = AppState.Canvas;
-
-  stage.mousedown = function(data) {
+  var mousedown = function(data) {
     isDown = true;
     data.originalEvent.preventDefault();
-    //movingSelf = true;
-    //this.data = data;
     originalCoords = data.getLocalPosition(this);
 
-    //graphics = new PIXI.Graphics();
     rect = new Rect(AppState.Tools.rectangle);
-    //finalGraphics = new PIXI.Graphics();
-
-    //curStageIndex = stage.children.length;
-
-    // SocketObject.emitDrawObject({
-    //   objectType: 'rectangle',
-    //   startCoords: originalCoords,
-    //   dimensions: {
-    //     width: 1,
-    //     height: 1
-    //   },
-    //   color: 0xFF0000,
-    //   stageIndex: curStageIndex + 1
-    // });
-
-    console.log("drawing");
   };
 
-  stage.mousemove = function(data) {
+  var mousemove = function(data) {
     if(isDown) {
+      data.originalEvent.preventDefault();
       var localPos = data.getLocalPosition(this);
       var topLeft = {};
 
@@ -66,10 +44,6 @@ function activate(settings, AppState) {
       // graphics.beginFill(0xFFFFFF); // style.fillColor
       // graphics.lineWidth = 2; // style.lineWidth
       // graphics.lineColor = 0x000000; // style.lineColor
-
-
-
-      // //console.log(originalCoords);
 
       var width = localPos.x - originalCoords.x;
       var height = localPos.y - originalCoords.y;
@@ -88,69 +62,41 @@ function activate(settings, AppState) {
         height: height
       }, AppState.Canvas.stage);
 
-      // //spriteGraphics = graphics;
-
-      // stage.addChild(graphics);
-
-      // graphics.drawRect(
-      //   0,
-      //   0,
-      //   newDimensions.width,
-      //   newDimensions.height
-      // );
-
-      // spriteGraphics = new PIXI.Sprite(graphics.generateTexture());
-      // spriteGraphics.position.x = topLeft.x;
-      // spriteGraphics.position.y = topLeft.y;
-
-      //finalGraphics = Rect.makeRect(topLeft, newDimensions, settings);
-      //stage.addChild(spriteGraphics);
-      //graphics = null;
-      //SocketObject.emitDrawingObject(finalGraphics);
       drawBegan = true;
     }
   };
 
-  stage.mouseup = function(data) {
-    var shapeObject;
+  var mouseup = function(data) {
+    data.originalEvent.preventDefault();
 
     // Flag that tells us that mouse button was pressed down before
-    if(isDown) {
-      // layerLevel: stage.children.length,
-      // x: graphics.x,
-      // y: graphics.y,
-      // width: graphics.width,
-      // height: graphics.height,
-      // fillColor: graphics.lineColor,
-      // rotation: graphics.rotation,
-      // borderWidth: graphics.lineWidth,
-      // borderColor: graphics.lineColor,
-      // objectType: 'rectangle',
-      // userId: 'wooMee',
-      // canvasID: 'session42'
-      //shapeObject = Canvas.addNew('rectangle', graphics);
-      rect.addNew(AppState.Canvas.Shapes);
-      socket.emit(EVENT.sendRect, 'add', { rect: 'some Info' } );
+    if(isDown && drawBegan) {
+      // Add Shape to Canvas Shapes map
+      rect.addNew(Shapes, AppState.Users.currentUser._id);
 
-      //setMoveShapeListeners(graphics, shapeObject, AppState);
-      //graphics.interactive = true;
-      //graphics = null;
-      rect = null;
+      // Set active listeners on added Shape
+      rect.setRectMoveListeners(AppState);
+      //var socketRect = rect.getProperties();
+
+      // console.log(socketRect);
+      // console.log(Socket);
+      // // Emit Socket Add Event
+      // Socket.emit(EVENT.sendRect, EVENT.add, socketRect);
     }
 
-    drawBegan = false;
-    isDown = false;
-    movingSelf = false;
-
-
-    // set move Mouse Events on the final shape created
-
-    //graphics = null;
-    //var graphics = new PIXI.Graphics();
-    //SocketObject.emitDrawObject(finalGraphics);
-    //SocketObject.emitObjectAddDone(finalGraphics);
+    isDown = drawBegan = false;
   };
-  // stage.mouseout = function(data) {
+
+  // var mouseout = function(data) {
   //   isDown = false;
   // }
-}
+
+  function activate() {
+    stage.mousedown = mousedown;
+    stage.mousemove = mousemove;
+    stage.mouseup = mouseup;
+    //stage.mouseout = mouseout;
+  }
+
+};
+

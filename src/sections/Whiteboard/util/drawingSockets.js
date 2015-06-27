@@ -27,27 +27,27 @@ module.exports = function(AppState) {
   socket.on(EVENT.sendRect, function(eventType, shapeProperties) {
     console.log('event sendRect recieved');
     switch(eventType) {
-      case 'draw':
+      case EVENT.draw:
         shapes[shapeProperties._id].draw(shapeProperties);
         break;
-      case 'interactionEnd':
+      case EVENT.interactionEnd:
         shapes[shapeProperties._id].interact(shapeProperties);
         break;
-      case 'interactionBegin':
+      case EVENT.interactionBegin:
         shapes[shapeProperties._id].interact(shapeProperties);
         break;
-      case 'move':
+      case EVENT.move:
         shapes[shapeProperties._id].move(shapeProperties);
         break;
-      case 'add':
+      case EVENT.add:
         console.log('recieved add', shapeProperties);
         //AppState.Canvas.stage.addChild(shapeProperties);
         //shapes.addNew(shapeProperties);
         break;
-      case 'modify':
+      case EVENT.modify:
         shapes[shapeProperties._id].modify(shapeProperties);
         break;
-      case 'remove':
+      case EVENT.remove:
         shapes[shapeProperties._id].remove();
         break;
     }

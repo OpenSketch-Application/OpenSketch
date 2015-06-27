@@ -1,12 +1,11 @@
 'use strict';
-var PIXI = require('pixi');
+PIXI = require('pixi');
 module.exports = BaseShape;
 
-function BaseShape() {
-  this.graphics = new PIXI.Graphics();
-};
+// Abstract class, don't instantiate object
+function BaseShape() {};
 
-BaseShape.prototype.getProperties = function() {
+var getProperties = function() {
   return {
     _id: this._id,
     userId: this.userId,
@@ -14,10 +13,10 @@ BaseShape.prototype.getProperties = function() {
     rotation: this.graphics.rotation,
     interactive: this.graphics.interactive,
     alpha: this.graphics.alpha
-  }
+  };
 };
 
-BaseShape.prototype.setProperties = function(shapeProperties) {
+var setProperties = function(shapeProperties) {
   if(shapeProperties._id) this._id = shapeProperties._id;
   if(shapeProperties.userId) this.userId = shapeProperties.userId;
   if(shapeProperties.rotation) this.rotation = shapeProperties.rotation;
@@ -26,24 +25,29 @@ BaseShape.prototype.setProperties = function(shapeProperties) {
   if(shapeProperties.alpha) this.alpha = shapeProperties.alpha;
 };
 
-BaseShape.prototype.setListeners = function(Stage, Shapes, Socket) {
-  var original;
+var setMoveListeners = function(AppState) {
   var selected = false;
+  var Tools = AppState.Tools;
+
+  var _this = this;
+  _this.origin;
+  this.graphics.interactive = true;
 
   this.graphics.mousedown = function(data) {
     //console.log('mouseDownRecieved on shape', data);
-    data.originalEvent.preventDefault();
-
+    //data.originalEvent.preventDefault();
+    console.log('click fired with', AppState.Tools.selected);
     if(AppState.Tools.selected === 'select') {
-
-      this.data = data;
-      original = data.getLocalPosition(this);
+      console.log('checking info here');
+      //_this.origin = data.getLocalPosition(this);
       this.alpha = 0.9;
       selected = true;
       //graphics.selected = true;
-      //console.log(AppState);
-      AppState.Tools.select.selectedObject = this;
+      console.log('origin', _this.origin);
 
+      Tools.select.selectedObject = _this;
+
+      //AppState.Tools.select.mouseData = data;
     }
     else if(AppState.Tools.selected === 'fill') {
       this.clear();
@@ -51,36 +55,32 @@ BaseShape.prototype.setListeners = function(Stage, Shapes, Socket) {
       //this.endFill(AppState.Tools.fill.fillColor);
       //AppState.Canvas.stage.addChild(this);
     }
-  };
+  }.bind(this.graphics);
 
-  graphics.mousemove = function(data)
-  {
-    if(selected) {
-      var newPosition = this.data.getLocalPosition(this.parent);
-      //movingSelf = true;
-
-      this.position.x = newPosition.x - original.x;
-      this.position.y = newPosition.y - original.y;
-
-      // var newPos = {
-      //   x: this.position.x,
-      //   y: this.position.y
-      // };
-    }
-  };
-
-  graphics.mouseup = function(data) {
+  this.graphics.mouseup = function(data) {
+    //data.originalEvent.preventDefault();
     selected = false;
     this.alpha = 1;
-    //shapeObject.selected = false;
-    // set the interaction data to null
-    this.data = null;
+
     //movingSelf = false;
     //SocketObject.emitObjectMoveDone(stage.getChildIndex(this));
-  };
-}
+  }.bind(this.graphics);
+};
 
+// Use Parasitic Combination Inheritance Pattern
+BaseShape.prototype = {
+  // Construction
+  //create: create,
 
+  // Getter/Setters
+  getProperties: getProperties,
+  setProperties: setProperties,
+
+  // Methods
+  // Mouse Events
+  setMoveListeners: setMoveListeners
+
+};
 
 
 

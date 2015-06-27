@@ -22,7 +22,6 @@ module.exports = {
     'createSession': 'createSession',
     'badSession': 'badSession',
 
-
     // Pixi/Canvas Draw Events
     'objectModified':'objectModified',
     'objectAdded':'objectAdded',
@@ -31,6 +30,16 @@ module.exports = {
     'sendDrawing': 'sendDrawing',
     'sendPencil' : 'sendPencil',
     'sendLine' : 'sendLine',
-    'sendRect' : 'sendRect'
+    'sendRect' : 'sendRect',
+
+    // Specific Shape Events
+    // INCLUDE in only Socket Event, as first parameter
+    'add': 'add',
+    'draw': 'draw',
+    'move': 'move',
+    'modify': 'modify',
+    'remove': 'remove',
+    'interactionStart': 'interactionStart',
+    'interactionEnd': 'interactionEnd'
   }
 };

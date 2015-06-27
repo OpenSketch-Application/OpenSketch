@@ -125,18 +125,21 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
 //DRAW
 whiteboardSockets.sendPencilCB = function(socket,nspWb){
   return function(info){
+    console.log('draw pencil received');
     //add drawing to db
     //emit drawing to other users
-    socket.broadcast.emit(EVENT.sendPencil,info);
+    socket.broadcast.emit(EVENT.sendPencil, info);
 
   };
 };
 
 whiteboardSockets.sendRectCB = function(socket, nspWb) {
+  console.log('send Rect socket connected');
   return function(eventType, data) {
+    console.log('recieved socket shape event');
     console.log(eventType);
     console.log(data);
-    socket.broadcast.emit(EVENT.sendRect, 'add', data);
+    socket.broadcast.emit(EVENT.sendRect, EVENT.add, data);
   }
 }
 
