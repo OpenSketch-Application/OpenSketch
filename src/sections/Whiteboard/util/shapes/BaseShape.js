@@ -39,7 +39,7 @@ var setMoveListeners = function(AppState) {
     console.log('click fired with', AppState.Tools.selected);
     if(AppState.Tools.selected === 'select') {
       console.log('checking info here');
-      //_this.origin = data.getLocalPosition(this);
+      _this.origin = data.getLocalPosition(this);
       this.alpha = 0.9;
       selected = true;
       //graphics.selected = true;
