@@ -16,18 +16,18 @@ module.exports = function(AppState, el) {
   //var Stage = AppState.Canvas.stage;
 
   var mousedown = function(data) {
-    data.originalEvent.preventDefault();
+    //data.originalEvent.preventDefault();
 
     selected = true;
-    Select.selectedObject !== null;
-
+    //Select.selectedObject !== null;
+    console.log('Select', Select);
     // Fire off selected ObjectId to server
     //Socket.emit(EVENTS.);
   };
 
   var mousemove = function(data) {
-    data.originalEvent.preventDefault();
-
+    //data.originalEvent.preventDefault();
+    // console.log('moving', Select);
     // Set selected
     if(selected = Select.selectedObject !== null) {
       console.log('move ', selected);

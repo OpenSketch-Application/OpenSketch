@@ -21,8 +21,7 @@ function activate(settings, AppState) {
   var drawBegan = false;
   var graphics;
   var inverse;
-  var stage = settings.stage;
-  var renderer = settings.renderer;
+  var stage = AppState.Canvas.stage;
 
   stage.mousedown = function(data) {
     isDown = true;
@@ -91,7 +90,9 @@ function activate(settings, AppState) {
 
     // set move Mouse Events on the final shape created
     setMoveShapeListeners(graphics, settings, AppState);
-
+    // graphics.mousedown = function(data) {
+    //   console.log('mouse down fired on ellipse');
+    // };
     //graphics = null;
     //var graphics = new PIXI.Graphics();
     //SocketObject.emitDrawObject(finalGraphics);

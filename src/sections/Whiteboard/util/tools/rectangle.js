@@ -27,15 +27,17 @@ module.exports = function(settings, el, AppState) {
 
   var mousedown = function(data) {
     isDown = true;
-    data.originalEvent.preventDefault();
+    //data.originalEvent.preventDefault();
     originalCoords = data.getLocalPosition(this);
 
     rect = new Rect(AppState.Tools.rectangle);
+
+    console.log('mousedown', rect);
   };
 
   var mousemove = function(data) {
     if(isDown) {
-      data.originalEvent.preventDefault();
+      //data.originalEvent.preventDefault();
       var localPos = data.getLocalPosition(this);
       var topLeft = {};
 
@@ -55,6 +57,7 @@ module.exports = function(settings, el, AppState) {
       topLeft.x = Math.min(originalCoords.x, localPos.x);
       topLeft.y = Math.min(localPos.y, originalCoords.y);
 
+
       rect.draw({
         x: topLeft.x,
         y: topLeft.y,
@@ -67,15 +70,20 @@ module.exports = function(settings, el, AppState) {
   };
 
   var mouseup = function(data) {
-    data.originalEvent.preventDefault();
+    //data.originalEvent.preventDefault();
 
     // Flag that tells us that mouse button was pressed down before
     if(isDown && drawBegan) {
       // Add Shape to Canvas Shapes map
       rect.addNew(Shapes, AppState.Users.currentUser._id);
-
+      console.log('mouse UP');
+      rect.graphics.mousedown = function(data) {
+        console.log('mouse down on RECTANGLE');
+      }
+      //console.log('settings rect mouse listeners');
       // Set active listeners on added Shape
       rect.setRectMoveListeners(AppState);
+      //setMoveShapeListeners(rect.graphics, rect, AppState);
       //var socketRect = rect.getProperties();
 
       // console.log(socketRect);

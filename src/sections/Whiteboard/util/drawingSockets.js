@@ -1,10 +1,15 @@
 var PIXI = require('pixi');
 var EVENT = require('../../../model/model').socketEvents;
+var Rectangle = require('./shapes/Rectangle');
+
 module.exports = function(AppState) {
   var stage = AppState.Canvas.stage;
   var shapes = AppState.Canvas.Shapes;
   var canvas = AppState.Canvas;
   var socket = AppState.Socket;
+  var tools = AppState.Tools;
+
+
 
   socket.on(EVENT.sendPencil,function(shapeObject, addFirst){
     var Shape;
@@ -42,6 +47,8 @@ module.exports = function(AppState) {
       case EVENT.add:
         console.log('recieved add', shapeProperties);
         //AppState.Canvas.stage.addChild(shapeProperties);
+        var rect = new Rectangle(shapeProperties);
+
         //shapes.addNew(shapeProperties);
         break;
       case EVENT.modify:
