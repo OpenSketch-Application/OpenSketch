@@ -6,8 +6,8 @@ var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(settings, el, AppState) {
   var stage = AppState.Canvas.stage;
-  var Socket = AppState.Socket;
-  var Shapes = AppState.Canvas.Shapes;
+  var socket = AppState.socket;
+  var shapes = AppState.Canvas.Shapes;
   var isDown = false;
   var drawBegan = false;
   var rect;
@@ -15,7 +15,7 @@ module.exports = function(settings, el, AppState) {
 
   el.addEventListener('click', function(data) {
     data.preventDefault();
-    console.log('Selected Shapes...');
+    console.log('Selected shapes...');
     //if(settings.toolbar.toolSelected) return;
     //// Return early if toolbar Select was picked
 
@@ -30,7 +30,10 @@ module.exports = function(settings, el, AppState) {
     data.originalEvent.preventDefault();
     originalCoords = data.getLocalPosition(this);
 
-    rect = new Rect(AppState.Tools.rectangle);
+    rect = new Rect(AppState.Tools.rectangle, stage);
+
+    rect.addNew(shapes, AppState.Users.currentUser._id);
+
   };
 
   var mousemove = function(data) {
@@ -38,12 +41,6 @@ module.exports = function(settings, el, AppState) {
       data.originalEvent.preventDefault();
       var localPos = data.getLocalPosition(this);
       var topLeft = {};
-
-      // graphics.clear();
-      // graphics.interactive = false;
-      // graphics.beginFill(0xFFFFFF); // style.fillColor
-      // graphics.lineWidth = 2; // style.lineWidth
-      // graphics.lineColor = 0x000000; // style.lineColor
 
       var width = localPos.x - originalCoords.x;
       var height = localPos.y - originalCoords.y;
@@ -62,6 +59,8 @@ module.exports = function(settings, el, AppState) {
         height: height
       }, AppState.Canvas.stage);
 
+      rect.getProperties();
+
       drawBegan = true;
     }
   };
@@ -70,32 +69,51 @@ module.exports = function(settings, el, AppState) {
     data.originalEvent.preventDefault();
 
     // Flag that tells us that mouse button was pressed down before
-    if(isDown && drawBegan) {
-      // Add Shape to Canvas Shapes map
-      rect.addNew(Shapes, AppState.Users.currentUser._id);
+    if(isDown) {
+      // Add Shape to Canvas shapes map
+      //rect.addNew(shapes, AppState.Users.currentUser._id);
 
       // Set active listeners on added Shape
       rect.setRectMoveListeners(AppState);
       //var socketRect = rect.getProperties();
 
-      // console.log(socketRect);
-      // console.log(Socket);
-      // // Emit Socket Add Event
-      // Socket.emit(EVENT.sendRect, EVENT.add, socketRect);
+      // Emit socket Add Event
+      //socket.emit(EVENT.sendRect, EVENT.add, socketRect);
+      if(drawBegan) {
+        rect.setRectMoveListeners(AppState);
+      }
+      else {
+        // Null currently set Shape in shapes
+        stage.removeChildAt(shapes[rect._id].layerLevel);
+        rect.remove(shapes);
+        //shapes[rect._id] = null;
+      }
     }
+
 
     isDown = drawBegan = false;
   };
 
-  // var mouseout = function(data) {
-  //   isDown = false;
-  // }
+  var mouseout = function(data) {
+    if(isDown) {
+      if(drawBegan) {
+        rect.setRectMoveListeners(AppState);
+      }
+      else {
+        rect.remove(shapes);
+        //shapes[rect._id] = null;
+      }
+    }
+
+
+    isDown = drawBegan = false;
+  }
 
   function activate() {
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;
-    //stage.mouseout = mouseout;
+    stage.mouseout = mouseout;
   }
 
 };

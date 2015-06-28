@@ -5,15 +5,14 @@ module.exports = BaseShape;
 // Abstract class, don't instantiate object
 function BaseShape() {};
 
-var getProperties = function() {
-  return {
-    _id: this._id,
-    userId: this.userId,
-    layerLevel: this.layerLevel,
-    rotation: this.graphics.rotation,
-    interactive: this.graphics.interactive,
-    alpha: this.graphics.alpha
-  };
+var getProperties = function(shapeModel) {
+  shapeModel._id = this._id;
+  shapeModel.userId = this.userId;
+  shapeModel.layerLevel = this.layerLevel;
+  shapeModel.rotation = this.graphics.rotation;
+  shapeModel.interactive = this.graphics.interactive;
+
+  return shapeModel;
 };
 
 var setProperties = function(shapeProperties) {
@@ -22,7 +21,6 @@ var setProperties = function(shapeProperties) {
   if(shapeProperties.rotation) this.rotation = shapeProperties.rotation;
   if(shapeProperties.layerLevel) this.layerLevel = shapeProperties.layerLevel;
   if(shapeProperties.interactive) this.interactive = shapeProperties.interactive;
-  if(shapeProperties.alpha) this.alpha = shapeProperties.alpha;
 };
 
 var setMoveListeners = function(AppState) {

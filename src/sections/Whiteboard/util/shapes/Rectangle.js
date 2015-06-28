@@ -3,76 +3,104 @@ var PIXI = require('pixi');
 var BaseShape = require('./BaseShape');
 
 module.exports = Rectangle;
-// var create = function(o) {
-//   function F() {};
 
-//   F.prototype = o;
-//   return new F();
-// };
-
-// var inherit = function(child, parent) {
-//   var copyParent = create(parent);
-
-//   copyParent.constructor = child;
-
-//   child.prototype = copyParent;
-// };
-
-function Rectangle(shapeProperties) {
+function Rectangle(shapeProperties, stage) {
   this.graphics = new PIXI.Graphics();
-  BaseShape.prototype.setProperties.call(this, shapeProperties);
   this.objectType = 'rect';
-  this.graphics.x = shapeProperties.x || 0;
-  this.graphics.y = shapeProperties.y || 0;
-  this.graphics.width = shapeProperties.width || 0;
-  this.graphics.height = shapeProperties.height || 0;
-  this.graphics.lineWidth = shapeProperties.lineWidth || 1;
-  this.graphics.lineColor = shapeProperties.lineColor || 0x000000;
-  this.graphics.fillColor = 0xFFFFFF; //shapeProperties.fillColor || 0xFFFFFF;
+
+  // Prefill Shape Model
+  this.shape = {
+    _id: '',
+    userId: '',
+    layerLevel: 0,
+    rotation: 0,
+    interactive: false,
+    x: 0,
+    y: 0,
+    width: 0,
+    height: 0,
+    lineWidth: 0,
+    lineColor: 0,
+    fillColor: 0,
+    lineAlpha: 0,
+    fillAlpha: 0
+  }
+
+  // Set defaults
+  this.lineWidth = 1;
+  this.lineColor = 0x000000;
+  this.fillColor = 0xFFFFFF;
+  this.lineAlpha = 1;
+  this.fillAlpha = 1;
+
+  // Check stage children size, before attaching
+  this.layerLevel = stage.children.length;
+
+  stage.addChild(this.graphics);
 }
 
-//inherit(Rectangle, BaseShape);
+// Set prototype to the BaseShape
 Rectangle.prototype = new BaseShape();
 
 // Get Properties for Socket (Does not include graphics object)
 Rectangle.prototype.getProperties = function() {
-  var rect = BaseShape.prototype.getProperties.call(this);
-  var origin = this.graphics.toLocal({x: 0, y: 0});
+  // Get Rectangle properties
+  var shape = {
+    x: this.x,
+    y: this.y,
+    width: this.width,
+    height: this.height,
+    lineWidth: this.lineWidth,
+    lineColor: this.lineColor,
+    fillColor: this.fillColor,
+    lineAlpha: this.lineAlpha,
+    fillAlpha: this.fillAlpha
+  }
 
-  console.log(origin);
-  console.log(this.graphics);
-  rect = this.getGraphicsData(rect);
-  // rect.x = this.graphics.x;
-  // rect.y = this.graphics.y;
-  // rect.width = this.graphics.width;
-  // rect.height = this.graphics.height;
-  // rect.lineWidth = this.graphics.lineWidth;
-  // rect.lineColor = this.graphics.lineColor;
-  // rect.fillColor = this.graphics.fillColor;
+  // Get the base properties and have it attached to temporary our shape object
+  BaseShape.prototype.getProperties.call(this, shape);
 
-  return rect;
+  return shape;
 };
 
-Rectangle.prototype.setProperties = function(shapeProperties) {
-  BaseShape.prototype.setBaseProperties.call(rect, shapeProperties);
-  if(shapeProperties.x) this.graphics.position.x = shapeProperties.x;
-  if(shapeProperties.y) this.graphics.position.y = shapeProperties.y;
-  if(shapeProperties.width) this.graphics.position.width = shapeProperties.width;
-  if(shapeProperties.height) this.graphics.position.height = shapeProperties.height;
-  if(shapeProperties.lineWidth) this.graphics.lineWidth = shapeProperties.lineWidth;
-  if(shapeProperties.lineColor) this.graphics.lineColor = shapeProperties.lineColor;
-  if(shapeProperties.fillColor) this.graphics.fillColor = 0xFFFFFF;//shapeProperties.fillColor;
-  //this.graphics.fillColor = 0xFFFFFF;
-  //this.graphics.dirty = true;
+Rectangle.prototype.setProperties = function(shapeProperties, stage) {
+
+  BaseShape.prototype.setProperties.call(this, shapeProperties);
+
+  if(shapeProperties.x) this.x;
+  if(shapeProperties.y) this.y;
+
+  if(shapeProperties.width) this.width = shapeProperties.width;
+  if(shapeProperties.height) this.height = shapeProperties.height;
+
+  if(shapeProperties.lineWidth) this.lineWidth = shapeProperties.lineWidth;
+  if(shapeProperties.lineColor) this.lineColor = shapeProperties.lineColor;
+  if(shapeProperties.fillColor) this.fillColor = shapeProperties.fillColor;
+  if(shapeProperties.lineAlpha) this.lineAlpha = shapeProperties.lineAlpha;
+  if(shapeProperties.fillAlpha) this.fillAlpha = shapeProperties.fillAlpha;  // Set Style properties to the internal Graphics object
+
+  this.graphics.lineWidth = this.lineWidth;
+  this.graphics.lineColor = this.lineColor;
+  this.graphics.fillColor = this.fillColor;
+  this.graphics.lineAlpha = this.lineAlpha;
+  this.graphics.fillAlpha = this.fillAlpha;
+
 };
 
 Rectangle.prototype.draw = function(shapeProperties, stage) {
   this.graphics.clear();
   this.graphics.interactive = false;
-  this.graphics.beginFill(0xFFFFFF); // style.fillColor
-  this.graphics.lineWidth = 1;//shapeProperties.lineWidth || this.lineWidth; // style.lineWidth
-  this.graphics.lineColor = 0x000000; // style.lineColor
 
+  // Since we cleared all the properties for redrawing, we need to set the styles again
+  this.graphics.lineWidth = shapeProperties.lineWidth || this.lineWidth;
+  this.graphics.lineColor = shapeProperties.lineColor || this.lineColor;
+  this.graphics.lineAlpha = shapeProperties.lineAlpha || this.lineAlpha;
+  this.graphics.fillAlpha = shapeProperties.fillAlpha || this.fillAlpha;
+  this.graphics.fillColor = shapeProperties.fillColor || this.fillColor;
+
+  this.graphics.beginFill(this.graphics.fillColor);
+
+  // Redraw the shape
   this.graphics.drawRect(
     shapeProperties.x,
     shapeProperties.y,
@@ -80,9 +108,7 @@ Rectangle.prototype.draw = function(shapeProperties, stage) {
     shapeProperties.height
   );
 
-  //this.graphics.dirty = true;
   stage.addChild(this.graphics);
-  this.layerLevel = stage.children.length;
 
   return this;
 };
@@ -100,14 +126,14 @@ Rectangle.prototype.addNew = function(Shapes, userId) {
   var shapeCount = Rectangle.prototype.shapeCount + 1;
   var keyIndex = 0;
   //var shapeObject = {};
-  this.userId = userId || 'unkown';// || AppState.Users.currentUser._id;
+  this.userId = this.userId || userId;// || AppState.Users.currentUser._id;
 
   // Create Unique key
   this._id = this.objectType + Rectangle.prototype.shapeCount;
 
   console.log(this._id);
 
-  while(this._id in Shapes) {
+  if(Shapes[this._id] !== null) {
     shapeCount = shapeCount%2 === 0 ? shapeCount + 1
                                       : shapeCount;
     this._id = shapeCount + this._id + this.hashKeys[keyIndex];
@@ -121,6 +147,11 @@ Rectangle.prototype.addNew = function(Shapes, userId) {
   Shapes[this._id] = this;
 
   return this;
+}
+
+Rectangle.prototype.remove = function(Shapes) {
+  Rectangle.prototype.shapeCount = Rectangle.prototype.shapeCount - 1;
+  Shapes[this._id] = null;
 }
 
 Rectangle.prototype.hasher = function(Shapes) {}
