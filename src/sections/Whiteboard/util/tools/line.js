@@ -1,5 +1,6 @@
 var PIXI = require('pixi');
 var Line = require('../shapes/Line');
+var EVENT = require('../../../../model/model').socketEvents;
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 
 module.exports = function(settings, el, AppState) {
@@ -23,6 +24,7 @@ function activate(settings, AppState) {
   var inverse;
   var stage = settings.stage;
   var renderer = settings.renderer;
+  var socket = settings.socket;
 
   stage.mousedown = function(data) {
     isDown = true;
@@ -70,6 +72,18 @@ function activate(settings, AppState) {
     graphics.interactive = true;
 
     setMoveShapeListeners(graphics, settings, AppState);
+    var loc = data.getLocalPosition(this);
+    var obj = {
+      x1:originalCoords.x ,
+      y1:originalCoords.y ,
+      x2:loc.x ,
+      y2:loc.y ,
+      color: graphics.lineColor,
+      strokeWeight: graphics.lineWidth,
+      type: 'line'
+    };
+    socket.emit(EVENT.sendObject,obj);
+    socket.emit(EVENT.saveObject,obj);
     //SocketObject.emitDrawObject(graphics);
 
     //SocketObject.emitObjectAddDone(graphics);

@@ -47,7 +47,7 @@ module.exports = function(info, el) {
         color: settings.color,
         strokeWeight: settings.strokeWeight
       };
-      info.socket.emit(EVENT.sendPencil,shapeinfo);
+      info.socket.emit(EVENT.sendPencil,'mousemove',shapeinfo);
       //renderer.render(stage);
     }
   }
@@ -58,7 +58,8 @@ module.exports = function(info, el) {
     shape.path = path;
     shape.strokeWeight = settings.strokeWeight;
     shape.color = settings.color;
-    info.socket.emit(EVENT.sendPencilDB,shape);
+    shape.type = 'pencil';
+    info.socket.emit(EVENT.sendPencil,'mouseup',shape);
 
   }
 

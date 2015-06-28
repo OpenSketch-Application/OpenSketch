@@ -24,8 +24,10 @@ module.exports = {
     'objectDeleted': 'objectDeleted',
 
     'sendPencil' : 'sendPencil',
-    'sendPencilDB' : 'sendPencilDB',
 
-    'sendLine' : 'sendLine'
+    'sendLine' : 'sendLine',
+    
+    'sendObject' : 'sendObject',
+    'saveObject' : 'saveObject'
   }
 };

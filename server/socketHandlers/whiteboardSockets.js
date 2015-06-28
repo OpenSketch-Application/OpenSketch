@@ -121,33 +121,54 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
 
 //DRAW
 whiteboardSockets.sendPencilCB = function(socket,nspWb){
-  return function(info){
+  return function(condition,info){
     //add drawing to db
     //emit drawing to other users
-    socket.broadcast.emit(EVENT.sendPencil,info);
-
-  };
-};
-
-whiteboardSockets.sendPencilDB = function(socket,nspWb){
-  return function(info){
-    //add drawing to db
-    //emit drawing to other users
-   // socket.broadcast.emit(EVENT.sendPencil,info);
-     sessionid = socket.adapter.nsp.name.split('/');
-    sessionid = sessionid[sessionid.length - 1];
-    
-    Session.findById(sessionid, function(err,session){
-      if(err){
-        console.log('error(sendPenciltoDb)');
-      }else if(session){
-        session.canvasShapes.push(info);
-        session.save(function(err){
-         if(err) console.log('error saving (sendpenciltodb)'); 
+    switch(condition){
+      case 'mousemove':
+        socket.broadcast.emit(EVENT.sendPencil,info);
+        console.log('mousemove');
+        break;
+      case 'mouseup':
+        console.log('mouseup');
+        sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
+        Session.findById(sessionid, function(err,session){
+          if(err){
+            console.log('error(sendPenciltoDb)');
+          }else if(session){
+            session.canvasShapes.push(info);
+            session.save(function(err){
+              if(err) console.log('error saving (sendpenciltodb)'); 
+            });
+          }
         });
-      }
-    });
+        break;
+    }
 
   };
 };
+
+whiteboardSockets.sendObjectCB = function(socket,nspWb){
+  return function(info){
+    socket.broadcast.emit(EVENT.sendObject,info);
+  }
+};
+whiteboardSockets.saveObjectCB = function(socket,nspWb){
+  return function(info){
+        sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
+        Session.findById(sessionid, function(err,session){
+          if(err){
+            console.log('error');
+          }else if(session){
+            session.canvasShapes.push(info);
+            session.save(function(err){
+              if(err) console.log('error saving object'); 
+            });
+          }
+        });
+  }
+};
+
 module.exports = whiteboardSockets;

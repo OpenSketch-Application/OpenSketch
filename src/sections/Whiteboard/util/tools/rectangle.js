@@ -1,6 +1,7 @@
 var PIXI = require('pixi');
 var Rect = require('../shapes/Rectangle');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
+var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(settings, el, AppState) {
   el.addEventListener('click', function(data) {
@@ -22,6 +23,7 @@ function activate(settings, AppState) {
   var inverse;
   var stage = settings.stage;
   var renderer = settings.renderer;
+  var socket = settings.socket;
 
   stage.mousedown = function(data) {
     isDown = true;
@@ -95,8 +97,26 @@ function activate(settings, AppState) {
     movingSelf = false;
     graphics.interactive = true;
 
+
     // set move Mouse Events on the final shape created
     setMoveShapeListeners(graphics, settings, AppState);
+    var loc = data.getLocalPosition(this);
+    width = loc.x - originalCoords.x;
+    height = loc.y - originalCoords.y;
+
+    var shape = 
+      {
+        x: originalCoords.x,
+        y: originalCoords.y,
+        w: width,
+        h: height,
+        strokeWeight:graphics.lineWidth,
+        color: graphics.lineColor,
+        type: 'rectangle'
+      };
+
+     socket.emit(EVENT.sendObject,shape);
+     socket.emit(EVENT.saveObject,shape);
 
     //graphics = null;
     //var graphics = new PIXI.Graphics();
