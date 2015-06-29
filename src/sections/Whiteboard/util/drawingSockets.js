@@ -34,12 +34,14 @@ module.exports = function(AppState) {
         shapes[shapeData._id].draw(shapeData);
         shapes[shapeData._id].highlight();
         break;
+
+      // Any interaction that involves a mouseup or mousedown
       case 'interactionEnd':
-        //shapes[shapeData._id].interact(shapeData);
         console.log('eventType', shapeData);
         shapes[shapeData].setRectMoveListeners(AppState);
         shapes[shapeData].unHighlight();
         break;
+
       case 'interactionBegin':
         shapes[shapeData._id].interact(shapeData);
         break;
@@ -49,7 +51,7 @@ module.exports = function(AppState) {
       case 'add':
         console.log('recieved add', shapeData);
         //AppState.Canvas.stage.addChild(shapeData);
-        var rect = new Rectangle(shapeData, stage);
+        var rect = new Rectangle(shapeData, shapeData.userId, stage);
 
         rect.addNew(shapes);
         break;

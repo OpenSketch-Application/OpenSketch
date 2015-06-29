@@ -20,7 +20,8 @@ module.exports = function(AppState, el) {
     //data.originalEvent.preventDefault();
 
     selected = true;
-    Select.selectedObject !== null;
+    //Select.selectedObject !== null;
+    //console.log('Select.selectedObject', Select.selectedObject !== null);
     //console.log(data);
     //console.log(data.target);
     // Fire off selected ObjectId to server

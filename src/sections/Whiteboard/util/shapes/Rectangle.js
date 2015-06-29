@@ -4,11 +4,11 @@ var BaseShape = require('./BaseShape');
 
 module.exports = Rectangle;
 
-function Rectangle(shapeProperties, stage) {
+function Rectangle(shapeProperties, userId, stage) {
   this.graphics = new PIXI.Graphics();
   this.highlightShape = new PIXI.Graphics();
   this.graphics.addChild(this.highlightShape);
-  this.objectType = 'rect';
+  this.objectType = 'rectangle';
 
   // Prefill Shape Model
   // this.shape = {
@@ -28,12 +28,63 @@ function Rectangle(shapeProperties, stage) {
   //   fillAlpha: 0
   // }
 
-  this.setProperties(shapeProperties, stage);
+  // Adding Shapes
+  // var ShapeLayer = [];
+  // var ShapeMap = {};
 
+  // Socket will always identify a shape based on its ID
+  // not its index
+  // ShapeMap['id1'] = {
+  //   'name': 'id1',
+  //   'layerLevel': ShapeLayer.length
+  // };
+
+  // Add Shape to our array map as well
+  //ShapeLayer.push(ShapeMap['id1']);
+
+  // Insert at specific point
+  // receives index value
+  // 1) Check if index element contains any object?
+  // 2) Add object at index, using splice
+  // addAt(shape, index)
+
+  // Swapping Shapes
+  // swapShapes(shape1, index1, shape2, index2)
+  /* When remove happens
+  // Check if one remove called, simply clear the graphics of shape at index
+  1) take the removed ShapeIndex
+
+  */
+
+/*
+if(child.parent) {
+  child.parent.removeChild(child);
+}
+
+child.parent = this;
+
+this.children.splice(index, 0, child);
+
+if(this.stage)child.setStageReference(this.stage);
+
+return child;
+*/
+
+//  PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index) {
+//     var child = this.getChildAt( index );
+//     if(this.stage)
+//         child.removeStageReference();
+//     child.parent = undefined;
+//     this.children.splice( index, 1 );
+//     return child;
+// };
+
+  this.setProperties(shapeProperties);
+  // this.stage = stage;
   // Set stage index, before attaching
-  this.layerLevel = stage.children.length;
+  //this.layerLevel = stage.children.length;
 
-  stage.addChildAt(this.graphics, this.layerLevel);
+  //stage.addChildAt(this.graphics, this.layerLevel);
 }
 
 // Set prototype to the BaseShape
@@ -61,10 +112,10 @@ Rectangle.prototype.getProperties = function() {
   return shape;
 };
 
-Rectangle.prototype.setProperties = function(shapeProperties, stage) {
+Rectangle.prototype.setProperties = function(shapeProperties) {
 
   // Set Base properties by calling Base's set method
-  BaseShape.prototype.setProperties.call(this, shapeProperties, stage);
+  BaseShape.prototype.setProperties.call(this, shapeProperties);
 
   if(shapeProperties.x) this.x = shapeProperties.x || 0;
   if(shapeProperties.y) this.y = shapeProperties.y || 0;
@@ -116,46 +167,44 @@ Rectangle.prototype.draw = function(shapeProperties) {
   console.log('Line width', this.lineWidth, this.graphics.lineWidth);
   console.log('lineColor', this.lineColor, this.graphics.lineColor);
   console.log('fillColor', this.fillColor, this.graphics.fillColor);
-  this.stage.addChildAt(this.graphics, this.layerLevel);
+
+  this.graphics.stage.addChildAt(this.graphics, this.layerLevel);
 
   return this;
 };
 
-Rectangle.prototype.move = function(x, y, stage) {
+Rectangle.prototype.move = function(x, y) {
 
   this.graphics.position.x = x;
   this.graphics.position.y = y;
-  //this.graphics.dirty = true;
-  //stage.addChildAt(this.graphics);
 };
 
-Rectangle.prototype.addNew = function(Shapes, userId) {
-  this.userId = this.userId || userId;
+// Rectangle.prototype.addNew = function(Shapes, userId) {
+//   this.userId = this.userId || userId;
 
-  // increment object type number
-  var shapeCount = Rectangle.prototype.shapeCount + 1;
-  var keyIndex = 0;
+//   // increment object type number
+//   var shapeCount = Rectangle.prototype.shapeCount + 1;
+//   var keyIndex = 0;
 
-  // Create Unique key
-  this._id = this.objectType + Rectangle.prototype.shapeCount;
+//   // Create Unique key
+//   this._id = this.objectType + Rectangle.prototype.shapeCount;
 
-  //console.log(this._id);
 
-  if(Shapes[this._id] !== null) {
-    shapeCount = shapeCount%2 === 0 ? shapeCount + 1
-                                      : shapeCount;
-    this._id = shapeCount + this._id + this.hashKeys[keyIndex];
-    keyIndex = ++keyIndex%5;
-  }
+//   while(Shapes[this._id]) {
+//     shapeCount = shapeCount%2 === 0 ? shapeCount + 1
+//                                     : shapeCount;
+//     this._id = shapeCount + this._id + this.hashKeys[keyIndex];
+//     keyIndex = ++keyIndex%5;
+//   }
 
-  // Set the Class types shapeCount for this type
-  Rectangle.prototype.shapeCount = shapeCount;
+//   // Set the Class types shapeCount for this type
+//   Rectangle.prototype.shapeCount = shapeCount;
 
-  // Set object in Shape Map
-  Shapes[this._id] = this;
+//   // Set object in Shape Map
+//   Shapes[this._id] = this;
 
-  return this;
-}
+//   return this;
+// }
 
 //Rectangle.prototypr.get
 
@@ -241,7 +290,6 @@ Rectangle.prototype.highlight = function(color) {
   this.highlightShape.lineColor = 0x2D8EF0;
   //this.highlightShape.lineColor = color || 0x0000FF;
   this.highlightShape.alpha = 1;
-
 
   this.highlightShape.drawRect(
     this.x,

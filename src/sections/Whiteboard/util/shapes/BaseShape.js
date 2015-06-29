@@ -3,11 +3,14 @@ PIXI = require('pixi');
 module.exports = BaseShape;
 
 // Abstract class, don't instantiate object
-function BaseShape() {};
+function BaseShape() {
+  console.log('Calling base constructor');
+};
 
 var getProperties = function(shapeModel) {
   shapeModel._id = this._id;
-  shapeModel.userId = this.userId;
+  shapeModel.originalUserId = this.userId;
+  shapeModel.currentUserId = this.currentUserId;
   shapeModel.layerLevel = this.layerLevel;
   shapeModel.rotation = this.graphics.rotation;
   shapeModel.interactive = this.graphics.interactive;
@@ -15,19 +18,19 @@ var getProperties = function(shapeModel) {
   return shapeModel;
 };
 
-var setProperties = function(shapeProperties, stage) {
-  this._id = shapeProperties._id || null;
-  this.userId = shapeProperties.userId || null;
+var setProperties = function(shapeProperties) {
+  this._id = shapeProperties._id || '';
+  this.originalUserId = shapeProperties.originalUserId || '';
+  this.currentUserId = shapeProperties.currentUserId || '';
   this.rotation = shapeProperties.rotation || 0;
-  this.layerLevel = shapeProperties.layerLevel || stage.children.length;
+  this.layerLevel = shapeProperties.layerLevel || 0;
   this.interactive = shapeProperties.interactive || false;
-  this.stage = stage;
 };
 
 var setMoveListeners = function(AppState) {
   var selected = false;
   var Tools = AppState.Tools;
-
+  var Users = AppState.Users;
   var _this = this;
   _this.origin;
   this.graphics.interactive = true;
@@ -43,7 +46,7 @@ var setMoveListeners = function(AppState) {
       selected = true;
       //graphics.selected = true;
       console.log('origin', _this.origin);
-
+      _this.currentUserId = Users.currentUser;
       Tools.select.selectedObject = _this;
 
       //AppState.Tools.select.mouseData = data;

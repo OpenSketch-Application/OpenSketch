@@ -31,14 +31,14 @@ module.exports = function(settings, el, AppState) {
     //data.originalEvent.preventDefault();
     originalCoords = data.getLocalPosition(this);
 
-    rect = new Rect(AppState.Tools.rectangle, stage);
+    rect = new Rect(Tools.rectangle, AppState.Users.currentUser._id, stage);
 
-    rect.addNew(shapes, AppState.Users.currentUser._id);
+    // Add shape to the shapes object/container
+    shapes.addNew(rect, stage);
 
-    socket.emit(EVENT.sendRect, 'add', rect.getProperties());
+    //socket.emit(EVENT.sendRect, 'add', rect.getProperties());
 
     console.log('rect added', rect.getProperties());
-
   };
 
   var mousemove = function(data) {
@@ -75,7 +75,7 @@ module.exports = function(settings, el, AppState) {
       // else {
       //   socket.emit(EVENT.sendRect, 'draw', rect.getProperties());
       // }
-      socket.emit(EVENT.sendRect, 'draw', rect.getProperties());
+      //socket.emit(EVENT.sendRect, 'draw', rect.getProperties());
 
       drawBegan = true;
     }
@@ -97,11 +97,11 @@ module.exports = function(settings, el, AppState) {
         console.log('rect._id', rect);
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        socket.emit(EVENT.sendRect, 'interactionEnd', rect._id);
+        //socket.emit(EVENT.sendRect, 'interactionEnd', rect._id);
       }
       else {
         // Null currently set Shape in shapes
-        stage.removeChildAt(shapes[rect._id].layerLevel);
+        stage.removeChildAt(rect.layerLevel);
         //rect.remove(shapes);
         shapes[rect._id] = null;
       }
@@ -118,8 +118,9 @@ module.exports = function(settings, el, AppState) {
         rect.setRectMoveListeners(AppState);
       }
       else {
-        rect.remove(shapes);
-        //shapes[rect._id] = null;
+        stage.removeChildAt(rect.layerLevel);
+        //rect.remove(shapes);
+        shapes[rect._id] = null;
       }
     }
 
