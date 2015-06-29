@@ -10,19 +10,13 @@ function drawShape(info,stage){
         stage.addChild(graphics);
         break;
       case 'rectangle':
-        graphics = new PIXI.Graphics();
         graphics.beginFill(0xFFFFFF);        
-        graphics.lineWidth = info.strokeWeight;
-        graphics.lineColor = info.color;
         graphics.drawRect(info.x,info.y,info.w,info.h);
         graphics.endFill();
         stage.addChild(graphics);
         break;
       case 'ellipse':
-        graphics = new PIXI.Graphics();
         graphics.beginFill(0xFFFFFF);        
-        graphics.lineWidth = info.strokeWeight;
-        graphics.lineColor = info.color;
         graphics.drawEllipse(info.x,info.y,info.w,info.h);
         graphics.endFill();
         stage.addChild(graphics);
