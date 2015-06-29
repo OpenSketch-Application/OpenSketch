@@ -45,8 +45,8 @@ module.exports = function(info, el, AppState) {
         color: settings.color,
         strokeWeight: settings.strokeWeight
       };
+
       info.socket.emit(EVENT.sendPencil,shapeinfo);
-      //renderer.render(stage);
     }
   }
 

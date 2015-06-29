@@ -15,12 +15,13 @@ var getProperties = function(shapeModel) {
   return shapeModel;
 };
 
-var setProperties = function(shapeProperties) {
-  if(shapeProperties._id) this._id = shapeProperties._id;
-  if(shapeProperties.userId) this.userId = shapeProperties.userId;
-  if(shapeProperties.rotation) this.rotation = shapeProperties.rotation;
-  if(shapeProperties.layerLevel) this.layerLevel = shapeProperties.layerLevel;
-  if(shapeProperties.interactive) this.interactive = shapeProperties.interactive;
+var setProperties = function(shapeProperties, stage) {
+  this._id = shapeProperties._id || null;
+  this.userId = shapeProperties.userId || null;
+  this.rotation = shapeProperties.rotation || 0;
+  this.layerLevel = shapeProperties.layerLevel || stage.children.length;
+  this.interactive = shapeProperties.interactive || false;
+  this.stage = stage;
 };
 
 var setMoveListeners = function(AppState) {
@@ -34,8 +35,8 @@ var setMoveListeners = function(AppState) {
   this.graphics.mousedown = function(data) {
     //console.log('mouseDownRecieved on shape', data);
     //data.originalEvent.preventDefault();
-    console.log('click fired with', AppState.Tools.selected);
-    if(AppState.Tools.selected === 'select') {
+    console.log('click fired with', Tools.selected);
+    if(Tools.selected === 'select') {
       console.log('checking info here');
       _this.origin = data.getLocalPosition(this);
       this.alpha = 0.9;
@@ -49,7 +50,7 @@ var setMoveListeners = function(AppState) {
     }
     else if(AppState.Tools.selected === 'fill') {
       this.clear();
-      console.log('fill Color: ' + AppState.Tools.fill.fillColor);
+      console.log('fill Color: ' + Tools.fill.fillColor);
       //this.endFill(AppState.Tools.fill.fillColor);
       //AppState.Canvas.stage.addChild(this);
     }
@@ -67,14 +68,11 @@ var setMoveListeners = function(AppState) {
 
 // Use Parasitic Combination Inheritance Pattern
 BaseShape.prototype = {
-  // Construction
-  //create: create,
 
   // Getter/Setters
   getProperties: getProperties,
   setProperties: setProperties,
 
-  // Methods
   // Mouse Events
   setMoveListeners: setMoveListeners
 

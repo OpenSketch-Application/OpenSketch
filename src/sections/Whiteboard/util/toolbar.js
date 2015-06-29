@@ -23,6 +23,9 @@ function toolbar(elements, AppState) {
   var el;
   var imgs = [];
   var _this = this;
+  var toolbox = find('#header ul.toolbar');
+  var previouslySelected; // Only for toolbar HTML UI functionality
+
   this.tools = {};
   this.container = find(elements.whiteboard);
   this.socket = AppState.Socket;
@@ -38,47 +41,52 @@ function toolbar(elements, AppState) {
   AppState.Canvas.stage = this.stage;
   AppState.Canvas.renderer = this.renderer;
 
+  // Start Animation loop
   animate();
-
-  setDrawingSockets(AppState);
 
   function animate() {
     requestAnimFrame(animate);
     _this.renderer.render(_this.stage);
   }
 
-  // AppState.Canvas.Tools
-  //var settings = AppState.Canvas.Tools;
+  // NEED TO GET RID OF THIS
   var settings = {
     container: this.container,
     renderer: this.renderer,
     stage: this.stage,
     socket: this.socket,
-    //selectedTool: this.selectedTool
     selectedTool: function() {
       return _this.selectedTool;
     }
   };
 
+  // Main drawing socket events
+  setDrawingSockets(AppState);
+
+  // Enables drag N drop functionality for Canvas images
   dragndrop(settings, AppState);
+
+  // Need to fix Shapes selection state
+  toolbox.addEventListener('click', function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+
+    _this.selectedTool = e.target.id;
+    var button = e.target;
+
+    button.className = "tool-selected";
+
+    if(previouslySelected) {
+      previouslySelected.className = "";
+    }
+
+    previouslySelected = button;
+  }, false);
+
 
   for(var tool in elements.tools) {
     el = find(typeof elements.tools[tool] === 'string' ?
                      elements.tools[tool] : elements.tools[tool].el);
-    imgs.push(el);
-
-    el.addEventListener('click', function(e) {
-      this.className = 'tool-selected';
-      console.log(el);
-
-      // Store selected tool
-      _this.selectedTool = e.target.id;
-
-      imgs.forEach(function(img) {
-        if(img !== this)
-          img.className = "";
-      }.bind(this));
-    });
 
     switch(tool) {
       case 'select':

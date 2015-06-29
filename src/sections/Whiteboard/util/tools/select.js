@@ -4,10 +4,11 @@ var EVENTS = require('../../../../model/model').socketEvents;
 module.exports = function(AppState, el) {
 
   el.addEventListener('click', function(e) {
-    console.log('click fired');
+    //console.log('click fired');
     AppState.Tools.selected = 'select';
     activate();
-  })
+  });
+
   var stage = AppState.Canvas.stage;
   var Select = AppState.Tools.select;
   var Socket = AppState.Socket;
@@ -16,11 +17,12 @@ module.exports = function(AppState, el) {
   //var Stage = AppState.Canvas.stage;
 
   var mousedown = function(data) {
-    data.originalEvent.preventDefault();
+    //data.originalEvent.preventDefault();
 
     selected = true;
     Select.selectedObject !== null;
-
+    //console.log(data);
+    //console.log(data.target);
     // Fire off selected ObjectId to server
     //Socket.emit(EVENTS.);
   };
@@ -31,10 +33,10 @@ module.exports = function(AppState, el) {
     // Set selected
     if(selected = Select.selectedObject !== null) {
       console.log('move ', selected);
-      var selectedTool = Select.selectedObject;
-      var x = data.global.x - selectedTool.origin.x;
-      var y = data.global.y - selectedTool.origin.y;
-      selectedTool.move(x, y, stage);
+      var selectedObject = Select.selectedObject;
+      var x = data.global.x - selectedObject.origin.x;
+      var y = data.global.y - selectedObject.origin.y;
+      selectedObject.move(x, y, stage);
     }
   };
 

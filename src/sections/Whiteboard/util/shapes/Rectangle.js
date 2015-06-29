@@ -6,37 +6,34 @@ module.exports = Rectangle;
 
 function Rectangle(shapeProperties, stage) {
   this.graphics = new PIXI.Graphics();
+  this.highlightShape = new PIXI.Graphics();
+  this.graphics.addChild(this.highlightShape);
   this.objectType = 'rect';
 
   // Prefill Shape Model
-  this.shape = {
-    _id: '',
-    userId: '',
-    layerLevel: 0,
-    rotation: 0,
-    interactive: false,
-    x: 0,
-    y: 0,
-    width: 0,
-    height: 0,
-    lineWidth: 0,
-    lineColor: 0,
-    fillColor: 0,
-    lineAlpha: 0,
-    fillAlpha: 0
-  }
+  // this.shape = {
+  //   _id: '',
+  //   userId: '',
+  //   layerLevel: 0,
+  //   rotation: 0,
+  //   interactive: false,
+  //   x: 0,
+  //   y: 0,
+  //   width: 0,
+  //   height: 0,
+  //   lineWidth: 0,
+  //   lineColor: 0,
+  //   fillColor: 0,
+  //   lineAlpha: 0,
+  //   fillAlpha: 0
+  // }
 
-  // Set defaults
-  this.lineWidth = 1;
-  this.lineColor = 0x000000;
-  this.fillColor = 0xFFFFFF;
-  this.lineAlpha = 1;
-  this.fillAlpha = 1;
+  this.setProperties(shapeProperties, stage);
 
-  // Check stage children size, before attaching
+  // Set stage index, before attaching
   this.layerLevel = stage.children.length;
 
-  stage.addChild(this.graphics);
+  stage.addChildAt(this.graphics, this.layerLevel);
 }
 
 // Set prototype to the BaseShape
@@ -44,6 +41,7 @@ Rectangle.prototype = new BaseShape();
 
 // Get Properties for Socket (Does not include graphics object)
 Rectangle.prototype.getProperties = function() {
+
   // Get Rectangle properties
   var shape = {
     x: this.x,
@@ -65,50 +63,60 @@ Rectangle.prototype.getProperties = function() {
 
 Rectangle.prototype.setProperties = function(shapeProperties, stage) {
 
-  BaseShape.prototype.setProperties.call(this, shapeProperties);
+  // Set Base properties by calling Base's set method
+  BaseShape.prototype.setProperties.call(this, shapeProperties, stage);
 
-  if(shapeProperties.x) this.x;
-  if(shapeProperties.y) this.y;
+  if(shapeProperties.x) this.x = shapeProperties.x || 0;
+  if(shapeProperties.y) this.y = shapeProperties.y || 0;
 
-  if(shapeProperties.width) this.width = shapeProperties.width;
-  if(shapeProperties.height) this.height = shapeProperties.height;
+  if(shapeProperties.width) this.width = shapeProperties.width || 0;
+  if(shapeProperties.height) this.height = shapeProperties.height || 0;
 
-  if(shapeProperties.lineWidth) this.lineWidth = shapeProperties.lineWidth;
-  if(shapeProperties.lineColor) this.lineColor = shapeProperties.lineColor;
-  if(shapeProperties.fillColor) this.fillColor = shapeProperties.fillColor;
-  if(shapeProperties.lineAlpha) this.lineAlpha = shapeProperties.lineAlpha;
-  if(shapeProperties.fillAlpha) this.fillAlpha = shapeProperties.fillAlpha;  // Set Style properties to the internal Graphics object
+  this.lineWidth = shapeProperties.lineWidth || 1; // if(shapeProperties.lineWidth)
+  this.lineColor = shapeProperties.lineColor || 0x000000; // if(shapeProperties.lineColor)
+  this.fillColor = shapeProperties.fillColor || 0xFFFFFF; // if(shapeProperties.fillColor)
+  this.lineAlpha = shapeProperties.lineAlpha || 1; // if(shapeProperties.lineAlpha)
+  this.fillAlpha = Number.parseFloat(shapeProperties.fillAlpha || 1);   // if(shapeProperties.fillAlpha)
 
+  // Set Style properties to the internal Graphics object
   this.graphics.lineWidth = this.lineWidth;
   this.graphics.lineColor = this.lineColor;
   this.graphics.fillColor = this.fillColor;
   this.graphics.lineAlpha = this.lineAlpha;
   this.graphics.fillAlpha = this.fillAlpha;
-
+  //this.graphics.alpha = 0.25;
 };
 
-Rectangle.prototype.draw = function(shapeProperties, stage) {
+Rectangle.prototype.draw = function(shapeProperties) {
   this.graphics.clear();
   this.graphics.interactive = false;
 
   // Since we cleared all the properties for redrawing, we need to set the styles again
-  this.graphics.lineWidth = shapeProperties.lineWidth || this.lineWidth;
-  this.graphics.lineColor = shapeProperties.lineColor || this.lineColor;
-  this.graphics.lineAlpha = shapeProperties.lineAlpha || this.lineAlpha;
-  this.graphics.fillAlpha = shapeProperties.fillAlpha || this.fillAlpha;
-  this.graphics.fillColor = shapeProperties.fillColor || this.fillColor;
+  if(shapeProperties.x) this.x = shapeProperties.x;
+  if(shapeProperties.y) this.y = shapeProperties.y;
+  if(shapeProperties.width) this.width = shapeProperties.width;
+  if(shapeProperties.height) this.height = shapeProperties.height;
+  this.lineWidth = this.graphics.lineWidth = shapeProperties.lineWidth || this.lineWidth;
+  this.lineColor = this.graphics.lineColor = shapeProperties.lineColor || this.lineColor;
+  this.lineAlpha = this.graphics.lineAlpha = shapeProperties.lineAlpha || this.lineAlpha;
+  this.fillAlpha = this.graphics.fillAlpha = shapeProperties.fillAlpha || this.fillAlpha;
+  this.fillColor = this.graphics.fillColor = shapeProperties.fillColor || this.fillColor;
 
-  this.graphics.beginFill(this.graphics.fillColor);
+  this.graphics.beginFill(this.fillColor);
 
   // Redraw the shape
   this.graphics.drawRect(
-    shapeProperties.x,
-    shapeProperties.y,
-    shapeProperties.width,
-    shapeProperties.height
+    this.x,
+    this.y,
+    this.width,
+    this.height
   );
 
-  stage.addChild(this.graphics);
+  console.log('ShapeProperties ', shapeProperties)
+  console.log('Line width', this.lineWidth, this.graphics.lineWidth);
+  console.log('lineColor', this.lineColor, this.graphics.lineColor);
+  console.log('fillColor', this.fillColor, this.graphics.fillColor);
+  this.stage.addChildAt(this.graphics, this.layerLevel);
 
   return this;
 };
@@ -118,29 +126,29 @@ Rectangle.prototype.move = function(x, y, stage) {
   this.graphics.position.x = x;
   this.graphics.position.y = y;
   //this.graphics.dirty = true;
-  stage.addChild(this.graphics);
+  //stage.addChildAt(this.graphics);
 };
 
 Rectangle.prototype.addNew = function(Shapes, userId) {
+  this.userId = this.userId || userId;
+
   // increment object type number
   var shapeCount = Rectangle.prototype.shapeCount + 1;
   var keyIndex = 0;
-  //var shapeObject = {};
-  this.userId = this.userId || userId;// || AppState.Users.currentUser._id;
 
   // Create Unique key
   this._id = this.objectType + Rectangle.prototype.shapeCount;
 
-  console.log(this._id);
+  //console.log(this._id);
 
   if(Shapes[this._id] !== null) {
     shapeCount = shapeCount%2 === 0 ? shapeCount + 1
                                       : shapeCount;
     this._id = shapeCount + this._id + this.hashKeys[keyIndex];
     keyIndex = ++keyIndex%5;
-    console.log(this._id);
   }
 
+  // Set the Class types shapeCount for this type
   Rectangle.prototype.shapeCount = shapeCount;
 
   // Set object in Shape Map
@@ -148,6 +156,8 @@ Rectangle.prototype.addNew = function(Shapes, userId) {
 
   return this;
 }
+
+//Rectangle.prototypr.get
 
 Rectangle.prototype.remove = function(Shapes) {
   Rectangle.prototype.shapeCount = Rectangle.prototype.shapeCount - 1;
@@ -162,25 +172,34 @@ Rectangle.prototype.shapeCount = 0;
 Rectangle.prototype.hashKeys = ['#', '@', '&', '*', '%'];
 
 Rectangle.prototype.setRectMoveListeners = function(AppState) {
+  var _this = this;
   this.setMoveListeners(AppState);
+  // If we wish to use the BaseShape mouse events as well, use bind the events to
+  // the graphics object first
   //var mousedown = this.graphics.mousedown.bind(this.graphics);
   //var mouseup = this.graphics.mouseup.bind(this.graphics);
 
-  console.log('settings rect mouse events', this.graphics);
-  console.log('Appstate', AppState.Tools);
+  //console.log('settings rect mouse events', this.graphics);
+  //console.log('Appstate', AppState.Tools);
 
   // this.graphics.mousedown = function(data) {
-  //   data.originalEvent.preventDefault();
-
+  //   // data.originalEvent.preventDefault();
   //   console.log('set Rect special mouse down');
-  //   mousedown(data);
+  //   // mousedown(data);
   // };
 
-  // this.graphics.mouseover = function(data) {
-  //   data.originalEvent.preventDefault();
+  this.graphics.mouseover = function(data) {
+    data.originalEvent.preventDefault();
+    _this.highlight(0x0000FF);
+    //console.log('set Rect special mouse over');
+  };
 
-  //   console.log('set Rect special mouse move');
-  // };
+  this.graphics.mouseout = function(data) {
+    data.originalEvent.preventDefault();
+
+    // Unhighlight
+    _this.unHighlight();
+  }
 
   // this.graphics.mouseup = function(data) {
   //   data.originalEvent.preventDefault();
@@ -190,15 +209,52 @@ Rectangle.prototype.setRectMoveListeners = function(AppState) {
   // };
 }
 
-Rectangle.prototype.getGraphicsData = function(rect) {
+Rectangle.prototype.getGraphicsData = function() {
   var graphicsData = this.graphics.graphicsData[0];
 
-  for(var prop in graphicsData) {
-    // Prevent us from copying function data
-    rect[prop] = graphicsData[prop];
+  var graphics = {
+    lineWidth: graphicsData.lineWidth,
+    lineColor: graphicsData.lineColor,
+    lineAlpha: graphicsData.lineAlpha,
+    fillAlpha: graphicsData.fillAlpha,
+    fillColor: graphicsData.fillColor
   }
 
-  return rect;
+  return graphics;
+}
+
+Rectangle.prototype.setGraphicsData = function(graphics) {
+  var graphicsData = this.graphics.graphicsData[0];
+
+  graphicsData.lineWidth = this.lineWidth = (graphics.lineWidth || this.lineWidth);
+  graphicsData.lineColor = this.lineColor = (graphics.lineColor || this.lineColor);
+  graphicsData.lineAlpha = this.lineAlpha = (graphics.lineAlpha || this.lineAlpha);
+  graphicsData.fillAlpha = this.fillAlpha = (graphics.fillAlpha || this.fillAlpha);
+  graphicsData.fillColor = this.fillColor = (graphics.fillColor || this.fillColor);
+
+  this.graphics.dirty = true;
+}
+
+Rectangle.prototype.highlight = function(color) {
+  this.highlightShape.clear();
+  this.highlightShape.lineWidth = this.lineWidth + 2;
+  this.highlightShape.lineColor = 0x2D8EF0;
+  //this.highlightShape.lineColor = color || 0x0000FF;
+  this.highlightShape.alpha = 1;
+
+
+  this.highlightShape.drawRect(
+    this.x,
+    this.y,
+    this.width,
+    this.height
+  );
+
+  this.graphics.addChildAt(this.highlightShape, 0);
+}
+
+Rectangle.prototype.unHighlight = function() {
+  this.highlightShape.clear();
 }
 
 var times = [];

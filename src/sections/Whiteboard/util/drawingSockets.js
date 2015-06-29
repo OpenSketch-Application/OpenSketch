@@ -1,5 +1,7 @@
 var PIXI = require('pixi');
 var EVENT = require('../../../model/model').socketEvents;
+var Rectangle = require('./shapes/Rectangle');
+
 module.exports = function(AppState) {
   var stage = AppState.Canvas.stage;
   var shapes = AppState.Canvas.Shapes;
@@ -7,48 +9,55 @@ module.exports = function(AppState) {
   var socket = AppState.Socket;
 
   socket.on(EVENT.sendPencil,function(shapeObject, addFirst){
-    var Shape;
+    // var Shape;
 
-    if(addFirst)
-      Shape = shapes.addNew(shapeObject);
-    else {
-      Shape = shapes[shapeObject._id];
-    }
+    // if(addFirst)
+    //   Shape = shapes.addNew(shapeObject);
+    // else {
+    //   Shape = shapes[shapeObject._id];
+    // }
 
-    Shape.setProp(shapeObject);
+    // Shape.setProp(shapeObject);
 
-    Shape.graphics.lineStyle(info.strokeWeight, info.color);
-    Shape.graphics.moveTo(info.x1, info.y1);
-    Shape.graphics.lineTo(info.x2, info.y2);
-    Shape.stage.addChild(graphics);
+    // Shape.graphics.lineStyle(info.strokeWeight, info.color);
+    // Shape.graphics.moveTo(info.x1, info.y1);
+    // Shape.graphics.lineTo(info.x2, info.y2);
+    // Shape.stage.addChild(graphics);
 
   });
 
-  socket.on(EVENT.sendRect, function(eventType, shapeProperties) {
-    console.log('event sendRect recieved');
+  socket.on(EVENT.sendRect, function(eventType, shapeData) {
+    console.log('event sendRect recieved ', eventType);
     switch(eventType) {
-      case EVENT.draw:
-        shapes[shapeProperties._id].draw(shapeProperties);
+      case 'draw':
+        console.log('received draw shape');
+        shapes[shapeData._id].draw(shapeData);
+        shapes[shapeData._id].highlight();
         break;
-      case EVENT.interactionEnd:
-        shapes[shapeProperties._id].interact(shapeProperties);
+      case 'interactionEnd':
+        //shapes[shapeData._id].interact(shapeData);
+        console.log('eventType', shapeData);
+        shapes[shapeData].setRectMoveListeners(AppState);
+        shapes[shapeData].unHighlight();
         break;
-      case EVENT.interactionBegin:
-        shapes[shapeProperties._id].interact(shapeProperties);
+      case 'interactionBegin':
+        shapes[shapeData._id].interact(shapeData);
         break;
-      case EVENT.move:
-        shapes[shapeProperties._id].move(shapeProperties);
+      case 'move':
+        shapes[shapeData._id].move(shapeData);
         break;
-      case EVENT.add:
-        console.log('recieved add', shapeProperties);
-        //AppState.Canvas.stage.addChild(shapeProperties);
-        //shapes.addNew(shapeProperties);
+      case 'add':
+        console.log('recieved add', shapeData);
+        //AppState.Canvas.stage.addChild(shapeData);
+        var rect = new Rectangle(shapeData, stage);
+
+        rect.addNew(shapes);
         break;
-      case EVENT.modify:
-        shapes[shapeProperties._id].modify(shapeProperties);
+      case 'modify':
+        shapes[shapeData._id].modify(shapeData);
         break;
-      case EVENT.remove:
-        shapes[shapeProperties._id].remove();
+      case 'remove':
+        shapes[shapeData._id].remove();
         break;
     }
   })

@@ -39,9 +39,11 @@ var AppState = {
       strokeWidth: 1
     },
     rectangle: {
-      fillColor: 0xFFFFFF,
       lineColor: 0x000000,
-      lineWidth: 1
+      lineWidth: 1,
+      lineAlpha: 1,
+      fillColor: 0x913ce6,
+      fillAlpha: 0.25
     },
     ellipse: {
       fillColor: 0xFFFFFF,
@@ -54,6 +56,25 @@ var AppState = {
     table: {
     }
   },
+
+  /*
+  // this.shape = {
+  //   _id: '',
+  //   userId: '',
+  //   layerLevel: 0,
+  //   rotation: 0,
+  //   interactive: false,
+  //   x: 0,
+  //   y: 0,
+  //   width: 0,
+  //   height: 0,
+  //   lineWidth: 0,
+  //   lineColor: 0,
+  //   fillColor: 0,
+  //   lineAlpha: 0,
+  //   fillAlpha: 0
+  // }
+   */
   Users: {
     currentUser: {},
     users: [] // index 0 is always for Head

@@ -139,7 +139,7 @@ whiteboardSockets.sendRectCB = function(socket, nspWb) {
     console.log('recieved socket shape event');
     console.log(eventType);
     console.log(data);
-    socket.broadcast.emit(EVENT.sendRect, EVENT.add, data);
+    socket.broadcast.emit(EVENT.sendRect, eventType, data);
   }
 }
 
