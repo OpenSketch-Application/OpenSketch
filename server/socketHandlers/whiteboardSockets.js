@@ -32,7 +32,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                    socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
 
-                   socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
+                   socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, session.users.length - 1);
 
                    socket.emit(EVENT.updateChatList, session.messages);
                  }
@@ -79,7 +79,7 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
               });
 
 
-                console.log('msg received', message);
+        console.log('msg received', message);
         //add chat to db //but maybe we don't need to keep chat messages stored?
 
       };
@@ -106,8 +106,12 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
        }
        if(removedUser != undefined){
          socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has left the session');
-         socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers,session.users);
-         socket.emit(EVENT.updateUserList,session.users.length+'/'+session.sessionProperties.maxUsers,session.users);
+
+         socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+         socket.broadcast.emit(EVENT.userLeft, removedUser.id);
+
+         socket.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+         socket.emit(EVENT.userLeft, removedUser);
        }
        session.save(function(err){
            if(err) console.log(err);
@@ -121,11 +125,23 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
 //DRAW
 whiteboardSockets.sendPencilCB = function(socket,nspWb){
   return function(info){
+    console.log('draw pencil received');
     //add drawing to db
     //emit drawing to other users
-    socket.broadcast.emit(EVENT.sendPencil,info);
+    socket.broadcast.emit(EVENT.sendPencil, info);
 
   };
 };
+
+whiteboardSockets.sendRectCB = function(socket, nspWb) {
+  console.log('send Rect socket connected');
+  return function(eventType, data) {
+    console.log('recieved socket shape event');
+    console.log(eventType);
+    console.log(data);
+    socket.broadcast.emit(EVENT.sendRect, eventType, data);
+  }
+}
+
 
 module.exports = whiteboardSockets;

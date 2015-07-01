@@ -2,7 +2,8 @@ var find = require('dom-select');
 var EVENT = require('../../../model/model').socketEvents;
 var SERVERNAME = window.location.origin;
 var Cookies = require('cookies-js');
-module.exports = function(io, framework){
+
+module.exports = function(io, framework, AppState){
   var curSession = window.location.href;
   curSession = curSession.split('/');
   var end = curSession.length -1;
@@ -20,9 +21,9 @@ module.exports = function(io, framework){
 
   if(Cookies.get('username') != null && Cookies.get('created')!=null){
     socket.emit(EVENT.joinSession,Cookies.get('username'),curSessionId);
-  }
-  
-  socket.on(EVENT.updateUserList,function(msg,users) {
+  };
+
+  socket.on(EVENT.updateUserList,function(msg,users, curUserIndex) {
     console.log('in update user list');
     var Usertab =  find('.cd-tabs-content li[data-content=Users]');
     var UsertabName = find('a[data-content=Users]');
@@ -39,13 +40,28 @@ module.exports = function(io, framework){
     for(var i = 0; i< users.length; i++){
       var user = document.createElement('div');
       user.className = "user";
-      user.innerHTML = users[i].username; 
+      user.innerHTML = users[i].username;
+
       UserList.appendChild(user);
+    }
+
+    AppState.Users.users = users;
+    console.log('Current user index: ' + curUserIndex);
+
+    if(curUserIndex !== undefined){
+      console.log('Current user set to: ' + users[curUserIndex]);
+
+      AppState.Users.currentUser = users[curUserIndex];
     }
 
     Usertab.appendChild(UserList);
 
   });
+
+  socket.on(EVENT.userLeft, function(removedUser) {
+    console.log('USER LEFT registered', removedUser);
+
+  })
 
   socket.on(EVENT.announcement,function(msg){
     //update user list clientside

@@ -4,6 +4,8 @@ module.exports = function(settings, el) {
   el.addEventListener('click', function(data) {
     console.log('Selected Color...');
 
+    AppState.Tools.selected = 'color';
+
     selectPressed = true;
     activate(settings.stage, settings.renderer);
   });

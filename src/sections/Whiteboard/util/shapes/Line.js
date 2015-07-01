@@ -49,7 +49,6 @@ Line.removeShapeAt = function(graphics, index) {
 
 Line.removeShape = function() {
   // console.log(this.stage.children.length);
-
   return this.stage.removeChild(this.graphics);
 }
 

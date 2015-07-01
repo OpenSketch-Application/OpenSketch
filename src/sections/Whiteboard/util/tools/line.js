@@ -6,6 +6,7 @@ module.exports = function(settings, el, AppState) {
   el.addEventListener('click', function(data) {
     console.log('Selected Shapes...');
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
+    AppState.Tools.selected = 'line';
 
     Line.set(settings.stage, settings.renderer);
     activate(settings, AppState);
@@ -64,10 +65,14 @@ function activate(settings, AppState) {
   };
 
   stage.mouseup = function(data) {
-    drawBegan = false;
-    isDown = false;
     movingSelf = false;
     graphics.interactive = true;
+
+    if(isDown) {
+      AppState.Canvas.addNew('line', graphics);
+    }
+    drawBegan = false;
+    isDown = false;
 
     setMoveShapeListeners(graphics, settings, AppState);
     //SocketObject.emitDrawObject(graphics);

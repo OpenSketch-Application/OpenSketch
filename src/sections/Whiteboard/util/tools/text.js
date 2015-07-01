@@ -1,15 +1,15 @@
 var PIXI = require('pixi');
 
-module.exports = function(settings, el) {
+module.exports = function(settings, el, AppState) {
   el.addEventListener('click', function(data) {
     console.log('Selected Text...');
 
     selectPressed = true;
-    activate(settings.stage, settings.renderer);
+    activate(settings.stage, settings.renderer, AppState);
   });
 };
 
-function activate(stage, renderer) {
+function activate(stage, renderer, AppState) {
   var color = 0xff92A1;
   var path = [];
   // var isActive = true;
@@ -32,32 +32,26 @@ function activate(stage, renderer) {
 
   stage.mousemove = function(data) {
     //if(!isActive) return;
-    if(!isDown) return;
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-    //path.push(data.global.y);
-    //var newPosition = this.data.getLocalPosition(this.parent);
-    graphics.moveTo(posOld[0], posOld[1]);
-    //console.log(data.global.x, data.global.y);
-    graphics.lineTo(data.global.x, data.global.y);
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    lines++;
-    stage.addChild(graphics);
-
+    if(isDown) {
+      var graphics = new PIXI.Graphics().lineStyle(2, color);
+      //path.push(data.global.y);
+      //var newPosition = this.data.getLocalPosition(this.parent);
+      graphics.moveTo(posOld[0], posOld[1]);
+      //console.log(data.global.x, data.global.y);
+      graphics.lineTo(data.global.x, data.global.y);
+      posOld = [data.global.x, data.global.y];
+      path.push(posOld[0],posOld[1]);
+      lines++;
+      stage.addChild(graphics);
+    }
     //renderer.render(stage);
   };
 
   stage.mouseup = function() {
-    isDown = false;
-
     if(!path.length) return;
     //graphics.lineStyle(5, 0xFF0000);
     //graphics.moveTo(path[0][0], path[0][1]);
     //graphics.drawPolygon(path);
-    while(lines) {
-      stage.removeChildAt(stageIndex + lines);
-      lines--;
-    }
 
     var graphics = new PIXI.Graphics().lineStyle(2, color);
 
@@ -67,8 +61,10 @@ function activate(stage, renderer) {
 
     graphics.hitArea = graphics.getBounds();
 
-    // moveObject(renderer, stage, graphics, { x: graphics.hitArea.x, y: graphics.hitArea.y });
-
+    if(isDown) {
+      AppState.Canvas.addNew('text', graphics);
+      // graphics.graphicsData[0].shape.points
+    }
     stage.addChild(graphics);
 
     // CanvasObjects.push({
@@ -77,7 +73,7 @@ function activate(stage, renderer) {
     //   coords: path
     // });
 
-    //renderer.render(stage);
+    isDown = false;
   };
 
   stage.mouseout = function(data) {

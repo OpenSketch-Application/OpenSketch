@@ -1,12 +1,13 @@
 var PIXI = require('pixi');
 var EVENT = require('../../../../model/model').socketEvents;
 
-module.exports = function(info, el) {
+module.exports = function(info, el, AppState) {
   var userID = info.userID;
   var stage = info.stage;
   var renderer = info.renderer;
   var isDown = false;
   var prevPos = { x: null, y: null };
+  var graphics;
 
   var settings = {
     el: el,
@@ -16,17 +17,18 @@ module.exports = function(info, el) {
 
   function mousedown(data) {
     isDown = true;
+
     prevPos.x = data.global.x;
     prevPos.y = data.global.y;
 
+    graphics = new PIXI.Graphics();
   }
 
   function mousemove(data) {
-    var graphics;
-
     if(isDown) {
-      graphics = new PIXI.Graphics().lineStyle(settings.strokeWeight, settings.color);
+      graphics.lineStyle(settings.strokeWeight, settings.color)
       graphics.moveTo(prevPos.x, prevPos.y);
+
       var prevX = prevPos.x;
       var prevY = prevPos.y;
 
@@ -43,21 +45,26 @@ module.exports = function(info, el) {
         color: settings.color,
         strokeWeight: settings.strokeWeight
       };
+
       info.socket.emit(EVENT.sendPencil,shapeinfo);
-      //renderer.render(stage);
     }
   }
 
   function mouseup() {
+    if(isDown) AppState.Canvas.addNew('pencil', graphics);
+
     isDown = false;
   }
 
   function mouseout(data) {
+    if(isDown) AppState.Canvas.addNew('pencil', graphics);
+
     isDown = false;
     graphics = undefined;
   }
 
   function activate() {
+    AppState.Tools.selected = 'pencil';
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;

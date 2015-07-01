@@ -6,23 +6,38 @@ module.exports = {
     'template': 'template file'
   },
   'socketEvents':{
-    'sendDrawing': 'sendDrawing',
+    // Announcements/Messages
     'chatMessage': 'chatMessage',
-    'joinSession': 'joinSession',
-    'validateSession': 'validateSession',
-    'updateUserList': 'updateUserList',
-    'updateChatList': 'updateChatList',
-    'getSocketID': 'getSocketID',
-    'createSession': 'createSession',
-    'badSession': 'badSession',
     'announcement': 'announcement',
 
-    // Pixi/Canvas Draw Events
-    'objectModified':'objectModified',
-    'objectAdded':'objectAdded',
-    'objectDeleted': 'objectDeleted',
+    // User Joining/Leaving Events
+    'updateUserList': 'updateUserList',
+    'updateChatList': 'updateChatList',
+    'userLeft': 'userLeft',
 
+    // Session Creation/Validation Events
+    'getSocketID': 'getSocketID',
+    'joinSession': 'joinSession',
+    'validateSession': 'validateSession',
+    'createSession': 'createSession',
+    'badSession': 'badSession',
+
+    // Pixi/Canvas Draw Events
+    'shapeObject':'shapeObject',
+
+    'sendDrawing': 'sendDrawing',
     'sendPencil' : 'sendPencil',
-    'sendLine' : 'sendLine'
+    'sendLine' : 'sendLine',
+    'sendRect' : 'sendRect',
+
+    // Specific Shape Events
+    // INCLUDE in only Socket Event, as first parameter
+    'add': 'add',
+    'draw': 'draw',
+    'move': 'move',
+    'modify': 'modify',
+    'remove': 'remove',
+    'interactionStart': 'interactionStart',
+    'interactionEnd': 'interactionEnd'
   }
 };

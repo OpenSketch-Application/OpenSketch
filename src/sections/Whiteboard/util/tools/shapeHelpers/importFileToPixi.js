@@ -28,6 +28,8 @@ module.exports = function(files, settings, AppState, event) {
 
     AppState.Canvas.stage.addChild(imageSprite);
 
+    AppState.Canvas.addNew('image', imageSprite);
+
     setMoveShapeListeners(imageSprite, settings, AppState);
   }
 };
