@@ -10,46 +10,45 @@ module.exports = function(AppState, el) {
   });
 
   var stage = AppState.Canvas.stage;
-  var Select = AppState.Tools.select;
-  var Socket = AppState.Socket;
+  var select = AppState.Tools.select;
+  var socket = AppState.Socket;
   var mouseData;
   var selected = false;
+  var moveObject = {
+    x: 0,
+    y: 0,
+    _id: ''
+  }
   //var Stage = AppState.Canvas.stage;
 
   var mousedown = function(data) {
     //data.originalEvent.preventDefault();
 
     selected = true;
-    //Select.selectedObject !== null;
-    //console.log('Select.selectedObject', Select.selectedObject !== null);
+    //;
+    //console.log('select.selectedObject', select.selectedObject !== null);
     //console.log(data);
     //console.log(data.target);
     // Fire off selected ObjectId to server
-    //Socket.emit(EVENTS.);
+    //socket.emit(EVENTS.);
   };
 
   var mousemove = function(data) {
     data.originalEvent.preventDefault();
 
     // Set selected
-    if(selected = Select.selectedObject !== null) {
-      console.log('move ', selected);
-      var selectedObject = Select.selectedObject;
-      var x = data.global.x - selectedObject.origin.x;
-      var y = data.global.y - selectedObject.origin.y;
-      selectedObject.move(x, y, stage);
+    if(select.selectedObject !== null) {
+      var selectedObject = select.selectedObject;
+      moveObject.x = data.global.x - selectedObject.origin.x;
+      moveObject.y = data.global.y - selectedObject.origin.y;
+      moveObject._id = selectedObject._id;
+      selectedObject.move(moveObject);
+      socket.emit(EVENTS.sendRect, 'move', moveObject);
     }
   };
 
   var mouseup = function(data) {
-    if(selected) {
-      Select.selectedObject = null;
-      selected = false;
-    }
-  }
-  var mouseout = function(data) {
-    selected = false;
-    Select.selectedObject = null;
+    select.selectedObject = null;
   }
 
   // Return true for now, might decide to implement more complexity for
@@ -58,7 +57,7 @@ module.exports = function(AppState, el) {
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;
-    stage.mouseout = mouseout;
+    stage.mouseout = mouseup; // should also contain same methods as mouseup
   }
 
   return true;

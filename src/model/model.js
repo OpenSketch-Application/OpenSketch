@@ -23,9 +23,7 @@ module.exports = {
     'badSession': 'badSession',
 
     // Pixi/Canvas Draw Events
-    'objectModified':'objectModified',
-    'objectAdded':'objectAdded',
-    'objectDeleted': 'objectDeleted',
+    'shapeObject':'shapeObject',
 
     'sendDrawing': 'sendDrawing',
     'sendPencil' : 'sendPencil',

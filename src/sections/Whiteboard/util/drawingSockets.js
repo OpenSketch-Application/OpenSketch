@@ -28,6 +28,7 @@ module.exports = function(AppState) {
 
   socket.on(EVENT.sendRect, function(eventType, shapeData) {
     console.log('event sendRect recieved ', eventType);
+
     switch(eventType) {
       case 'draw':
         console.log('received draw shape');
@@ -38,22 +39,26 @@ module.exports = function(AppState) {
       // Any interaction that involves a mouseup or mousedown
       case 'interactionEnd':
         console.log('eventType', shapeData);
+        // shapeData is just an _id property
         shapes[shapeData].setRectMoveListeners(AppState);
         shapes[shapeData].unHighlight();
         break;
 
       case 'interactionBegin':
-        shapes[shapeData._id].interact(shapeData);
+        shapes[shapeData].interactive = false;
+        shapes[shapeData].highlight();
+        //shapes[shapeData._id].interact(shapeData);
         break;
       case 'move':
+        console.log('moving rect', shapeData);
         shapes[shapeData._id].move(shapeData);
         break;
       case 'add':
         console.log('recieved add', shapeData);
         //AppState.Canvas.stage.addChild(shapeData);
-        var rect = new Rectangle(shapeData, shapeData.userId, stage);
+        var rect = new Rectangle(shapeData);
 
-        shapes.addNew(rect, stage);
+        shapes.addNew(rect);
         break;
       case 'modify':
         shapes[shapeData._id].modify(shapeData);

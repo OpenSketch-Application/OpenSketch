@@ -4,7 +4,7 @@ var BaseShape = require('./BaseShape');
 
 module.exports = Rectangle;
 
-function Rectangle(shapeProperties, userId) {
+function Rectangle(shapeProperties) {
   this.graphics = new PIXI.Graphics();
   this.highlightShape = new PIXI.Graphics();
   this.graphics.addChild(this.highlightShape);
@@ -28,40 +28,7 @@ function Rectangle(shapeProperties, userId) {
   //   fillAlpha: 0
   // }
 
-  // Adding Shapes
-  // var ShapeLayer = [];
-  // var ShapeMap = {};
-
-  // Socket will always identify a shape based on its ID
-  // not its index
-  // ShapeMap['id1'] = {
-  //   'name': 'id1',
-  //   'layerLevel': ShapeLayer.length
-  // };
-
-  // Add Shape to our array map as well
-  //ShapeLayer.push(ShapeMap['id1']);
-
-  // Insert at specific point
-  // receives index value
-  // 1) Check if index element contains any object?
-  // 2) Add object at index, using splice
-  // addAt(shape, index)
-
-  // Swapping Shapes
-  // swapShapes(shape1, index1, shape2, index2)
-  /* When remove happens
-  // Check if one remove called, simply clear the graphics of shape at index
-  1) take the removed ShapeIndex
-
-  */
-
   this.setProperties(shapeProperties);
-  // this.stage = stage;
-  // Set stage index, before attaching
-  // this.layerLevel = stage.children.length;
-
-  // stage.addChildAt(this.graphics, this.layerLevel);
 }
 
 // Set prototype to the BaseShape
@@ -83,7 +50,7 @@ Rectangle.prototype.getProperties = function() {
     fillAlpha: this.fillAlpha
   }
 
-  // Get the base properties and have it attached to temporary our shape object
+  // Get the base properties and attach base properties to temporary our shape object
   BaseShape.prototype.getProperties.call(this, shape);
 
   return shape;
@@ -112,10 +79,11 @@ Rectangle.prototype.setProperties = function(shapeProperties) {
   this.graphics.fillColor = this.fillColor;
   this.graphics.lineAlpha = this.lineAlpha;
   this.graphics.fillAlpha = this.fillAlpha;
-  //this.graphics.alpha = 0.25;
+  this.graphics.alpha = this.fillAlpha;
 };
 
 Rectangle.prototype.draw = function(shapeProperties) {
+  //console.log('calling draw')
   this.graphics.clear();
   this.graphics.interactive = false;
 
@@ -125,11 +93,18 @@ Rectangle.prototype.draw = function(shapeProperties) {
   if(shapeProperties.height) this.height = shapeProperties.height;
 
   // Since we cleared all the draw properties for redrawing, we need to set the styles again
-  this.lineWidth = this.graphics.lineWidth = shapeProperties.lineWidth || this.lineWidth;
-  this.lineColor = this.graphics.lineColor = shapeProperties.lineColor || this.lineColor;
-  this.lineAlpha = this.graphics.lineAlpha = shapeProperties.lineAlpha || this.lineAlpha;
-  this.fillAlpha = this.graphics.fillAlpha = shapeProperties.fillAlpha || this.fillAlpha;
-  this.fillColor = this.graphics.fillColor = shapeProperties.fillColor || this.fillColor;
+  this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
+                                                      : this.lineWidth;
+
+  this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
+                                                      : this.lineColor;
+  this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
+                                                      : this.lineAlpha;
+
+  this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
+                                                      : this.fillAlpha;
+  this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
+                                                      : this.fillColor;
 
   this.graphics.beginFill(this.fillColor);
 
@@ -141,28 +116,15 @@ Rectangle.prototype.draw = function(shapeProperties) {
     this.height
   );
 
-  console.log('ShapeProperties ', shapeProperties)
-  console.log('Line width', this.lineWidth, this.graphics.lineWidth);
-  console.log('lineColor', this.lineColor, this.graphics.lineColor);
-  console.log('fillColor', this.fillColor, this.graphics.fillColor);
-
-  //this.graphics.stage.addChildAt(this.graphics, this.layerLevel);
-
   return this;
 };
 
-Rectangle.prototype.move = function(x, y) {
+//Rectangle.prototype.update = function(shapeProperties) {}
 
-  this.graphics.position.x = x;
-  this.graphics.position.y = y;
-};
-
-// Rectangle.prototype.remove = function(Shapes) {
-//   Rectangle.prototype.shapeCount = Rectangle.prototype.shapeCount - 1;
-//   Shapes[this._id] = null;
-// }
-
-Rectangle.prototype.hasher = function(Shapes) {}
+// Rectangle.prototype.move = function(x, y) {
+//   this.graphics.position.x = x;
+//   this.graphics.position.y = y;
+// };
 
 // To keep track of the number of shapes of this type
 Rectangle.prototype.shapeCount = 0;
@@ -183,16 +145,15 @@ Rectangle.prototype.getGraphicsData = function() {
   return graphics;
 }
 
-Rectangle.prototype.setGraphicsData = function(graphics) {
+Rectangle.prototype.setGraphicsData = function(shapeProperties) {
   var graphicsData = this.graphics.graphicsData[0];
 
-  graphicsData.lineWidth = this.lineWidth = (graphics.lineWidth || this.lineWidth);
-  graphicsData.lineColor = this.lineColor = (graphics.lineColor || this.lineColor);
-  graphicsData.lineAlpha = this.lineAlpha = (graphics.lineAlpha || this.lineAlpha);
-  graphicsData.fillAlpha = this.fillAlpha = (graphics.fillAlpha || this.fillAlpha);
-  graphicsData.fillColor = this.fillColor = (graphics.fillColor || this.fillColor);
+  graphicsData.lineWidth = this.lineWidth = (shapeProperties.lineWidth || this.lineWidth);
+  graphicsData.lineColor = this.lineColor = (shapeProperties.lineColor || this.lineColor);
+  graphicsData.lineAlpha = this.lineAlpha = (shapeProperties.lineAlpha || this.lineAlpha);
+  graphicsData.fillAlpha = this.fillAlpha = (shapeProperties.fillAlpha || this.fillAlpha);
+  graphicsData.fillColor = this.fillColor = (shapeProperties.fillColor || this.fillColor);
 
-  this.graphics.dirty = true;
 }
 
 Rectangle.prototype.highlight = function(color) {
@@ -218,31 +179,33 @@ Rectangle.prototype.unHighlight = function() {
 
 Rectangle.prototype.setRectMoveListeners = function(AppState) {
   var _this = this;
-  var SelectTool = AppState.Tools.select;
+  var Tools = AppState.Tools;
   this.setMoveListeners(AppState);
+  //this.graphics.interactive = true;
   // If we wish to use the BaseShape mouse events as well, use bind the events to
   // the graphics object first
   //var mousedown = this.graphics.mousedown.bind(this.graphics);
   //var mouseup = this.graphics.mouseup.bind(this.graphics);
 
-  // this.graphics.mousedown = function(data) {
-  //   // data.originalEvent.preventDefault();
-  //   console.log('set Rect special mouse down');
-  //   // mousedown(data);
-  // };
-
   // Mouse handlers for highlighting shapes
   this.graphics.mouseover = function(data) {
     data.originalEvent.preventDefault();
 
-    this.highlight(0x0000FF);
+    if(Tools.selected === 'select') {
+      // Highlight Shape outline
+      this.highlight(0x0000FF);
+    }
+
   }.bind(this);//mouseover.bind(_this);
 
   this.graphics.mouseout = function(data) {
     data.originalEvent.preventDefault();
 
-    // Unhighlight
-    this.unHighlight();
+    if(Tools.selected === 'select') {
+      // Unhighlight
+      this.unHighlight();
+    }
+
   }.bind(this);//mouseout.bind(_this);
 }
 

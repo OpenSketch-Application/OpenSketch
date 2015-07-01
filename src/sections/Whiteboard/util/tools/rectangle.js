@@ -32,22 +32,22 @@ module.exports = function(settings, el, AppState) {
     //data.originalEvent.preventDefault();
     originalCoords = data.getLocalPosition(this);
 
-    rect = new Rect(Tools.rectangle, AppState.Users.currentUser._id, stage);
+    rect = new Rect(Tools.rectangle);
 
     // Add shape to the shapes object/container
-    shapes.addNew(rect);
+    rect = shapes.addNew(rect);
 
     socket.emit(EVENT.sendRect, 'add', rect.getProperties());
-
-    console.log('rect added', rect.getProperties());
+    //console.log(rect);
+    //console.log('rect added', rect.getProperties());
   };
 
   var mousemove = function(data) {
     if(isDown) {
       //data.originalEvent.preventDefault();
       var localPos = data.getLocalPosition(this);
-      var topLeft = {};
-
+      var topX = 0;
+      var topY = 0;
       var width = localPos.x - originalCoords.x;
       var height = localPos.y - originalCoords.y;
 
@@ -55,12 +55,12 @@ module.exports = function(settings, el, AppState) {
       if(width < 0) width *= -1;
       if(height < 0) height *= -1;
 
-      topLeft.x = Math.min(originalCoords.x, localPos.x);
-      topLeft.y = Math.min(localPos.y, originalCoords.y);
+      topX = Math.min(originalCoords.x, localPos.x);
+      topY = Math.min(localPos.y, originalCoords.y);
 
       rect.draw({
-        x: topLeft.x,
-        y: topLeft.y,
+        x: topX,
+        y: topY,
         width: width,
         height: height
       });
@@ -101,10 +101,6 @@ module.exports = function(settings, el, AppState) {
       }
       else {
         shapes.removeShape(rect._id);
-        // // Null currently set Shape in shapes
-        // stage.removeChildAt(rect.layerLevel);
-        // //rect.remove(shapes);
-        // shapes[rect._id] = null;
       }
     }
 
@@ -119,9 +115,6 @@ module.exports = function(settings, el, AppState) {
       }
       else {
         shapes.removeShape(rect._id);
-        // stage.removeChildAt(rect.layerLevel);
-        // //rect.remove(shapes);
-        // shapes[rect._id] = null;
       }
     }
 

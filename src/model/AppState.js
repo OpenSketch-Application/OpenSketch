@@ -46,6 +46,12 @@ var Shapes = {
   hashKeys: ['#', '@', '&', '*', '%']
 };
 
+Object.defineProperty(Shapes, 'originalUser', {
+  get: function() {
+    return AppState.Users.currentUser._id || 'unknown';
+  }
+})
+
 // Methods for User Layer
 // function insertAt(shape, index) {
 //   var oldIndex = 0;
@@ -63,12 +69,13 @@ var Shapes = {
 
 // Use test case to ensure userId, canvasID and Object Type are set
 // userId: AppState.Users.currentUser._id,
-function addNew(shapeObject) {
+function addNew(shapeObject, layerLevel) {
   // increment object type number
   var shapeNumRef = this._shapeTypes[shapeObject.objectType];
-
-  shapeObject.userId = shapeObject.userId || 'unknown';
   var keyIndex = 0;
+
+  shapeObject.originalUserId = shapeObject.originalUserId || this.originalUser;
+  shapeObject.currentUserId = shapeObject.originalUserId;
 
   if(!isNaN(shapeNumRef)) {
     shapeNumRef++;
@@ -80,7 +87,7 @@ function addNew(shapeObject) {
   // Create Unique key
   shapeObject._id = '_' + shapeObject.objectType +
                     shapeNumRef +
-                    shapeObject.userId.substr(0,3);
+                    shapeObject.originalUserId.substr(0,3);
 
   while(this[shapeObject._id]) {
     shapeNumRef = shapeNumRef%2 === 0 ? shapeNumRef + 1
@@ -89,16 +96,16 @@ function addNew(shapeObject) {
     keyIndex = ++keyIndex%5;
   }
 
+  shapeObject.layerLevel = layerLevel || this.stage.children.length;
+
   // Set object in Shape Map
   this[shapeObject._id] = shapeObject;
-
-  shapeObject.layerLevel = this.stage.children.length;
 
   // Add stage/layer level the shape will be inserted at
   this.stage.addChildAt(shapeObject.graphics, shapeObject.layerLevel);
 
   this._shapeTypes[shapeObject.objectType] = shapeNumRef;
-
+  console.log('ADD NEW', shapeObject);
   return shapeObject;
 }
 
