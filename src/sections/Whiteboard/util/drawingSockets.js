@@ -53,7 +53,7 @@ module.exports = function(AppState) {
         //AppState.Canvas.stage.addChild(shapeData);
         var rect = new Rectangle(shapeData, shapeData.userId, stage);
 
-        rect.addNew(shapes);
+        shapes.addNew(rect, stage);
         break;
       case 'modify':
         shapes[shapeData._id].modify(shapeData);

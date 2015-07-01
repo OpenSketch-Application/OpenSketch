@@ -1,8 +1,9 @@
 'use strict';
+// Every new tool will have these defaults settings
+// Can be changed by user for her preferences later
 var Tools = {
-  selected: '', // Currently selected tool
-  // Every new tool will have these defaults settings
-  // Can be changed by user for her preferences
+  // Currently selected tool from the ToolBar
+  selected: '',
   importer: {
     maxSize: 5
   },
@@ -14,7 +15,6 @@ var Tools = {
     strokeWidth: 1
   },
   select: {
-    mouseData: null,
     selectedObject: null
   },
   line: {
@@ -26,7 +26,7 @@ var Tools = {
     lineWidth: 1,
     lineAlpha: 1,
     fillColor: 0x913ce6,
-    fillAlpha: 0.25
+    fillAlpha: 1
   },
   ellipse: {
     fillColor: 0xFFFFFF,
@@ -41,12 +41,29 @@ var Shapes = {
   addNew: addNew,
   removeShape: removeShape,
   _shapeTypes: {},
+  _shapes: {},
+  _order: [],
   hashKeys: ['#', '@', '&', '*', '%']
 };
 
+// Methods for User Layer
+// function insertAt(shape, index) {
+//   var oldIndex = 0;
+//   // Check if shape exists already
+//   if(this._shapes[shape._id]) {
+//     oldIndex = this._shapes.layerLevel;
+//   }
+// }
+
+// function removeAt() {}
+// function reorder(start, end) {
+//   var orderedArray = this._order;
+//   var i = start;
+// }
+
 // Use test case to ensure userId, canvasID and Object Type are set
 // userId: AppState.Users.currentUser._id,
-function addNew(shapeObject, stage) {
+function addNew(shapeObject) {
   // increment object type number
   var shapeNumRef = this._shapeTypes[shapeObject.objectType];
 
@@ -75,24 +92,36 @@ function addNew(shapeObject, stage) {
   // Set object in Shape Map
   this[shapeObject._id] = shapeObject;
 
-  // Add stage reference to this Shape
-  shapeObject.stage = stage;
+  shapeObject.layerLevel = this.stage.children.length;
 
   // Add stage/layer level the shape will be inserted at
-  stage.addChildAt(shapeObject.graphics, shapeNumRef);
-
-  shapeObject.layerLevel = stage.children.length;
+  this.stage.addChildAt(shapeObject.graphics, shapeObject.layerLevel);
 
   this._shapeTypes[shapeObject.objectType] = shapeNumRef;
 
   return shapeObject;
 }
 
-function removeShape(shapeObject) {}
+// Removes shape based on id
+function removeShapeByID(id) {
+  var shape = this[id];
 
+  this._shapeTypes[shape.objectType]--;
+
+  this.stage.removeChildAt(shape.layerLevel);
+
+  this[id] = null;
+}
+
+// Removes entire shape by reference
+function removeShape(shapeObject) {
+  this.removeShapeByID(shapeObject._id);
+}
+
+// AppState Main Object
 var AppState = {
   Canvas: {
-    stage: null,
+    _stage: null,
     renderer: null,
     settings: {
       maxUsers: 0,
@@ -100,7 +129,6 @@ var AppState = {
       canChat: true
     },
     Shapes: Shapes,
-    //ActiveShapes: {}, // Locks for shapes being handled by multiple users
     addNew: addNew
   },
   Tools: Object.preventExtensions(Tools),
@@ -112,6 +140,20 @@ var AppState = {
   Messages: [],
   Socket: null
 };
+
+// Defines a more specific setter and getter for Canvas stage
+Object.defineProperty(AppState.Canvas, "stage", {
+
+  get: function () {
+    return this._stage;
+  },
+
+  set: function (stage) {
+    this._stage = stage;
+    this.Shapes.stage = stage;
+  }
+
+});
 
 module.exports = AppState;
 

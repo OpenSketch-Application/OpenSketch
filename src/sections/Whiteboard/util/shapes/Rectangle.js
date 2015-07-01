@@ -4,7 +4,7 @@ var BaseShape = require('./BaseShape');
 
 module.exports = Rectangle;
 
-function Rectangle(shapeProperties, userId, stage) {
+function Rectangle(shapeProperties, userId) {
   this.graphics = new PIXI.Graphics();
   this.highlightShape = new PIXI.Graphics();
   this.graphics.addChild(this.highlightShape);
@@ -56,35 +56,12 @@ function Rectangle(shapeProperties, userId, stage) {
 
   */
 
-/*
-if(child.parent) {
-  child.parent.removeChild(child);
-}
-
-child.parent = this;
-
-this.children.splice(index, 0, child);
-
-if(this.stage)child.setStageReference(this.stage);
-
-return child;
-*/
-
-//  PIXI.DisplayObjectContainer.prototype.removeChildAt = function(index) {
-//     var child = this.getChildAt( index );
-//     if(this.stage)
-//         child.removeStageReference();
-//     child.parent = undefined;
-//     this.children.splice( index, 1 );
-//     return child;
-// };
-
   this.setProperties(shapeProperties);
   // this.stage = stage;
   // Set stage index, before attaching
-  //this.layerLevel = stage.children.length;
+  // this.layerLevel = stage.children.length;
 
-  //stage.addChildAt(this.graphics, this.layerLevel);
+  // stage.addChildAt(this.graphics, this.layerLevel);
 }
 
 // Set prototype to the BaseShape
@@ -142,11 +119,12 @@ Rectangle.prototype.draw = function(shapeProperties) {
   this.graphics.clear();
   this.graphics.interactive = false;
 
-  // Since we cleared all the properties for redrawing, we need to set the styles again
   if(shapeProperties.x) this.x = shapeProperties.x;
   if(shapeProperties.y) this.y = shapeProperties.y;
   if(shapeProperties.width) this.width = shapeProperties.width;
   if(shapeProperties.height) this.height = shapeProperties.height;
+
+  // Since we cleared all the draw properties for redrawing, we need to set the styles again
   this.lineWidth = this.graphics.lineWidth = shapeProperties.lineWidth || this.lineWidth;
   this.lineColor = this.graphics.lineColor = shapeProperties.lineColor || this.lineColor;
   this.lineAlpha = this.graphics.lineAlpha = shapeProperties.lineAlpha || this.lineAlpha;
@@ -168,7 +146,7 @@ Rectangle.prototype.draw = function(shapeProperties) {
   console.log('lineColor', this.lineColor, this.graphics.lineColor);
   console.log('fillColor', this.fillColor, this.graphics.fillColor);
 
-  this.graphics.stage.addChildAt(this.graphics, this.layerLevel);
+  //this.graphics.stage.addChildAt(this.graphics, this.layerLevel);
 
   return this;
 };
@@ -179,39 +157,10 @@ Rectangle.prototype.move = function(x, y) {
   this.graphics.position.y = y;
 };
 
-// Rectangle.prototype.addNew = function(Shapes, userId) {
-//   this.userId = this.userId || userId;
-
-//   // increment object type number
-//   var shapeCount = Rectangle.prototype.shapeCount + 1;
-//   var keyIndex = 0;
-
-//   // Create Unique key
-//   this._id = this.objectType + Rectangle.prototype.shapeCount;
-
-
-//   while(Shapes[this._id]) {
-//     shapeCount = shapeCount%2 === 0 ? shapeCount + 1
-//                                     : shapeCount;
-//     this._id = shapeCount + this._id + this.hashKeys[keyIndex];
-//     keyIndex = ++keyIndex%5;
-//   }
-
-//   // Set the Class types shapeCount for this type
-//   Rectangle.prototype.shapeCount = shapeCount;
-
-//   // Set object in Shape Map
-//   Shapes[this._id] = this;
-
-//   return this;
+// Rectangle.prototype.remove = function(Shapes) {
+//   Rectangle.prototype.shapeCount = Rectangle.prototype.shapeCount - 1;
+//   Shapes[this._id] = null;
 // }
-
-//Rectangle.prototypr.get
-
-Rectangle.prototype.remove = function(Shapes) {
-  Rectangle.prototype.shapeCount = Rectangle.prototype.shapeCount - 1;
-  Shapes[this._id] = null;
-}
 
 Rectangle.prototype.hasher = function(Shapes) {}
 
@@ -219,44 +168,6 @@ Rectangle.prototype.hasher = function(Shapes) {}
 Rectangle.prototype.shapeCount = 0;
 
 Rectangle.prototype.hashKeys = ['#', '@', '&', '*', '%'];
-
-Rectangle.prototype.setRectMoveListeners = function(AppState) {
-  var _this = this;
-  this.setMoveListeners(AppState);
-  // If we wish to use the BaseShape mouse events as well, use bind the events to
-  // the graphics object first
-  //var mousedown = this.graphics.mousedown.bind(this.graphics);
-  //var mouseup = this.graphics.mouseup.bind(this.graphics);
-
-  //console.log('settings rect mouse events', this.graphics);
-  //console.log('Appstate', AppState.Tools);
-
-  // this.graphics.mousedown = function(data) {
-  //   // data.originalEvent.preventDefault();
-  //   console.log('set Rect special mouse down');
-  //   // mousedown(data);
-  // };
-
-  this.graphics.mouseover = function(data) {
-    data.originalEvent.preventDefault();
-    _this.highlight(0x0000FF);
-    //console.log('set Rect special mouse over');
-  };
-
-  this.graphics.mouseout = function(data) {
-    data.originalEvent.preventDefault();
-
-    // Unhighlight
-    _this.unHighlight();
-  }
-
-  // this.graphics.mouseup = function(data) {
-  //   data.originalEvent.preventDefault();
-
-  //   console.log('set Rect special mouse up');
-  //   mouseup(data);
-  // };
-}
 
 Rectangle.prototype.getGraphicsData = function() {
   var graphicsData = this.graphics.graphicsData[0];
@@ -305,16 +216,36 @@ Rectangle.prototype.unHighlight = function() {
   this.highlightShape.clear();
 }
 
-var times = [];
+Rectangle.prototype.setRectMoveListeners = function(AppState) {
+  var _this = this;
+  var SelectTool = AppState.Tools.select;
+  this.setMoveListeners(AppState);
+  // If we wish to use the BaseShape mouse events as well, use bind the events to
+  // the graphics object first
+  //var mousedown = this.graphics.mousedown.bind(this.graphics);
+  //var mouseup = this.graphics.mouseup.bind(this.graphics);
 
-function testObjHashRetrival() {
-  times[0] = Date.now();
-  var Obj = function() {};
+  // this.graphics.mousedown = function(data) {
+  //   // data.originalEvent.preventDefault();
+  //   console.log('set Rect special mouse down');
+  //   // mousedown(data);
+  // };
 
-  Obj.prototype.hasher = function() {
-    this.shapeCount++;
-    this.hashKeys = ['#@&*%'];
-  }
+  // Mouse handlers for highlighting shapes
+  this.graphics.mouseover = function(data) {
+    data.originalEvent.preventDefault();
+
+    this.highlight(0x0000FF);
+  }.bind(this);//mouseover.bind(_this);
+
+  this.graphics.mouseout = function(data) {
+    data.originalEvent.preventDefault();
+
+    // Unhighlight
+    this.unHighlight();
+  }.bind(this);//mouseout.bind(_this);
 }
+
+
 
 

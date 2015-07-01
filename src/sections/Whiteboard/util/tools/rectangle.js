@@ -5,6 +5,7 @@ var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(settings, el, AppState) {
+  console.log('AppState', AppState);
   var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
   var shapes = AppState.Canvas.Shapes;
@@ -34,9 +35,9 @@ module.exports = function(settings, el, AppState) {
     rect = new Rect(Tools.rectangle, AppState.Users.currentUser._id, stage);
 
     // Add shape to the shapes object/container
-    shapes.addNew(rect, stage);
+    shapes.addNew(rect);
 
-    //socket.emit(EVENT.sendRect, 'add', rect.getProperties());
+    socket.emit(EVENT.sendRect, 'add', rect.getProperties());
 
     console.log('rect added', rect.getProperties());
   };
@@ -66,16 +67,13 @@ module.exports = function(settings, el, AppState) {
 
       rect.highlight();
 
-      // if(!drawBegan) {
-      //   // Send socket info since drawing has began now
-      //   console.log('rect draw began', rect.getProperties());
-
-      //   socket.emit(EVENT.sendRect, 'add', rect.getProperties());
-      // }
-      // else {
-      //   socket.emit(EVENT.sendRect, 'draw', rect.getProperties());
-      // }
-      //socket.emit(EVENT.sendRect, 'draw', rect.getProperties());
+      if(drawBegan) {
+        socket.emit(EVENT.sendRect, 'draw', rect.getProperties());
+      }
+      else {
+        // Send socket info since drawing has began now
+        socket.emit(EVENT.sendRect, 'add', rect.getProperties());
+      }
 
       drawBegan = true;
     }
@@ -96,18 +94,20 @@ module.exports = function(settings, el, AppState) {
         rect.setRectMoveListeners(AppState);
         console.log('rect._id', rect);
 
+        rect.unHighlight();
+
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        //socket.emit(EVENT.sendRect, 'interactionEnd', rect._id);
+        socket.emit(EVENT.sendRect, 'interactionEnd', rect._id);
       }
       else {
-        // Null currently set Shape in shapes
-        stage.removeChildAt(rect.layerLevel);
-        //rect.remove(shapes);
-        shapes[rect._id] = null;
+        shapes.removeShape(rect._id);
+        // // Null currently set Shape in shapes
+        // stage.removeChildAt(rect.layerLevel);
+        // //rect.remove(shapes);
+        // shapes[rect._id] = null;
       }
     }
 
-    rect.unHighlight();
 
     isDown = drawBegan = false;
   };
@@ -118,9 +118,10 @@ module.exports = function(settings, el, AppState) {
         rect.setRectMoveListeners(AppState);
       }
       else {
-        stage.removeChildAt(rect.layerLevel);
-        //rect.remove(shapes);
-        shapes[rect._id] = null;
+        shapes.removeShape(rect._id);
+        // stage.removeChildAt(rect.layerLevel);
+        // //rect.remove(shapes);
+        // shapes[rect._id] = null;
       }
     }
 
