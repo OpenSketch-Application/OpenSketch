@@ -53,14 +53,18 @@ var setMoveListeners = function(AppState) {
       _this.currentUserId = Users.currentUser._id;
       Tools.select.selectedObject = _this;
 
-      socket.emit(EVENTS.sendRect, 'interactionBegin', _this._id);
+      socket.emit(EVENTS.shapeObject, 'interactionBegin', _this._id);
     }
     else if(Tools.selected === 'fill') {
       this.clear();
       console.log('fill Color: ' + Tools.fill.fillColor);
       console.log('fill this', _this);
+
       _this.draw({fillColor: Tools.fill.fillColor});
-      //_this.interactive = this.graphics.interactive = true;
+
+      socket.emit(EVENTS.shapeObject, 'modify', _this.getProperties());
+
+      _this.interactive = this.graphics.interactive = true;
     }
 
   }.bind(this.graphics);
