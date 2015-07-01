@@ -26,8 +26,8 @@ module.exports = function(AppState) {
 
   });
 
-  socket.on(EVENT.sendRect, function(eventType, shapeData) {
-    console.log('event sendRect recieved ', eventType);
+  socket.on(EVENT.shapeObject, function(eventType, shapeData) {
+    console.log('event shapeObject recieved ', eventType);
 
     switch(eventType) {
       case 'draw':
@@ -61,7 +61,9 @@ module.exports = function(AppState) {
         shapes.addNew(rect);
         break;
       case 'modify':
-        shapes[shapeData._id].modify(shapeData);
+        console.log('modify shape', shapeData);
+        shapes[shapeData._id].draw(shapeData);
+        shapes[shapeData._id].highlight();
         break;
       case 'remove':
         shapes[shapeData._id].remove();

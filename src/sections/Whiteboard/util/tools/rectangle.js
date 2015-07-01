@@ -37,7 +37,7 @@ module.exports = function(settings, el, AppState) {
     // Add shape to the shapes object/container
     rect = shapes.addNew(rect);
 
-    socket.emit(EVENT.sendRect, 'add', rect.getProperties());
+    socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
     //console.log(rect);
     //console.log('rect added', rect.getProperties());
   };
@@ -68,11 +68,11 @@ module.exports = function(settings, el, AppState) {
       rect.highlight();
 
       if(drawBegan) {
-        socket.emit(EVENT.sendRect, 'draw', rect.getProperties());
+        socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
       }
       else {
         // Send socket info since drawing has began now
-        socket.emit(EVENT.sendRect, 'add', rect.getProperties());
+        socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
       }
 
       drawBegan = true;
@@ -97,7 +97,7 @@ module.exports = function(settings, el, AppState) {
         rect.unHighlight();
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        socket.emit(EVENT.sendRect, 'interactionEnd', rect._id);
+        socket.emit(EVENT.shapeObject, 'interactionEnd', rect._id);
       }
       else {
         shapes.removeShape(rect._id);

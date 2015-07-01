@@ -133,13 +133,13 @@ whiteboardSockets.sendPencilCB = function(socket,nspWb){
   };
 };
 
-whiteboardSockets.sendRectCB = function(socket, nspWb) {
+whiteboardSockets.shapeObjectCB = function(socket, nspWb) {
   console.log('send Rect socket connected');
   return function(eventType, data) {
     console.log('recieved socket shape event');
     console.log(eventType);
     console.log(data);
-    socket.broadcast.emit(EVENT.sendRect, eventType, data);
+    socket.broadcast.emit(EVENT.shapeObject, eventType, data);
   }
 }
 

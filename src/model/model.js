@@ -28,7 +28,6 @@ module.exports = {
     'sendDrawing': 'sendDrawing',
     'sendPencil' : 'sendPencil',
     'sendLine' : 'sendLine',
-    'sendRect' : 'sendRect',
 
     // Specific Shape Events
     // INCLUDE in only Socket Event, as first parameter

@@ -18,17 +18,13 @@ module.exports = function(AppState, el) {
     x: 0,
     y: 0,
     _id: ''
-  }
-  //var Stage = AppState.Canvas.stage;
+  };
 
   var mousedown = function(data) {
     //data.originalEvent.preventDefault();
 
     selected = true;
-    //;
-    //console.log('select.selectedObject', select.selectedObject !== null);
-    //console.log(data);
-    //console.log(data.target);
+
     // Fire off selected ObjectId to server
     //socket.emit(EVENTS.);
   };
@@ -42,8 +38,10 @@ module.exports = function(AppState, el) {
       moveObject.x = data.global.x - selectedObject.origin.x;
       moveObject.y = data.global.y - selectedObject.origin.y;
       moveObject._id = selectedObject._id;
+
       selectedObject.move(moveObject);
-      socket.emit(EVENTS.sendRect, 'move', moveObject);
+
+      socket.emit(EVENTS.shapeObject, 'move', moveObject);
     }
   };
 
