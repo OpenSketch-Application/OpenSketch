@@ -6,8 +6,8 @@
   "scripts": {
     "startTestServer": "nohup node /Users/intricus/npm-global/bin/webdriver-manager start > /dev/null 2>&1 &",
     "runProtactor": "protractor ./src/tests/conf.js",
-    "stopTest": "ps -A | grep selenium-server-standalone | grep -Eio '^[0-9]+'' | head -1 | xargs kill",
-    "test": "npm run startTestServer; npm run runProtactor"
+    "stopTest": "ps -A | grep selenium-server-standalone | grep -Eio '^[0-9]+' | head -1 | xargs kill",
+    "test": "npm run stopTest; npm run startTestServer; npm run runProtactor"
   },
   "repository": {
     "type": "git",

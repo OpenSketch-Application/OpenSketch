@@ -9,6 +9,6 @@ describe('Whiteboard test suite', function() {
     // saved on the db
     browser.get("#!/whiteboard/h2gHF9cBx3w5vPqKAAAB");
 
-    expect(browser.wait());
+    //expect(browser.wait());
   })
 })
