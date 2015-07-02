@@ -38,35 +38,40 @@ module.exports = function(AppState) {
 
       // Any interaction that involves a mouseup or mousedown
       case 'interactionEnd':
-        console.log('eventType', shapeData);
+        console.log('eventType', eventType, 'shape', shapeData);
         // shapeData is just an _id property
         shapes[shapeData].setRectMoveListeners(AppState);
         shapes[shapeData].unHighlight();
         break;
-
       case 'interactionBegin':
         shapes[shapeData].interactive = false;
         shapes[shapeData].highlight();
         //shapes[shapeData._id].interact(shapeData);
         break;
       case 'move':
-        console.log('moving rect', shapeData);
+        console.log('moving shape', shapeData);
         shapes[shapeData._id].move(shapeData);
+        break;
+      case 'moveTo':
+        console.log('moving shape', shapeData);
+        shapes[shapeData._id].moveTo(shapeData);
         break;
       case 'add':
         console.log('recieved add', shapeData);
         //AppState.Canvas.stage.addChild(shapeData);
         var rect = new Rectangle(shapeData);
-
+        // Pass shape type to another function
         shapes.addNew(rect);
         break;
       case 'modify':
         console.log('modify shape', shapeData);
+        // redraw the shape with new properties
         shapes[shapeData._id].draw(shapeData);
-        shapes[shapeData._id].highlight();
+
+        //shapes[shapeData._id].highlight();
         break;
       case 'remove':
-        shapes[shapeData._id].remove();
+        shapes.removeShapeByID(shapeData);
         break;
     }
   })

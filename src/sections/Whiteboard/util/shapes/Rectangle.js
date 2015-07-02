@@ -191,7 +191,7 @@ Rectangle.prototype.setRectMoveListeners = function(AppState) {
   this.graphics.mouseover = function(data) {
     data.originalEvent.preventDefault();
 
-    if(Tools.selected === 'select') {
+    if(Tools.selected === 'select' && !_this.selected) {
       // Highlight Shape outline
       this.highlight(0x0000FF);
     }
@@ -201,7 +201,7 @@ Rectangle.prototype.setRectMoveListeners = function(AppState) {
   this.graphics.mouseout = function(data) {
     data.originalEvent.preventDefault();
 
-    if(Tools.selected === 'select') {
+    if(Tools.selected === 'select' && !_this.selected) {
       // Unhighlight
       this.unHighlight();
     }

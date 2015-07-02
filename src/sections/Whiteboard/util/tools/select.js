@@ -1,5 +1,5 @@
 var PIXI = require('pixi');
-var EVENTS = require('../../../../model/model').socketEvents;
+var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(AppState, el) {
 
@@ -13,7 +13,7 @@ module.exports = function(AppState, el) {
   var select = AppState.Tools.select;
   var socket = AppState.Socket;
   var mouseData;
-  var selected = false;
+  var isDown = false;
   var moveObject = {
     x: 0,
     y: 0,
@@ -23,17 +23,27 @@ module.exports = function(AppState, el) {
   var mousedown = function(data) {
     //data.originalEvent.preventDefault();
 
-    selected = true;
+    isDown = true;
+    if(select.selectedObject !== null) {
+      if(select.clickedObject) {
+        console.log('clicked on object');
+      }
+      else {
+        console.log('clicked on stage');
+      }
 
-    // Fire off selected ObjectId to server
-    //socket.emit(EVENTS.);
+      select.clickedObject = false;
+
+      // Fire off selected ObjectId to server
+      //socket.emit(EVENTS.);
+    }
   };
 
   var mousemove = function(data) {
     data.originalEvent.preventDefault();
 
     // Set selected
-    if(select.selectedObject !== null) {
+    if(isDown && select.selectedObject !== null) {
       var selectedObject = select.selectedObject;
       moveObject.x = data.global.x - selectedObject.origin.x;
       moveObject.y = data.global.y - selectedObject.origin.y;
@@ -41,12 +51,20 @@ module.exports = function(AppState, el) {
 
       selectedObject.move(moveObject);
 
-      socket.emit(EVENTS.shapeObject, 'move', moveObject);
+      socket.emit(EVENT.shapeObject, 'move', moveObject);
     }
   };
 
   var mouseup = function(data) {
-    select.selectedObject = null;
+    if(select.selectedObject) {
+      var shapeId = select.selectedObject._id;
+      // Emit socket interactionEnd Event, since drawing has ended on mouse up
+      socket.emit(EVENT.shapeObject, 'interactionEnd', shapeId);
+
+    }
+
+    isDown = false;
+
   }
 
   // Return true for now, might decide to implement more complexity for

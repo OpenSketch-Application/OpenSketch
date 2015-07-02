@@ -1,4 +1,5 @@
 'use strict';
+var EVENT = require('./model').socketEvents;
 // Every new tool will have these defaults settings
 // Can be changed by user for her preferences later
 var Tools = {
@@ -15,6 +16,7 @@ var Tools = {
     strokeWidth: 1
   },
   select: {
+    clickedObject: false,
     selectedObject: null
   },
   line: {
@@ -40,6 +42,7 @@ var Tools = {
 var Shapes = {
   addNew: addNew,
   removeShape: removeShape,
+  removeShapeByID: removeShapeByID,
   _shapeTypes: {},
   _shapes: {},
   _order: [],
@@ -105,6 +108,7 @@ function addNew(shapeObject, layerLevel) {
   this.stage.addChildAt(shapeObject.graphics, shapeObject.layerLevel);
 
   this._shapeTypes[shapeObject.objectType] = shapeNumRef;
+
   console.log('ADD NEW', shapeObject);
   return shapeObject;
 }
@@ -112,12 +116,14 @@ function addNew(shapeObject, layerLevel) {
 // Removes shape based on id
 function removeShapeByID(id) {
   var shape = this[id];
+  console.log('shape to remove', shape);
+  if(shape) {
+    this._shapeTypes[shape.objectType]--;
 
-  this._shapeTypes[shape.objectType]--;
+    this.stage.removeChildAt(shape.layerLevel);
 
-  this.stage.removeChildAt(shape.layerLevel);
-
-  this[id] = null;
+    this[id] = null;
+  }
 }
 
 // Removes entire shape by reference

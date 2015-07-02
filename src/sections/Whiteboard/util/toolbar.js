@@ -41,7 +41,7 @@ function toolbar(elements, AppState) {
   AppState.Canvas.stage = this.stage;
   AppState.Canvas.renderer = this.renderer;
   AppState.Canvas.Shapes.stage = this.stage;
-
+  AppState.Canvas.Shapes.socket = AppState.Socket;
   // Start Animation loop
   animate();
 

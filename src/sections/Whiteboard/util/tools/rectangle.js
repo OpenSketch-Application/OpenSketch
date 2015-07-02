@@ -34,10 +34,7 @@ module.exports = function(settings, el, AppState) {
 
     rect = new Rect(Tools.rectangle);
 
-    // Add shape to the shapes object/container
-    rect = shapes.addNew(rect);
-
-    socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
+    //socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
     //console.log(rect);
     //console.log('rect added', rect.getProperties());
   };
@@ -68,9 +65,12 @@ module.exports = function(settings, el, AppState) {
       rect.highlight();
 
       if(drawBegan) {
-        socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
+      socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
       }
       else {
+        // Adds shape to the shapes object/container and stage
+        rect = shapes.addNew(rect);
+
         // Send socket info since drawing has began now
         socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
       }
@@ -100,26 +100,27 @@ module.exports = function(settings, el, AppState) {
         socket.emit(EVENT.shapeObject, 'interactionEnd', rect._id);
       }
       else {
-        shapes.removeShape(rect._id);
+        shapes.removeShape(rect);
+
+        // Emit socket interactionEnd Event, since drawing has ended on mouse up
+        socket.emit(EVENT.shapeObject, 'remove', rect._id);
       }
     }
-
-
     isDown = drawBegan = false;
   };
 
-  var mouseout = function(data) {
-    if(isDown) {
-      if(drawBegan) {
-        rect.setRectMoveListeners(AppState);
-      }
-      else {
-        shapes.removeShape(rect._id);
-      }
-    }
+  // var mouseout = function(data) {
+  //   if(isDown) {
+  //     if(drawBegan) {
+  //       rect.setRectMoveListeners(AppState);
+  //     }
+  //     else {
+  //       shapes.removeShape(rect);
+  //     }
+  //   }
 
-    isDown = drawBegan = false;
-  }
+  //   isDown = drawBegan = false;
+  // }
 
   function activate() {
     stage.mousedown = mousedown;
