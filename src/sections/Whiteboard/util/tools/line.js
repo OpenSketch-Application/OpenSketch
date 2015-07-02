@@ -1,3 +1,4 @@
+'use strict';
 var PIXI = require('pixi');
 var Line = require('../shapes/Line');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');

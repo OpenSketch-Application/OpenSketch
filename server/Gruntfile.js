@@ -18,25 +18,12 @@ module.exports = function(grunt) {
         }
       }
     },
-    browserify: {
-      dev: {
-        src: ['../src/*.js'],
-        dest: '../app/js/bundle.js',
-        'options': {
-                    'debug': true,
-                    'watch': true,
-                    'verbose': true,
-                    'open': true,
-                    'browserifyOptions' : {'debug': true}
-                }
-      }
-    },
     watch: {
       options: {
         livereload: true
       },
       express: {
-        files: ['./server.js', './routes/**', './socketHandlers/**'], //'server.js', '/routes/**', 'socketHandlers/**'
+        files: ['./server.js', './routes/**', './socketHandlers/**', './db/**/.js', './config/**/*.js'], //'server.js', '/routes/**', 'socketHandlers/**'
         tasks: ['express:dev'],
         options: {
           spawn: false
@@ -50,7 +37,7 @@ module.exports = function(grunt) {
         }
       },
       browserify: {
-          files: ['../src/**/*.js'],
+          files: ['../src/**/*.js', '!../src/tests/**/*.js'],
           tasks: ['browserify:dev']
       }
     },
@@ -65,10 +52,11 @@ module.exports = function(grunt) {
     browserify: {
       options: {
         debug: true,
-        watch: true
+        watch: true,
+        exclude: ['../src/tests']
       },
       dev: {
-        src: ['../src/**/*.js'],
+        src: ['../src/**/*.js', '!../src/tests/**/*.js'],
         dest: '../app/js/bundle.js'
       }
     }

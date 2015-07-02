@@ -5,8 +5,10 @@ describe('Whiteboard test suite', function() {
 
   it('should be at the application home page', function() {
     // Root is set at localhost:3000
-    browser.get("/");
+    // This should load the whiteboard instance that is already
+    // saved on the db
+    browser.get("#!/whiteboard/h2gHF9cBx3w5vPqKAAAB");
 
-    expect(browser.getTitle()).toEqual('Open Sketch');
+    expect(browser.wait());
   })
 })

@@ -4,7 +4,10 @@
   "description": "An online whiteboard used for remote colloboration and conferencing",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "startTestServer": "nohup node /Users/intricus/npm-global/bin/webdriver-manager start > /dev/null 2>&1 &",
+    "runProtactor": "protractor ./src/tests/conf.js",
+    "stopTest": "ps -A | grep selenium-server-standalone | grep -Eio '^[0-9]+'' | head -1 | xargs kill",
+    "test": "npm run startTestServer; npm run runProtactor"
   },
   "repository": {
     "type": "git",

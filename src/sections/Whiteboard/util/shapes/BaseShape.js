@@ -7,6 +7,28 @@ module.exports = BaseShape;
 // Abstract class, don't instantiate object
 function BaseShape() {};
 
+var init = function(shapeProperties) {
+  this.graphics = new PIXI.Graphics();
+  this.hightlightShape = new PIXI.Graphics();
+
+  this.graphics.addChild(this.hightlightShape);
+
+
+
+  // User properties will be set by Shapes class
+  this._id = '';
+  this.originalUserId = '';
+  this.currentUserId = '';
+
+  this.layerLevel = shapeProperties.layerLevel || 0;
+  this.selected = false;
+
+  // Set Graphics specific properties
+  this.scale = this.graphics.scale = shapeProperties.scale || 1;
+  this.rotation = this.graphics.rotation = shapeProperties.rotation || 0;
+  this.interactive = this.graphics.interactive = this.interactive = shapeProperties.interactive || false;
+}
+
 // Should be called only by Shape objects that inherit BaseShape
 var getProperties = function(shapeModel) {
   shapeModel._id = this._id;
@@ -15,6 +37,7 @@ var getProperties = function(shapeModel) {
   shapeModel.layerLevel = this.layerLevel;
   shapeModel.rotation = this.rotation;
   shapeModel.interactive = this.interactive;
+  shapeModel.scale = this.scale;
 
   return shapeModel;
 };
@@ -24,6 +47,7 @@ var setProperties = function(shapeProperties) {
   this.originalUserId = shapeProperties.originalUserId;
   this.currentUserId = shapeProperties.currentUserId;
   this.layerLevel = shapeProperties.layerLevel || 0;
+  this.scale = shapeProperties.scale || 1;
   this.selected = false;
 
   // Set Graphics specific properties
