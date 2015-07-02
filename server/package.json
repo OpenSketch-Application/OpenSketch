@@ -15,7 +15,7 @@
     "start": "npm run mkDbFolders; npm run startMongoDb",
     "startWin": "mongod --dbpath ./mongoBinaries --logpath ./logs/mongo_logs",
     "stopProd": "echo mjJL4574 | sudo -S mongod --shutdown --dbpath ./mongoBinaries",
-    "stop": "ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[0-9]+' | head -1 | xargs kill"
+    "stop": "ps -A | grep -E 'mongod --dbpath .*mongoBinaries.* --fork$' | grep -Eioh '^[ 0-9]+' | head -1 | xargs kill"
   },
   "dependencies": {
     "body-parser": "^1.12.4",
