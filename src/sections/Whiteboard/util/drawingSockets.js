@@ -31,14 +31,14 @@ module.exports = function(AppState) {
 
     switch(eventType) {
       case 'draw':
-        console.log('received draw shape');
+        console.log('received draw shape', shapeData);
         shapes[shapeData._id].draw(shapeData);
         shapes[shapeData._id].highlight();
         break;
 
       // Any interaction that involves a mouseup or mousedown
       case 'interactionEnd':
-        console.log('eventType', eventType, 'shape', shapeData);
+        //console.log('eventType', eventType, 'shape', shapeData);
         // shapeData is just an _id property
         shapes[shapeData].setRectMoveListeners(AppState);
         shapes[shapeData].unHighlight();
@@ -49,13 +49,13 @@ module.exports = function(AppState) {
         //shapes[shapeData._id].interact(shapeData);
         break;
       case 'move':
-        console.log('moving shape', shapeData);
+        //console.log('moving shape', shapeData);
         shapes[shapeData._id].move(shapeData);
         break;
-      case 'moveTo':
-        console.log('moving shape', shapeData);
-        shapes[shapeData._id].moveTo(shapeData);
-        break;
+      // case 'moveTo':
+      //   //console.log('moving shape', shapeData);
+      //   shapes[shapeData._id].moveTo(shapeData);
+      //   break;
       case 'add':
         console.log('recieved add', shapeData);
         //AppState.Canvas.stage.addChild(shapeData);

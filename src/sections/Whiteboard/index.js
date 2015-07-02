@@ -14,6 +14,8 @@ var Cookies = require('cookies-js');
 // A model object can all use it to store Application state properties
 // Mostly information retrieved on-mass from Database
 var AppState = require('../../model/AppState');
+
+// For live Testing purposes
 window.APP_STATE = AppState;
 module.exports = Section;
 
@@ -41,12 +43,10 @@ Section.prototype = {
         pencil: '#tool-pencil',
         eraser: '#tool-eraser',
         fill: '#tool-fill',
-        //shapes: {
         shapes: '#tool-shapes',
         line: '#tool-shapes-line',
         ellipse: '#tool-shapes-ellipse',
         rectangle: '#tool-shapes-rectangle',
-        //},
         text: '#tool-text',
         table: '#tool-table',
         templates: {
