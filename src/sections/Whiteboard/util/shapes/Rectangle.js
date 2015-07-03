@@ -47,7 +47,8 @@ Rectangle.prototype.getProperties = function() {
     lineColor: this.lineColor,
     fillColor: this.fillColor,
     lineAlpha: this.lineAlpha,
-    fillAlpha: this.fillAlpha
+    fillAlpha: this.fillAlpha,
+    objectType: this.objectType
   }
 
   // Get the base properties and attach base properties to temporary our shape object

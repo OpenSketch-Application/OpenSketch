@@ -13,7 +13,11 @@ var Tools = {
   },
   pencil: {
     fillColor: 0x000000,
-    strokeWidth: 1
+    strokeWidth: 1,
+    lineColor: 0x000000,
+    lineWidth: 2,
+    lineAlpha: 1
+
   },
   select: {
     clickedObject: false,

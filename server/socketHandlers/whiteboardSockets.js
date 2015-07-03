@@ -35,6 +35,8 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                    socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, session.users.length - 1);
 
                    socket.emit(EVENT.updateChatList, session.messages);
+
+                   socket.emit(EVENT.populateCanvas,session.canvasShapes);
                  }
               });
             }
@@ -142,6 +144,34 @@ whiteboardSockets.shapeObjectCB = function(socket, nspWb) {
     socket.broadcast.emit(EVENT.shapeObject, eventType, data);
   }
 }
+
+whiteboardSockets.saveObjectCB = function(socket, nspWb) {
+  return function(data) {
+    console.log('recieved socket ssave event');
+    console.log(data);
+    var sessionid = socket.adapter.nsp.name.split('/');
+    sessionid = sessionid[sessionid.length - 1];
+
+    Session.findById(sessionid, function(err, session){
+          if(err){
+            throw new Error('Error retrieving Session');
+          }
+          else if(session._id){
+            //push user to db
+              session.canvasShapes.push(data); 
+              session.save(function(err){
+                 if(err) console.log(err);
+                 else{
+                   console.log('saved obj');
+
+                 }
+              });
+           }
+          
+        });
+   };
+  }
+
 
 
 module.exports = whiteboardSockets;

@@ -24,7 +24,10 @@ module.exports = {
 
     // Pixi/Canvas Draw Events
     'shapeObject':'shapeObject',
+    'saveObject' : 'saveObject',
+    'populateCanvas' : 'populateCanvas',
 
+   
     'sendDrawing': 'sendDrawing',
     'sendPencil' : 'sendPencil',
     'sendLine' : 'sendLine',
