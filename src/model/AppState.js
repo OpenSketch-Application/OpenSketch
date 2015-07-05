@@ -20,8 +20,9 @@ var Tools = {
     selectedObject: null
   },
   line: {
-    fillColor: 0x000000,
-    strokeWidth: 1
+    lineColor: 0x000000,
+    lineWidth: 1,
+    lineAlpha: 1
   },
   rectangle: {
     lineColor: 0x000000,
@@ -43,7 +44,11 @@ var Shapes = {
   addNew: addNew,
   removeShape: removeShape,
   removeShapeByID: removeShapeByID,
-  _shapeTypes: {},
+  _shapeTypes: {
+    'line': 0,
+    'rectangle': 0,
+    'ellipse': 0
+  },
   _shapes: {},
   _order: [],
   hashKeys: ['#', '@', '&', '*', '%']
@@ -54,7 +59,6 @@ Object.defineProperty(Shapes, 'originalUser', {
     return AppState.Users.currentUser._id || 'unknown';
   }
 })
-
 // Methods for User Layer
 // function insertAt(shape, index) {
 //   var oldIndex = 0;
@@ -88,14 +92,14 @@ function addNew(shapeObject, layerLevel) {
   }
 
   // Create Unique key
-  shapeObject._id = '_' + shapeObject.objectType +
+  shapeObject._id = '#_' + shapeObject.objectType +
                     shapeNumRef +
                     shapeObject.originalUserId.substr(0,3);
 
   while(this[shapeObject._id]) {
     shapeNumRef = shapeNumRef%2 === 0 ? shapeNumRef + 1
                                     : shapeNumRef;
-    shapeObject._id = shapeObject._id + shapeObject.hashKeys[keyIndex] + shapeNumRef;
+    shapeObject._id = shapeObject._id + this.hashKeys[keyIndex] + shapeNumRef;
     keyIndex = ++keyIndex%5;
   }
 
@@ -168,6 +172,33 @@ Object.defineProperty(AppState.Canvas, "stage", {
 
 });
 
+Object.defineProperty(AppState, 'init', {
+  value: function(PIXI, Socket) {
+    PIXI.dontSayHello = true;
+
+    this.Canvas.stage = new PIXI.Stage(0xFFFFFF, true);
+    this.Canvas.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
+                                                   document.body.offsetHeight - 60,
+                                                   { antialias: true });
+    this.Socket = Socket;
+    this.Canvas.Shapes.stage = this.Canvas.stage;
+    this.Canvas.Shapes.socket = Socket;
+  }
+});
+
 module.exports = AppState;
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 

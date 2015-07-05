@@ -1,6 +1,6 @@
 'use strict';
 var PIXI = require('pixi');
-var Rect = require('../shapes/Rectangle');
+var Rectangle = require('../shapes/Rectangle');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
@@ -32,8 +32,9 @@ module.exports = function(settings, el, AppState) {
     //data.originalEvent.preventDefault();
     originalCoords = data.getLocalPosition(this);
 
-    rect = new Rect(Tools.rectangle);
-
+    rect = new Rectangle(Tools.rectangle);
+    // rect.setProperties(Tools.rectangle);
+    console.log('RECT', rect.graphics);
     //socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
     //console.log(rect);
     //console.log('rect added', rect.getProperties());
@@ -62,6 +63,7 @@ module.exports = function(settings, el, AppState) {
         height: height
       });
 
+      //console.log(rect);
       rect.highlight();
 
       if(drawBegan) {
@@ -91,7 +93,9 @@ module.exports = function(settings, el, AppState) {
       //var socketRect = rect.getProperties();
 
       if(drawBegan) {
+
         rect.setRectMoveListeners(AppState);
+
         console.log('rect._id', rect);
 
         rect.unHighlight();

@@ -5,9 +5,10 @@ var BaseShape = require('./BaseShape');
 module.exports = Rectangle;
 
 function Rectangle(shapeProperties) {
-  this.graphics = new PIXI.Graphics();
-  this.highlightShape = new PIXI.Graphics();
-  this.graphics.addChild(this.highlightShape);
+  BaseShape.call(this, shapeProperties);
+  // this.graphics = new PIXI.Graphics();
+  // this.highlightShape = new PIXI.Graphics();
+  // this.graphics.addChild(this.highlightShape);
   this.objectType = 'rectangle';
 
   // Prefill Shape Model
@@ -32,7 +33,9 @@ function Rectangle(shapeProperties) {
 }
 
 // Set prototype to the BaseShape
-Rectangle.prototype = new BaseShape();
+//Rectangle.prototype = new BaseShape();
+Rectangle.prototype = Object.create(BaseShape.prototype);
+Rectangle.prototype.constructor = Rectangle;
 
 // Get Properties for Socket (Does not include graphics object)
 Rectangle.prototype.getProperties = function() {
@@ -127,9 +130,7 @@ Rectangle.prototype.draw = function(shapeProperties) {
 // };
 
 // To keep track of the number of shapes of this type
-Rectangle.prototype.shapeCount = 0;
-
-Rectangle.prototype.hashKeys = ['#', '@', '&', '*', '%'];
+//Rectangle.prototype.shapeCount = 0;
 
 Rectangle.prototype.getGraphicsData = function() {
   var graphicsData = this.graphics.graphicsData[0];

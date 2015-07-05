@@ -1,33 +1,16 @@
 'use strict';
-PIXI = require('pixi');
+var PIXI = require('pixi');
 var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = BaseShape;
 
 // Abstract class, don't instantiate object
-function BaseShape() {};
-
-var init = function(shapeProperties) {
+function BaseShape(shapeProperties) {
   this.graphics = new PIXI.Graphics();
-  this.hightlightShape = new PIXI.Graphics();
+  this.highlightShape = new PIXI.Graphics();
 
-  this.graphics.addChild(this.hightlightShape);
-
-
-
-  // User properties will be set by Shapes class
-  this._id = '';
-  this.originalUserId = '';
-  this.currentUserId = '';
-
-  this.layerLevel = shapeProperties.layerLevel || 0;
-  this.selected = false;
-
-  // Set Graphics specific properties
-  this.scale = this.graphics.scale = shapeProperties.scale || 1;
-  this.rotation = this.graphics.rotation = shapeProperties.rotation || 0;
-  this.interactive = this.graphics.interactive = this.interactive = shapeProperties.interactive || false;
-}
+  this.graphics.addChild(this.highlightShape);
+};
 
 // Should be called only by Shape objects that inherit BaseShape
 var getProperties = function(shapeModel) {
@@ -53,6 +36,7 @@ var setProperties = function(shapeProperties) {
   // Set Graphics specific properties
   this.rotation = this.graphics.rotation = shapeProperties.rotation || 0;
   this.interactive = this.graphics.interactive = this.interactive = shapeProperties.interactive || false;
+
 };
 
 var setMoveListeners = function(AppState) {
@@ -65,7 +49,7 @@ var setMoveListeners = function(AppState) {
     y: this.y
   };
 
-  console.log('SETTINGS MOVE LISTENERS', this.origin);
+  console.log('SETTINGS MOVE LISTENERS', this.graphics);
 
   this.interactive = this.graphics.interactive = true;
 
@@ -74,41 +58,47 @@ var setMoveListeners = function(AppState) {
     //data.originalEvent.preventDefault();
     console.log('click fired with', Tools.selected);
     if(Tools.selected === 'select') {
-      _this.origin = data.getLocalPosition(this);
+      //console.log('data:', this.originalOrigin);
+      console.log('local pos', this.x, this.y);
+      this.origin = data.getLocalPosition(this.graphics);
+      console.log('new origin', this.origin.x, this.origin.y);
       this.alpha = 0.9;
 
       //graphics.selected = true;
-      console.log('origin', _this.origin);
+      console.log('origin', this.origin);
       console.log('current User', Users.currentUser);
-      _this.currentUserId = Users.currentUser._id;
+      this.currentUserId = Users.currentUser._id;
 
-      Tools.select.selectedObject = _this;
-      Tools.select.clickedObject = true;
+      Tools.select.selectedObject = this;
+      this.selected = true;
+      this.highlight();
+      //Tools.select.clickedObject = true;
 
-      socket.emit(EVENT.shapeObject, 'interactionBegin', _this._id);
+      socket.emit(EVENT.shapeObject, 'interactionBegin', this._id);
     }
     else if(Tools.selected === 'fill') {
       this.clear();
-      console.log('fill Color: ' + Tools.fill.fillColor);
-      console.log('fill this', _this);
-      console.log('socket', socket);
-      _this.draw({fillColor: Tools.fill.fillColor});
 
-      socket.emit(EVENT.shapeObject, 'modify', _this.getProperties());
+      this.draw({fillColor: Tools.fill.fillColor});
 
-      _this.interactive = this.interactive = true;
+      socket.emit(EVENT.shapeObject, 'modify', this.getProperties());
+
+      this.interactive = this.interactive = true;
     }
-  }.bind(this.graphics);
+  }.bind(this);
 
   this.graphics.mouseup = function(data) {
     if(Tools.selected === 'select') {
 
       this.alpha = 1;
-
+      this.origin = {
+        x: this.graphics.position.x,
+        y: this.graphics.position.y
+      };
     }
     //movingSelf = false;
     //SocketObject.emitObjectMoveDone(stage.getChildIndex(this));
-  }.bind(this.graphics);
+  }.bind(this);
 };
 
 var move = function(moveObject) {
@@ -126,7 +116,7 @@ var moveTo = function(vector) {
 
 // Use Parasitic Combination Inheritance Pattern
 BaseShape.prototype = {
-
+  //construct: construct,
   // Getter/Setters
   getProperties: getProperties,
   setProperties: setProperties,
@@ -137,6 +127,24 @@ BaseShape.prototype = {
   moveTo: moveTo
 };
 
+/*
+// Naive approach
+function InvertColor(const Color: TColor): TColor;
+begin
+    result := TColor(Windows.RGB(255 - GetRValue(Color),
+                                 255 - GetGValue(Color),
+                                 255 - GetBValue(Color)));
+end;
+
+function InvertColor(const Color: TColor): TColor;
+begin
+  if (GetRValue(BackgroundColor) + GetGValue(BackgroundColor) + GetBValue(BackgroundColor)) > 384 then
+    result := clBlack
+  else
+    result := clWhite;
+end;
+
+*/
 // Object.defineProperties(BaseShape.prototype, {
 //   layerLevel: {
 //     get: function() {

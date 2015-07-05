@@ -22,25 +22,22 @@ module.exports = function(AppState, el) {
 
   var mousedown = function(data) {
     //data.originalEvent.preventDefault();
-
+    console.log('mouse down fired');
     isDown = true;
     if(select.selectedObject !== null) {
-      if(select.clickedObject) {
-        console.log('clicked on object');
-      }
-      else {
-        console.log('clicked on stage');
-      }
 
-      select.clickedObject = false;
+      select.selectedObject.unHighlight();
+      select.selectedObject.selected = false;
 
       // Fire off selected ObjectId to server
-      //socket.emit(EVENTS.);
+      socket.emit(EVENT.interactionEnd, 'interactionEnd', select.selectedObject._id);
+
+      select.selectedObject = null;
     }
   };
 
   var mousemove = function(data) {
-    data.originalEvent.preventDefault();
+    //data.originalEvent.preventDefault();
 
     // Set selected
     if(isDown && select.selectedObject !== null) {
@@ -60,11 +57,8 @@ module.exports = function(AppState, el) {
       var shapeId = select.selectedObject._id;
       // Emit socket interactionEnd Event, since drawing has ended on mouse up
       socket.emit(EVENT.shapeObject, 'interactionEnd', shapeId);
-
     }
-
     isDown = false;
-
   }
 
   // Return true for now, might decide to implement more complexity for

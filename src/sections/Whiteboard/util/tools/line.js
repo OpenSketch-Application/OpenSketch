@@ -4,85 +4,84 @@ var Line = require('../shapes/Line');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 
 module.exports = function(settings, el, AppState) {
+  var isDown = false;
+  var originalPoint;
+  var drawBegan = false;
+
+  var lineSettings = AppState.Tools.line
+  var line;
+  var stage = settings.stage;
+  var renderer = settings.renderer;
+  var shapes = AppState.Canvas.Shapes;
+
   el.addEventListener('click', function(data) {
-    console.log('Selected Shapes...');
+    console.log('Selected Line Tool...');
     //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
     AppState.Tools.selected = 'line';
 
-    Line.set(settings.stage, settings.renderer);
-    activate(settings, AppState);
+    //Line.set(settings.stage, settings.renderer);
+    activate();
   });
-};
 
-
-function activate(settings, AppState) {
-  // var isActive = true;
-  var isDown = false;
-  var originalCoords;
-  var curStageIndex = 0;
-  var drawBegan = false;
-  var graphics;
-  var inverse;
-  var stage = settings.stage;
-  var renderer = settings.renderer;
-
-  stage.mousedown = function(data) {
+  function mousedown(data) {
     isDown = true;
     data.originalEvent.preventDefault();
-    movingSelf = true;
-    this.data = data;
-    originalCoords = data.getLocalPosition(this);
-    graphics = new PIXI.Graphics();
+    originalPoint = data.getLocalPosition(this);
 
-    // SocketObject.emitDrawObject({
-    //   objectType: 'rectangle',
-    //   startCoords: originalCoords,
-    //   dimensions: {
-    //     width: 1,
-    //     height: 1
-    //   },
-    //   color: 0xFF0000,
-    //   stageIndex: curStageIndex + 1
-    // });
+    line = new Line(lineSettings);
 
-    console.log("drawing");
+    console.log("line mouse down", AppState);
   };
 
-  stage.mousemove = function(data) {
+  function mousemove(data) {
     if(isDown) {
-      var localPos = data.getLocalPosition(this);
+      var currentPoint = data.getLocalPosition(this);
+      //console.log('line mouse move: ', line);
+      line.draw({
+        x: originalPoint.x,
+        y: originalPoint.y,
+        x2: currentPoint.x,
+        y2: currentPoint.y
+      });
 
-      graphics.clear();
-
-      graphics.lineWidth = 2;
-      graphics.lineColor = 0x000000;
-      graphics.moveTo(localPos.x, localPos.y);
-      graphics.lineTo(originalCoords.x, originalCoords.y);
-
-      stage.addChild(graphics);
       //SocketObject.emitDrawingObject(graphics);
+      if(drawBegan) {
+        // Emite socket draw event
+      }
+      else {
+        // Add line to Shapes container
+        line = shapes.addNew(line);
+
+        // Emit socket add shape event
+
+      }
       drawBegan = true;
     }
   };
 
-  stage.mouseup = function(data) {
-    movingSelf = false;
-    graphics.interactive = true;
-
+  function mouseup(data) {
     if(isDown) {
-      AppState.Canvas.addNew('line', graphics);
+      if(drawBegan) {
+        console.log('line mouseup, draw began');
+        line.setEventListeners(AppState);
+
+        // Emit socket event
+      }
+      else {
+        console.log('line mouseup, draw not began');
+
+        shapes.removeShape(line);
+
+        // Emit socket remove event
+      }
     }
-    drawBegan = false;
-    isDown = false;
-
-    setMoveShapeListeners(graphics, settings, AppState);
-    //SocketObject.emitDrawObject(graphics);
-
-    //SocketObject.emitObjectAddDone(graphics);
+    drawBegan = isDown = false;
   };
 
-  // stage.mouseout = function(data) {
-  //   isDown = false;
-  //   //graphics = undefined;
-  // }
-}
+  function activate() {
+    stage.mousedown = mousedown;
+    stage.mouseup = mouseup;
+    stage.mousemove = mousemove;
+    stage.mouseout = mouseup;
+  }
+};
