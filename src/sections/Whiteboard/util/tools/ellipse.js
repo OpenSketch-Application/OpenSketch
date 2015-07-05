@@ -1,105 +1,136 @@
+'use strict';
 var PIXI = require('pixi');
-var Rect = require('../shapes/Rectangle');
+var Ellipse = require('../shapes/Ellipse');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
+var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(settings, el, AppState) {
+  console.log('AppState', AppState);
+  var stage = AppState.Canvas.stage;
+  var socket = AppState.Socket;
+  var shapes = AppState.Canvas.Shapes;
+  var Tools = AppState.Tools;
+  var isDown = false;
+  var drawBegan = false;
+  var ellipse;
+  var originalCoords;
+
   el.addEventListener('click', function(data) {
-    console.log('Selected Shapes...');
-    //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
+    data.preventDefault();
+    console.log('Selected shapes...');
+    //if(settings.toolbar.toolSelected) return;
+    //// Return early if toolbar Select was picked
+
+    // Set the selected tool on AppState
     AppState.Tools.selected = 'ellipse';
 
-    //Rect.set(settings.stage, settings.renderer);
     activate(settings, AppState);
   });
-};
 
-function activate(settings, AppState) {
-  // var isActive = true;
-  var isDown = false;
-  var originalCoords;
-  var curStageIndex = 0;
-  var drawBegan = false;
-  var graphics;
-  var inverse;
-  var stage = settings.stage;
-  var renderer = settings.renderer;
-
-  stage.mousedown = function(data) {
+  var mousedown = function(data) {
     isDown = true;
-    data.originalEvent.preventDefault();
-    movingSelf = true;
-    this.data = data;
+    //data.originalEvent.preventDefault();
     originalCoords = data.getLocalPosition(this);
-    graphics = new PIXI.Graphics();
-    //finalGraphics = new PIXI.Graphics();
 
-    //curStageIndex = stage.children.length;
+    ellipse = new Ellipse(Tools.ellipse);
 
-    // SocketObject.emitDrawObject({
-    //   objectType: 'rectangle',
-    //   startCoords: originalCoords,
-    //   dimensions: {
-    //     width: 1,
-    //     height: 1
-    //   },
-    //   color: 0xFF0000,
-    //   stageIndex: curStageIndex + 1
-    // });
-
-    console.log("drawing");
+    socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
+    //console.log(rect);
+    //console.log('rect added', rect.getProperties());
   };
 
-  stage.mousemove = function(data) {
+  var mousemove = function(data) {
     if(isDown) {
+      //data.originalEvent.preventDefault();
       var localPos = data.getLocalPosition(this);
-      var topLeft = {};
+      var topX = 0;
+      var topY = 0;
+      var width = localPos.x - originalCoords.x;
+      var height = localPos.y - originalCoords.y;
 
-      graphics.clear();
-      graphics.interactive = false;
-      graphics.beginFill(0xFFFFFF); // style.fillColor
-      graphics.lineWidth = 2; // style.lineWidth
-      graphics.lineColor = 0x000000; // style.lineColor
+      // Ensure height and width are positive
+      if(width < 0) width *= -1;
+      if(height < 0) height *= -1;
 
-      var newDimensions = {
-        width: localPos.x - originalCoords.x,
-        height: localPos.y - originalCoords.y
-      };
+      topX = Math.min(originalCoords.x, localPos.x);
+      topY = Math.min(localPos.y, originalCoords.y);
 
-      // // Ensure height and width are positive
-      if(newDimensions.width < 0) newDimensions.width *= -1;
-      if(newDimensions.height < 0) newDimensions.height *= -1;
+      ellipse.draw({
+        x: topX,
+        y: topY,
+        width: width,
+        height: height
+      });
 
-      graphics.drawEllipse(
-        originalCoords.x,
-        originalCoords.y,
-        newDimensions.width*1.5,
-        newDimensions.height*1.5
-      );
+      ellipse.highlight();
 
-      stage.addChild(graphics);
+      if(drawBegan) {
+       socket.emit(EVENT.shapeObject, 'draw', ellipse.getProperties());
+     //   ellipse.draw();
+      }
+      else {
+        // Adds shape to the shapes object/container and stage
+        ellipse = shapes.addNew(ellipse);
+        socket.emit(EVENT.shapeObject, 'add', ellipse.getProperties());
+      }
 
-      //SocketObject.emitDrawingObject(finalGraphics);
       drawBegan = true;
     }
   };
 
-  stage.mouseup = function(data) {
-    drawBegan = false;
-    isDown = false;
-    movingSelf = false;
-    graphics.interactive = true;
+  var mouseup = function(data) {
+    //data.originalEvent.preventDefault();
+    //
+        //rect = shapes.addNew(rect);
 
-    // set move Mouse Events on the final shape created
-    setMoveShapeListeners(graphics, settings, AppState);
+        // Send socket info since drawing has began now
+     //   socket.emit(EVENT.saveObject, rect.getProperties());
 
-    //graphics = null;
-    //var graphics = new PIXI.Graphics();
-    //SocketObject.emitDrawObject(finalGraphics);
-    //SocketObject.emitObjectAddDone(finalGraphics);
+if(isDown) {
+      // Add Shape to Canvas shapes map
+      //rect.addNew(shapes, AppState.Users.currentUser._id);
+
+      // Set active listeners on added Shape
+      //rect.setRectMoveListeners(AppState);
+      //var socketRect = rect.getProperties();
+
+      if(drawBegan) {
+        ellipse.setShapeMoveListeners(AppState);
+
+        ellipse.unHighlight();
+
+        // Emit socket interactionEnd Event, since drawing has ended on mouse up
+        socket.emit(EVENT.shapeObject, 'interactionEnd', ellipse._id);
+      }
+      else {
+        shapes.removeShape(ellipse);
+
+        // Emit socket interactionEnd Event, since drawing has ended on mouse up
+        socket.emit(EVENT.shapeObject, 'remove', ellipse._id);
+      }
+    }
+    isDown = drawBegan = false;
   };
 
-  // stage.mouseout = function(data) {
-  //   isDown = false;
-  //   graphics = undefined;
+  // var mouseout = function(data) {
+  //   if(isDown) {
+  //     if(drawBegan) {
+  //       rect.setRectMoveListeners(AppState);
+  //     }
+  //     else {
+  //       shapes.removeShape(rect);
+  //     }
+  //   }
+
+  //   isDown = drawBegan = false;
   // }
-}
+
+  function activate() {
+    stage.mousedown = mousedown;
+    stage.mousemove = mousemove;
+    stage.mouseup = mouseup;
+    stage.mouseout = mouseup;
+  }
+
+};
+
