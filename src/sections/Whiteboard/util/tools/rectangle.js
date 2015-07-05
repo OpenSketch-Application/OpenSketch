@@ -65,7 +65,7 @@ module.exports = function(settings, el, AppState) {
       rect.highlight();
 
       if(drawBegan) {
-        socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
+       socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
       }
       else {
         // Adds shape to the shapes object/container and stage

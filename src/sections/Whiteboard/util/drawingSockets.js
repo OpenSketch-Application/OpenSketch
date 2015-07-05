@@ -61,7 +61,7 @@ module.exports = function(AppState) {
         //AppState.Canvas.stage.addChild(shapeData);
         var rect = new Rectangle(shapeData);
         // Pass shape type to another function
-        shapes.addNew(rect);
+        shapes.addNew(rect,null,shapeData._id);
         break;
       case 'modify':
         console.log('modify shape', shapeData);

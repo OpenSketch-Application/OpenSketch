@@ -72,7 +72,7 @@ Object.defineProperty(Shapes, 'originalUser', {
 
 // Use test case to ensure userId, canvasID and Object Type are set
 // userId: AppState.Users.currentUser._id,
-function addNew(shapeObject, layerLevel) {
+function addNew(shapeObject, layerLevel, shapeID) {
   // increment object type number
   var shapeNumRef = this._shapeTypes[shapeObject.objectType];
   var keyIndex = 0;
@@ -88,7 +88,7 @@ function addNew(shapeObject, layerLevel) {
   }
 
   // Create Unique key
-  shapeObject._id = '_' + shapeObject.objectType +
+  shapeObject._id = shapeID || '_' + shapeObject.objectType +
                     shapeNumRef +
                     shapeObject.originalUserId.substr(0,3);
 
