@@ -69,7 +69,9 @@ module.exports = function(settings, el, AppState) {
       }
       else {
         // Adds shape to the shapes object/container and stage
-         }
+        rect = shapes.addNew(rect);
+        socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
+      }
 
       drawBegan = true;
     }
@@ -78,11 +80,10 @@ module.exports = function(settings, el, AppState) {
   var mouseup = function(data) {
     //data.originalEvent.preventDefault();
     //
-        rect = shapes.addNew(rect);
+        //rect = shapes.addNew(rect);
 
         // Send socket info since drawing has began now
-        socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
-        socket.emit(EVENT.saveObject, rect.getProperties());
+     //   socket.emit(EVENT.saveObject, rect.getProperties());
 
 if(isDown) {
       // Add Shape to Canvas shapes map

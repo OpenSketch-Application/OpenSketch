@@ -36,7 +36,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 
                    socket.emit(EVENT.updateChatList, session.messages);
 
-                   socket.emit(EVENT.populateCanvas,session.canvasShapes);
+  //                 socket.emit(EVENT.populateCanvas,session.canvasShapes);
                  }
               });
             }
