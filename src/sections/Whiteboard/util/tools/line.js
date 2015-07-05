@@ -53,7 +53,6 @@ module.exports = function(settings, el, AppState) {
         line = shapes.addNew(line);
 
         // Emit socket add shape event
-
       }
       drawBegan = true;
     }
