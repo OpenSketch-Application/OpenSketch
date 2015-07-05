@@ -46,7 +46,6 @@ function shapeControl(eventType,shapeData,AppState){
           case 'rectangle':
             
             var rect = new Rectangle(shapeData);
-            rect.draw(shapeData);
             shapes.addNew(rect);
             break;
         }
