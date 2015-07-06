@@ -1,6 +1,7 @@
 var PIXI = require('pixi');
 var EVENT = require('../../../model/model').socketEvents;
 var Rectangle = require('./shapes/Rectangle');
+var Line = require('./shapes/Line');
 
 module.exports = function(AppState) {
   var stage = AppState.Canvas.stage;
@@ -43,19 +44,18 @@ module.exports = function(AppState) {
         shapes[shapeData].setRectMoveListeners(AppState);
         shapes[shapeData].unHighlight();
         break;
+
       case 'interactionBegin':
         shapes[shapeData].interactive = false;
         shapes[shapeData].highlight();
         //shapes[shapeData._id].interact(shapeData);
         break;
+
       case 'move':
         //console.log('moving shape', shapeData);
         shapes[shapeData._id].move(shapeData);
         break;
-      // case 'moveTo':
-      //   //console.log('moving shape', shapeData);
-      //   shapes[shapeData._id].moveTo(shapeData);
-      //   break;
+
       case 'add':
         console.log('recieved add', shapeData);
         //AppState.Canvas.stage.addChild(shapeData);
@@ -63,6 +63,7 @@ module.exports = function(AppState) {
         // Pass shape type to another function
         shapes.addNew(rect);
         break;
+
       case 'modify':
         console.log('modify shape', shapeData);
         // redraw the shape with new properties
@@ -70,6 +71,7 @@ module.exports = function(AppState) {
 
         //shapes[shapeData._id].highlight();
         break;
+
       case 'remove':
         shapes.removeShapeByID(shapeData);
         break;

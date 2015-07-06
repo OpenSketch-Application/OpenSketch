@@ -170,8 +170,6 @@ Rectangle.prototype.highlight = function(color) {
     this.width,
     this.height
   );
-
-  //this.graphics.addChildAt(this.highlightShape, 0);
 }
 
 Rectangle.prototype.unHighlight = function() {

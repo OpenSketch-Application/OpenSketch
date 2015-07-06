@@ -10,10 +10,11 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
         console.log('joinsession');
 
         Session.findById(sessionid, function(err, session){
-          if(err){
-            throw new Error('Error retrieving Session');
+          if(err || !session){
+            console.log('Error Retrieving Session: at ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+            //throw new Error('Error retrieving Session');
           }
-          else if(session._id){
+          else if(session && session._id){
             //push user to db
 
             if(session.users.length < session.sessionProperties.maxUsers){
@@ -41,7 +42,6 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
           }
         });
   };
-
 };
 //CHAT
 whiteboardSockets.chatMessageCB = function(socket,nsp){

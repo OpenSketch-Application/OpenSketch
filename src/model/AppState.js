@@ -37,7 +37,8 @@ var Tools = {
     strokeWidth: 1
   },
   templates: {},
-  table: {}
+  table: {},
+  uml: {}
 };
 
 var Shapes = {

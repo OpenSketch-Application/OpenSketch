@@ -26,6 +26,18 @@ function setEventListeners(AppState) {
   var width = this.x2 - this.x;
   var height = this.y2 - this.y;
 
+  // var vertices = [
+  //   // x,y, x,y, x,y, x,y
+  //   this.x, this.y - len,
+  //   this.x + len, this.y,
+  //   this.x, this.y + len,
+  //   this.x - len, this.y
+  // ];
+
+  // Get angle of the points
+
+  //Get length of the line
+
   // Draw selectable points on shape
   // for line we need only two, on point x,y and x2,y2
   // width, height should default to lineWidth + 2;
@@ -137,6 +149,7 @@ Object.defineProperties(Line.prototype, {
       console.log('shapeProperties lineWidth', shapeProperties.lineWidth, this.lineWidth);
       this.graphics.moveTo(this.x, this.y);
       this.graphics.lineTo(this.x2, this.y2);
+
       this.drawSelectablePoints(this.x, this.y, this.x2, this.y2);
     }
   },
@@ -171,18 +184,18 @@ Object.defineProperties(Line.prototype, {
   },
   drawSelectablePoints: {
     value: function(x,y,x2,y2) {
-      var container = this.graphics;
+      var container = this.selectablePoints;
+
       // Store current style
       var lineWidth = container.lineWidth;
       var len = ((lineWidth + 5)/2);
 
-      // var vertices = [
-      //   // x,y, x,y, x,y, x,y
-      //   this.x, this.y - len,
-      //   this.x + len, this.y,
-      //   this.x, this.y + len,
-      //   this.x - len, this.y
-      // ];
+      var vertices = [
+        x,y,
+        x,y,
+        x,y,
+        x,y
+      ];
 
       x -= len;
       y -= len;
@@ -191,13 +204,18 @@ Object.defineProperties(Line.prototype, {
 
       len = len*2;
 
+      var rad = Vector.angle(
+        { x: x, y: y },
+        { x: x2, y: y2 }
+      );
+
       container.beginFill(0);
-
-      container.drawRect(x, y, len, len);
-      container.drawRect(x2, y2, len, len);
-
-      // Set lineWidth back to normal for this graphics object
-      container.lineWidth = this.lineWidth;
+      container.lineWidth + 2;
+      container.lineColor = 0;
+      //container.rotation = rad;
+      container.drawPolygon(vertices);
+      //container.drawRect(x, y, len, len);
+      //container.drawRect(x2, y2, len, len);
     }
   }
 });

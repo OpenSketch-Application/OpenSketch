@@ -8,8 +8,10 @@ module.exports = BaseShape;
 function BaseShape(shapeProperties) {
   this.graphics = new PIXI.Graphics();
   this.highlightShape = new PIXI.Graphics();
+  this.selectablePoints = new PIXI.Graphics();
 
-  this.graphics.addChild(this.highlightShape);
+  this.graphics.addChildAt(this.highlightShape, 0);
+  this.graphics.addChildAt(this.selectablePoints, 1);
 };
 
 // Should be called only by Shape objects that inherit BaseShape
@@ -77,7 +79,7 @@ var setMoveListeners = function(AppState) {
       socket.emit(EVENT.shapeObject, 'interactionBegin', this._id);
     }
     else if(Tools.selected === 'fill') {
-      this.clear();
+      this.graphics.clear();
 
       this.draw({fillColor: Tools.fill.fillColor});
 
