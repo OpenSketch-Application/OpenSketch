@@ -1,4 +1,3 @@
-var PIXI = require('pixi');
 var find = require('dom-select');
 var createSelect = require('./tools/select');
 var createPencil = require('./tools/pencil');
@@ -28,34 +27,29 @@ function toolbar(elements, AppState) {
 
   this.tools = {};
   this.container = find(elements.whiteboard);
-  this.socket = AppState.Socket;
-  PIXI.dontSayHello = true;
+  //this.socket = AppState.Socket;
 
-  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
-                                          document.body.offsetHeight - 60,
-                                          { antialias: true });
+  // PIXI.dontSayHello = true;
 
-  this.container.appendChild(this.renderer.view);
-  this.stage = new PIXI.Stage(0xFFFFFF, true);
+  // this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
+  //                                         document.body.offsetHeight - 60,
+  //                                         { antialias: true });
 
-  AppState.Canvas.stage = this.stage;
-  AppState.Canvas.renderer = this.renderer;
-  AppState.Canvas.Shapes.stage = this.stage;
-  AppState.Canvas.Shapes.socket = AppState.Socket;
+  // this.container.appendChild(this.renderer.view);
+  // this.stage = new PIXI.Stage(0xFFFFFF, true);
+
+  // AppState.Canvas.stage = this.stage;
+  // AppState.Canvas.renderer = this.renderer;
+  // AppState.Canvas.Shapes.stage = this.stage;
+  // AppState.Canvas.Shapes.socket = AppState.Socket;
   // Start Animation loop
-  animate();
-
-  function animate() {
-    requestAnimFrame(animate);
-    _this.renderer.render(_this.stage);
-  }
 
   // NEED TO GET RID OF THIS
   var settings = {
     container: this.container,
-    renderer: this.renderer,
-    stage: this.stage,
-    socket: this.socket,
+    renderer: AppState.Canvas.renderer,
+    stage: AppState.Canvas.stage,
+    socket: AppState.Socket,
     selectedTool: function() {
       return _this.selectedTool;
     }
@@ -65,7 +59,7 @@ function toolbar(elements, AppState) {
   setDrawingSockets(AppState);
 
   // Enables drag N drop functionality for Canvas images
-  dragndrop(settings, AppState);
+  dragndrop(AppState);
 
   // Need to fix Shapes selection state
   toolbox.addEventListener('click', function(e) {

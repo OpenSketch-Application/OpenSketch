@@ -50,18 +50,21 @@ module.exports = function(AppState) {
         shapes[shapeData].highlight();
         //shapes[shapeData._id].interact(shapeData);
         break;
-
+      case 'shapeLock':
+        shapes[id].lockShape();
+        break;
+      case 'shapeUnlock':
+        shapes[id].unlockShape();
+        break;
       case 'move':
         //console.log('moving shape', shapeData);
         shapes[shapeData._id].move(shapeData);
         break;
 
       case 'add':
-        console.log('recieved add', shapeData);
-        //AppState.Canvas.stage.addChild(shapeData);
-        var rect = new Rectangle(shapeData);
-        // Pass shape type to another function
-        shapes.addNew(rect);
+
+        addShapeBasedOnType(shapeData);
+
         break;
 
       case 'modify':
@@ -77,5 +80,25 @@ module.exports = function(AppState) {
         break;
     }
   })
+
+  function addShapeBasedOnType(shapeData) {
+    console.log('recieved add', shapeData);
+    var shape;
+
+    switch(shapeData.objectType) {
+      case 'rectangle':
+        //AppState.Canvas.stage.addChild(shapeData);
+        shape = new Rectangle(shapeData);
+        break;
+      case 'line':
+        shape = new Line(shapeData);
+        break;
+    }
+
+    // Add Shape to the Shapes hashmap
+    if(shape) shapes.addNew(rect);
+    else console.log('ERROR: Did not create a Shape of requested type', shapeData);
+  }
+
  };
 

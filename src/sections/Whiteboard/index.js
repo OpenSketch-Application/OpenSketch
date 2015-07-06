@@ -1,6 +1,7 @@
 var fs = require('fs');
 var io = require('io');
 var f1 = require('f1');
+var PIXI = require('pixi');
 var find = require('dom-select');
 var framework = require('../../framework/index');
 var Model = require('../../model/model');
@@ -26,7 +27,7 @@ Section.prototype = {
   init: function(req, done) {
     console.log('start init');
 
-    AppState.Socket = socketSetup(io, framework, AppState);
+    var socket = socketSetup(io, framework, AppState);
 
     var content = find('#content');
 
@@ -35,6 +36,9 @@ Section.prototype = {
     content.appendChild(this.section);
 
     createTabs();
+
+    // Inits AppState with Pixi and adds Socket object to AppState objects
+    AppState.init(PIXI, socket);
 
     this.toolbar = new Toolbar({
       whiteboard: '#whiteboard-container',

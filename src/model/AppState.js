@@ -76,34 +76,37 @@ Object.defineProperty(Shapes, 'originalUser', {
 // }
 
 // Use test case to ensure userId, canvasID and Object Type are set
-// userId: AppState.Users.currentUser._id,
+// layerLevel is optional parameter
 function addNew(shapeObject, layerLevel) {
-  // increment object type number
-  var shapeNumRef = this._shapeTypes[shapeObject.objectType];
+  // increment the number of Shapes of this type
+  var shapeCount = this._shapeTypes[shapeObject.objectType];
   var keyIndex = 0;
 
   shapeObject.originalUserId = shapeObject.originalUserId || this.originalUser;
   shapeObject.currentUserId = shapeObject.originalUserId;
 
-  if(!isNaN(shapeNumRef)) {
-    shapeNumRef++;
+  // Increment the count of Shapes of this type that have been drawn
+  if(!isNaN(shapeCount)) {
+    shapeCount++;
   }
   else {
-    shapeNumRef = 0;
+    shapeCount = 0;
   }
 
   // Create Unique key
   shapeObject._id = '#_' + shapeObject.objectType +
-                    shapeNumRef +
+                    shapeCount +
                     shapeObject.originalUserId.substr(0,3);
 
+  // Loop and attempt to create a unqiue key for this shape
   while(this[shapeObject._id]) {
-    shapeNumRef = shapeNumRef%2 === 0 ? shapeNumRef + 1
-                                    : shapeNumRef;
-    shapeObject._id = shapeObject._id + this.hashKeys[keyIndex] + shapeNumRef;
+    shapeCount = shapeCount%2 === 0 ? shapeCount + 1
+                                    : shapeCount;
+    shapeObject._id = shapeObject._id + this.hashKeys[keyIndex] + shapeCount;
     keyIndex = ++keyIndex%5;
   }
 
+  // Set the layer level of this Shape, ie. this is its stage level on Pixi stage
   shapeObject.layerLevel = layerLevel || this.stage.children.length;
 
   // Set object in Shape Map
@@ -112,7 +115,8 @@ function addNew(shapeObject, layerLevel) {
   // Add stage/layer level the shape will be inserted at
   this.stage.addChildAt(shapeObject.graphics, shapeObject.layerLevel);
 
-  this._shapeTypes[shapeObject.objectType] = shapeNumRef;
+  // Set the number of Shapes of this type that have been drawn so far
+  this._shapeTypes[shapeObject.objectType] = shapeCount;
 
   console.log('ADD NEW', shapeObject);
   return shapeObject;
@@ -139,7 +143,7 @@ function removeShape(shapeObject) {
 // AppState Main Object
 var AppState = {
   Canvas: {
-    _stage: null,
+    _stage: null, // private property, accessed through getter AppState.Canvas.stage, set value by AppState.Canvas.stage = new PIXI.Stage(color)
     renderer: null,
     settings: {
       maxUsers: 0,
@@ -156,7 +160,7 @@ var AppState = {
   },
   Settings: {}, // General settings, ie. styles or themes
   Messages: [],
-  Socket: null
+  Socket: null // Will be added later, in toolbar js or AppState.init method
 };
 
 // Defines a more specific setter and getter for Canvas stage
@@ -170,20 +174,36 @@ Object.defineProperty(AppState.Canvas, "stage", {
     this._stage = stage;
     this.Shapes.stage = stage;
   }
-
 });
 
+// Preferred way of initiatializing the AppState, should be done early and seperate
+// Currently initialization is done in toolbar.js, would prefer to see it initialized
+// there, but through this method call
 Object.defineProperty(AppState, 'init', {
   value: function(PIXI, Socket) {
+    var _this = this;
+    var stage = new PIXI.Stage(0xFFFFFF, true);
+    var renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
+                                           document.body.offsetHeight - 60,
+                                           { antialias: true });
+    var container = document.getElementById('whiteboard');
     PIXI.dontSayHello = true;
 
-    this.Canvas.stage = new PIXI.Stage(0xFFFFFF, true);
-    this.Canvas.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
-                                                   document.body.offsetHeight - 60,
-                                                   { antialias: true });
+    this.Canvas.stage = stage;
+    this.Canvas.renderer = renderer;
     this.Socket = Socket;
-    this.Canvas.Shapes.stage = this.Canvas.stage;
+    this.Canvas.stage = stage;
     this.Canvas.Shapes.socket = Socket;
+
+    container.appendChild(renderer.view);
+
+    // Start the render loop
+    animate();
+
+    function animate() {
+      requestAnimFrame(animate);
+      renderer.render(stage);
+    }
   }
 });
 

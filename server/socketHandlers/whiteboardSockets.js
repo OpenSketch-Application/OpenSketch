@@ -8,6 +8,11 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
   return function(uName,sessionid) {
         //validate name
         console.log('joinsession');
+        // FOR TESTING AND DEVELOPMENT
+        if(sessionid === 'session41') {
+          console.log('Development session Enabled');
+          return;
+        }
 
         Session.findById(sessionid, function(err, session){
           if(err || !session){
@@ -129,7 +134,6 @@ whiteboardSockets.sendPencilCB = function(socket,nspWb){
     //add drawing to db
     //emit drawing to other users
     socket.broadcast.emit(EVENT.sendPencil, info);
-
   };
 };
 

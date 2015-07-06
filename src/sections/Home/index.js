@@ -144,12 +144,3 @@ Section.prototype = {
   }
 };
 
-
-function getWhiteboardSettings() {
-  var inputElements = document.querySelectorAll('form input');
-  var form = document.querySelector('div.form form');
-  var formData = new FormData(form);
-  var ajax = new XMLHttpRequest();
-  ajax.setRequestHeader("Content-Type", "JSON");
-  ajax.send(formData);
-}

@@ -2,9 +2,7 @@ var Session = require('../db/models/Session');
 var User = require('../db/DbManagers/UserManager');
 var wbLogic = require('./whiteboardSockets');
 var EVENT = require('../../src/model/model').socketEvents;
-//var validateCookie = require();
 
-//var homeLogic = require('./homeSockets');
 module.exports = function(io,DB) {
   var home = io.of('/home');
   home.on('connection',homeHandler(home));
@@ -69,7 +67,9 @@ module.exports = function(io,DB) {
 
       Session.findById(sessionid, function(err, session) {
         var userFound = false;
-        //session.users
+
+        // FOR TESTING AND DEVELOPMENT
+        if(sessionid === 'session41') return;
 
         if(err || !session || !session.users || session.users.length >= session.sessionProperties.maxUsers) {
           socket.emit(EVENT.badSession);

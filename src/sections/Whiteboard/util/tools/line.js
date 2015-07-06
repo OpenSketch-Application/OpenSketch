@@ -44,9 +44,15 @@ module.exports = function(settings, el, AppState) {
         y2: currentPoint.y
       });
 
+      line.drawSelectablePoints(
+        originalPoint.x, originalPoint.y,
+        currentPoint.x, currentPoint.y
+      );
+
       //SocketObject.emitDrawingObject(graphics);
       if(drawBegan) {
         // Emite socket draw event
+
       }
       else {
         // Add line to Shapes container
@@ -64,6 +70,7 @@ module.exports = function(settings, el, AppState) {
         console.log('line mouseup, draw began');
         line.setEventListeners(AppState);
 
+        line.unHighlight();
         // Emit socket event
       }
       else {

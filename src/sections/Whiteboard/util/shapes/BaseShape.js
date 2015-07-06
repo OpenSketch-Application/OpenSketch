@@ -85,7 +85,7 @@ var setMoveListeners = function(AppState) {
 
       socket.emit(EVENT.shapeObject, 'modify', this.getProperties());
 
-      this.interactive = this.interactive = true;
+      this.interactive = this.graphics.interactive = true;
     }
   }.bind(this);
 

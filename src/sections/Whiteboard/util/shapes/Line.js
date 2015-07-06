@@ -1,6 +1,7 @@
 var PIXI = require('pixi');
 var BaseShape = require('./BaseShape');
-var Vector = require('matter-js').Vector;
+var Matter = require('matter-js');
+var Vector = Matter.Vector;
 
 module.exports = Line;
 
@@ -23,8 +24,6 @@ function setEventListeners(AppState) {
   this.interactive = true;
   var Tools = AppState.Tools;
   // Set the hit area for interaction
-  var width = this.x2 - this.x;
-  var height = this.y2 - this.y;
 
   // var vertices = [
   //   // x,y, x,y, x,y, x,y
@@ -43,7 +42,7 @@ function setEventListeners(AppState) {
   // width, height should default to lineWidth + 2;
   // don't set hit listeners for these ones
   // Use rectangle contains to calculate it from main hit area
-
+  //drawSelectablePoints();
   this.graphics.mouseover = function(data) {
     data.originalEvent.preventDefault();
 
@@ -160,6 +159,8 @@ Object.defineProperties(Line.prototype, {
     value: function(color) {
       this.highlightShape.clear();
 
+      this.drawSelectablePoints(this.x, this.y, this.x2, this.y2);
+
       this.highlightShape.lineWidth = this.lineWidth + 2;
       this.highlightShape.lineColor = 0x2D8EF0;
       //this.highlightShape.lineColor = color || 0x0000FF;
@@ -174,12 +175,13 @@ Object.defineProperties(Line.prototype, {
       //   this.height
       // );
 
-      this.graphics.addChildAt(this.highlightShape, 0);
+      //this.graphics.addChildAt(this.highlightShape, 0);
     }
   },
   unHighlight: {
     value: function() {
       this.highlightShape.clear();
+      this.selectablePoints.clear();
     }
   },
   drawSelectablePoints: {
@@ -188,14 +190,22 @@ Object.defineProperties(Line.prototype, {
 
       // Store current style
       var lineWidth = container.lineWidth;
-      var len = ((lineWidth + 5)/2);
-
-      var vertices = [
-        x,y,
-        x,y,
-        x,y,
-        x,y
-      ];
+      var len = ((lineWidth + 3)/2);
+      container.clear();
+      // var vertices = [
+      //   // x,y, x,y, x,y, x,y
+      //   x, y - len,
+      //   x + len, y,
+      //   x, y + len,
+      //   x - len, y
+      // ];
+      // var vertices = [
+      //   // x,y, x,y, x,y, x,y
+      //   {x:x, y: y - len},
+      //   {x:x + len, y:y},
+      //   {x:x, y:y + len},
+      //   {x:x - len, y:y}
+      // ];
 
       x -= len;
       y -= len;
@@ -204,18 +214,42 @@ Object.defineProperties(Line.prototype, {
 
       len = len*2;
 
-      var rad = Vector.angle(
-        { x: x, y: y },
-        { x: x2, y: y2 }
-      );
+      //var vertices = Matter.Vertices.(x,y,x2,y2);
+      //   x, (y - len),
+      //   (x + len), y,
+      //   x, (y + len),
+      //   (x - len), y
+      // );
+
+      // Matter.Vertices.rotate(vertices, rad, { x: x, y: y });
+      // var newVerts = [];
+      // vertices.forEach(function(vertex) {
+      //   newVerts.push(vertex.x, vertex.y);
+      // })
+      // var newVerts = vertices.reduce(function(arr, vertex) {
+      //   return arr.push(vertex.x, vertex.y);
+      // }, []);
+      // vertices = vertices.reduce(function(x,y,index) {
+      //   var tempV = {
+      //     x: x,
+      //     y: y
+      //   }
+      //   var updatedVert = Vector.add(normV, tempV);
+
+      //   newVerts.push(updatedVert.x, updatedVert.y)
+      //   return y;
+      // });
 
       container.beginFill(0);
-      container.lineWidth + 2;
+      container.lineWidth += 2;
       container.lineColor = 0;
-      //container.rotation = rad;
-      container.drawPolygon(vertices);
-      //container.drawRect(x, y, len, len);
-      //container.drawRect(x2, y2, len, len);
+      //console.log('PIVOT point:', { x: x, y: y });
+      //container.pivot = { x: 0.5 * x, y: 0.5 * y };
+      //container.rotation = rotateVector;
+
+      //container.drawPolygon(newVerts);
+      container.drawRect(x, y, len, len);
+      container.drawRect(x2, y2, len, len);
     }
   }
 });

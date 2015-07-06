@@ -85,13 +85,8 @@ module.exports = function(settings, el, AppState) {
     //data.originalEvent.preventDefault();
     // Flag that tells us that mouse button was pressed down before
     if(isDown) {
-      // Add Shape to Canvas shapes map
-      //rect.addNew(shapes, AppState.Users.currentUser._id);
-
-      // Set active listeners on added Shape
-      //rect.setRectMoveListeners(AppState);
-      //var socketRect = rect.getProperties();
-
+      // Check if Shape was actually drawn, ie. did user press mouse down and mouse move, which draws a Shape, or
+      // just simply press mouse down, which is not considered drawing
       if(drawBegan) {
 
         rect.setRectMoveListeners(AppState);
@@ -104,6 +99,7 @@ module.exports = function(settings, el, AppState) {
         socket.emit(EVENT.shapeObject, 'interactionEnd', rect._id);
       }
       else {
+        // We always add a Shape Id to hash on
         shapes.removeShape(rect);
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
