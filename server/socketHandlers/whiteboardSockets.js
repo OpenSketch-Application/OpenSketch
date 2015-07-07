@@ -56,7 +56,7 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
           if(err){
             throw new Error('Error retrieving Session');
           }
-          else if(session._id){
+          else if(session && session._id){
             //push user to db
 
             if(session.users.length < session.sessionProperties.maxUsers){
