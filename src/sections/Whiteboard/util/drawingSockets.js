@@ -2,6 +2,7 @@ var PIXI = require('pixi');
 var EVENT = require('../../../model/model').socketEvents;
 var Rectangle = require('./shapes/Rectangle');
 var Pencil = require('./shapes/Pencil');
+var Ellipse = require('./shapes/Ellipse');
 function shapeControl(eventType,shapeData,AppState){
   var shapes = AppState.Canvas.Shapes;
 
@@ -16,7 +17,7 @@ function shapeControl(eventType,shapeData,AppState){
       case 'interactionEnd':
         //console.log('eventType', eventType, 'shape', shapeData);
         // shapeData is just an _id property
-        shapes[shapeData].setRectMoveListeners(AppState);
+        shapes[shapeData].setShapeMoveListeners(AppState);
         shapes[shapeData].unHighlight();
         break;
       case 'interactionBegin':
@@ -41,12 +42,14 @@ function shapeControl(eventType,shapeData,AppState){
             var pen = new Pencil(shapeData);   
             pen.draw(shapeData.path);
             shapes.addNew(pen);
-
             break;
           case 'rectangle':
-            
             var rect = new Rectangle(shapeData);
             shapes.addNew(rect);
+            break;
+          case 'ellipse':
+            var ellipse = new Ellipse(shapeData);
+            shapes.addNew(ellipse);
             break;
         }
 

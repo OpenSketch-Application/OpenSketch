@@ -94,7 +94,7 @@ if(isDown) {
       //var socketRect = rect.getProperties();
 
       if(drawBegan) {
-        rect.setRectMoveListeners(AppState);
+        rect.setShapeMoveListeners(AppState);
         console.log('rect._id', rect);
 
         rect.unHighlight();
