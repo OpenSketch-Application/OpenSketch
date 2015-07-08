@@ -66,7 +66,7 @@ module.exports = function(settings, el, AppState) {
 
       if(drawBegan) {
        socket.emit(EVENT.shapeObject, 'draw', ellipse.getProperties());
-     //   ellipse.draw();
+       socket.emit(EVENT.saveObject,ellipse.getProperties());
       }
       else {
         // Adds shape to the shapes object/container and stage

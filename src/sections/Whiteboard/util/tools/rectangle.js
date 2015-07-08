@@ -71,6 +71,7 @@ module.exports = function(settings, el, AppState) {
         // Adds shape to the shapes object/container and stage
         rect = shapes.addNew(rect);
         socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
+
       }
 
       drawBegan = true;
@@ -84,8 +85,7 @@ module.exports = function(settings, el, AppState) {
 
         // Send socket info since drawing has began now
      //   socket.emit(EVENT.saveObject, rect.getProperties());
-
-if(isDown) {
+     if(isDown) {
       // Add Shape to Canvas shapes map
       //rect.addNew(shapes, AppState.Users.currentUser._id);
 
@@ -101,6 +101,7 @@ if(isDown) {
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
         socket.emit(EVENT.shapeObject, 'interactionEnd', rect._id);
+        socket.emit(EVENT.saveObject, rect.getProperties());
       }
       else {
         shapes.removeShape(rect);

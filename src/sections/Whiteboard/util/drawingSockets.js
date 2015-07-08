@@ -26,8 +26,9 @@ function shapeControl(eventType,shapeData,AppState){
         //shapes[shapeData._id].interact(shapeData);
         break;
       case 'move':
-        //console.log('moving shape', shapeData);
+        console.log('moving shape',shapeData);
         shapes[shapeData._id].move(shapeData);
+
         break;
       // case 'moveTo':
       //   //console.log('moving shape', shapeData);
@@ -64,6 +65,34 @@ function shapeControl(eventType,shapeData,AppState){
       case 'remove':
         shapes.removeShapeByID(shapeData);
         break;
+      case 'populating':
+        switch(shapeData.objectType){
+          case 'pencil':
+            var pen = new Pencil(shapeData);   
+            pen.draw(shapeData.path);
+            shapes.addNew(pen);
+            break;
+          case 'rectangle':
+            var rect = new Rectangle(shapeData);
+            shapes.addNew(rect);
+            rect.draw(shapeData);
+            if(shapeData.moveX!= null || shapeData.moveX!=undefined){
+             rect.move({x:shapeData.moveX,y:shapeData.moveY});
+            }
+            rect.setShapeMoveListeners(AppState);
+            break;
+          case 'ellipse':
+            var ellipse = new Ellipse(shapeData);
+            shapes.addNew(ellipse);
+            ellipse.draw(shapeData);
+            if(shapeData.moveX!= null || shapeData.moveX!=undefined){
+             ellipse.move({x:shapeData.moveX,y:shapeData.moveY});
+            }
+            ellipse.setShapeMoveListeners(AppState);
+            break;
+
+        }
+        break;
     }
 }
 module.exports = function(AppState) {
@@ -96,10 +125,11 @@ module.exports = function(AppState) {
      
   });
   socket.on(EVENT.populateCanvas, function(shapelist){
-    console.log('POPUlatecanvas');
+
     for(var i = 0; i<shapelist.length;i++){
-      shapeControl('add',shapelist[i],AppState);
+      shapeControl('populating',shapelist[i],AppState);
     }
+
   });
  };
 

@@ -114,6 +114,7 @@ var setMoveListeners = function(AppState) {
 var move = function(moveObject) {
   this.graphics.position.x = moveObject.x;
   this.graphics.position.y = moveObject.y;
+
 };
 
 var moveTo = function(vector) {

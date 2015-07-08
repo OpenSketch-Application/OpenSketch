@@ -1,5 +1,6 @@
 var Session = require('../db/models/Session');
 
+var ShapeManager = require('../db/DbManagers/CanvasShapesManager');
 var EVENT = require('../../src/model/model').socketEvents;
 var whiteboardSockets = {};
 
@@ -36,7 +37,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 
                    socket.emit(EVENT.updateChatList, session.messages);
 
-  //                 socket.emit(EVENT.populateCanvas,session.canvasShapes);
+                   socket.emit(EVENT.populateCanvas,session.canvasShapes);
                  }
               });
             }
@@ -141,7 +142,10 @@ whiteboardSockets.shapeObjectCB = function(socket, nspWb) {
     console.log('recieved socket shape event');
     console.log(eventType);
     console.log(data);
+
     socket.broadcast.emit(EVENT.shapeObject, eventType, data);
+
+     
   }
 }
 
@@ -151,25 +155,26 @@ whiteboardSockets.saveObjectCB = function(socket, nspWb) {
     console.log(data);
     var sessionid = socket.adapter.nsp.name.split('/');
     sessionid = sessionid[sessionid.length - 1];
-
-    Session.findById(sessionid, function(err, session){
-          if(err){
-            throw new Error('Error retrieving Session');
+    ShapeManager.findOne(sessionid,data._id,function(err,result){
+      if(result){
+        if(result.canvasShapes.length > 0){
+          var newObj = result.canvasShapes[0];
+          for(var prop in data){
+           newObj[prop] = data[prop]; 
           }
-          else if(session._id){
-            //push user to db
-              session.canvasShapes.push(data); 
-              session.save(function(err){
-                 if(err) console.log(err);
-                 else{
-                   console.log('saved obj');
+          console.log('newobj: ',newObj); 
+          ShapeManager.updateOne(sessionid,data._id,newObj,function(){}) 
+        }else{
+          ShapeManager.addOne(sessionid,data,function(){});
+        }
+      }
+      
+    });
 
-                 }
-              });
-           }
-          
-        });
-   };
+
+        
+    
+    };
   }
 
 
