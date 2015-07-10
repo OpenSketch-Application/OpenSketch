@@ -1,6 +1,9 @@
 var Session = require('../db/models/Session');
 
 var EVENT = require('../../src/model/model').socketEvents;
+//Liam Permissions
+var pmission = require('../../examples/NodPermissions/permissions');
+
 var whiteboardSockets = {};
 
 //JOIN
@@ -15,16 +18,20 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
           }
           else if(session._id){
             //push user to db
-
+			//Liam: Passing through here to test under situation where ou have the session Id
+			pmission.setPerms(sessionid, session);
+			//
             if(session.users.length < session.sessionProperties.maxUsers){
               session.users.push({
                 username: uName,
                 userRank: session.users.length,
+				//This push does not seem to be effecting the permissions at all (as being shown in a print of session variable)
+				
                 canDraw: session.canDraw,
                 canChat: session.canChat,
                 _id: socket.id
               });
-
+			  console.log(session);
               session.save(function(err){
                  if(err) console.log(err);
                  else{
@@ -79,11 +86,12 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
                'user': message.user,
                'msg': message.msg
               });
-
+		 
 
         console.log('msg received', message);
+		//session.users.upda
         //add chat to db //but maybe we don't need to keep chat messages stored?
-
+		
       };
 
 };

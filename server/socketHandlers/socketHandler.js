@@ -2,7 +2,9 @@ var Session = require('../db/models/Session');
 var User = require('../db/DbManagers/UserManager');
 var wbLogic = require('./whiteboardSockets');
 var EVENT = require('../../src/model/model').socketEvents;
+var pmission = require('../../examples/NodPermissions/permissions');
 //var validateCookie = require();
+//var Cookies = require('cookies-js');
 
 //var homeLogic = require('./homeSockets');
 module.exports = function(io,DB) {
@@ -17,6 +19,19 @@ module.exports = function(io,DB) {
 
       socket.on(EVENT.createSession, function(canvasSession) {
         //push canvasSession to db
+		
+		//var userId = socket.request.headers.cookie.match(/username:.*;/gi);
+		//Liam 
+		//Here is checking a rejoin of a session/ the creation of a new session after it has
+		//Been Closed . When A session is closed all fields are destroyed() and will be undefined
+		//
+		console.log(canvasSession.id);
+		if(canvasSession.id === undefined){
+		//Grab the cookies formthe session and assign it tot he id 
+			console.log("Hi");
+			//var sessid = Cookies.get('created');
+		}
+		//EndLiam
         var newSession = new Session({
           _id: canvasSession.id,
           users: [],
@@ -37,7 +52,7 @@ module.exports = function(io,DB) {
             console.log('Session saved to db');
           }
         });
-
+		
         //create new namespace
         var nsp = io.of('/whiteboard/' + canvasSession.id);
         nsp.on('connection', wbHandler(nsp));
@@ -64,10 +79,9 @@ module.exports = function(io,DB) {
     socket.on(EVENT.validateSession, function(sessionid) {
       console.log('in validate');
 
-      console.log(socket.request.headers.cookie);
-
-      //var userId = socket.request.headers.cookie.match(/userId:.*;/gi);
-
+      
+	//var userId = socket.request.headers.cookie.match(/username:.*;/gi);
+      
       Session.findById(sessionid, function(err, session) {
         var userFound = false;
         //session.users
