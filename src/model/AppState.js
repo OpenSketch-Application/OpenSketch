@@ -1,5 +1,6 @@
 'use strict';
 var EVENT = require('./model').socketEvents;
+
 // Every new tool will have these defaults settings
 // Can be changed by user for her preferences later
 var Tools = {
@@ -36,23 +37,49 @@ var Tools = {
     strokeColor: 0x000000,
     strokeWidth: 1
   },
+  text: {
+    // Text Properties
+    fontSize: 12,
+    fontFamily: 'Arial',
+    stroke: 0xff1010,
+    align: 'center',
+    strokeThickness: 1,
+    wordWrap: true,
+    wordWrapWidth: 100,
+
+    // Rectangle class properties
+    lineColor: 0x000000,
+    lineWidth: 1,
+    lineAlpha: 1,
+    fillColor: 0xFFFFFF,
+    fillAlpha: 1
+    // {font : '24px Arial',
+    // fill : 0xff1010,
+    // align : 'center'}
+  },
   templates: {},
   table: {},
   uml: {}
 };
 
+/**
+ * Shapes holds all the Drawn objects on Canvas and stage, but it organizes
+ * it by hashkeys (ObjectIds), this will ensure each Shape created can be uniquely
+ * identified and quick to access
+ */
 var Shapes = {
   addNew: addNew,
   removeShape: removeShape,
   removeShapeByID: removeShapeByID,
   _shapeTypes: {
+    'pencil': 0,
     'line': 0,
     'rectangle': 0,
     'ellipse': 0
   },
   _shapes: {},
   _order: [],
-  hashKeys: ['#', '@', '&', '*', '%']
+  hashKeys: ['#', '@', '&', '*', '%'] // These are scrambler characters to make Key more unique
 };
 
 Object.defineProperty(Shapes, 'originalUser', {
@@ -79,7 +106,7 @@ Object.defineProperty(Shapes, 'originalUser', {
 // layerLevel is optional parameter
 function addNew(shapeObject, layerLevel) {
   // increment the number of Shapes of this type
-  var shapeCount = this._shapeTypes[shapeObject.objectType];
+  var shapeCount = this._shapeTypes[shapeObject.shapeType];
   var keyIndex = 0;
 
   shapeObject.originalUserId = shapeObject.originalUserId || this.originalUser;
@@ -94,7 +121,7 @@ function addNew(shapeObject, layerLevel) {
   }
 
   // Create Unique key
-  shapeObject._id = '#_' + shapeObject.objectType +
+  shapeObject._id = '#_' + shapeObject.shapeType +
                     shapeCount +
                     shapeObject.originalUserId.substr(0,3);
 
@@ -113,21 +140,19 @@ function addNew(shapeObject, layerLevel) {
   this[shapeObject._id] = shapeObject;
 
   // Add stage/layer level the shape will be inserted at
-  this.stage.addChildAt(shapeObject.graphics, shapeObject.layerLevel);
+  this.stage.addChildAt(shapeObject.getGraphics(), shapeObject.layerLevel);
 
   // Set the number of Shapes of this type that have been drawn so far
-  this._shapeTypes[shapeObject.objectType] = shapeCount;
+  this._shapeTypes[shapeObject.shapeType] = shapeCount;
 
-  console.log('ADD NEW', shapeObject);
   return shapeObject;
 }
 
 // Removes shape based on id
 function removeShapeByID(id) {
   var shape = this[id];
-  console.log('shape to remove', shape);
   if(shape) {
-    this._shapeTypes[shape.objectType]--;
+    this._shapeTypes[shape.shapeType]--;
 
     this.stage.removeChildAt(shape.layerLevel);
 
@@ -150,8 +175,7 @@ var AppState = {
       canDraw: true,
       canChat: true
     },
-    Shapes: Shapes,
-    addNew: addNew
+    Shapes: Shapes
   },
   Tools: Object.preventExtensions(Tools),
   Users: {
@@ -177,31 +201,31 @@ Object.defineProperty(AppState.Canvas, "stage", {
 });
 
 // Preferred way of initiatializing the AppState, should be done early and seperate
-// Currently initialization is done in toolbar.js, would prefer to see it initialized
-// there, but through this method call
+// Currently initialization is done in toolbar.js
 Object.defineProperty(AppState, 'init', {
-  value: function(PIXI, Socket) {
+  // Pixi library instance, Socket instance, HTML div container
+  value: function(PIXI, Socket, Container) {
     var _this = this;
     var stage = new PIXI.Stage(0xFFFFFF, true);
     var renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
-                                           document.body.offsetHeight - 60,
+                                           document.body.offsetHeight  * 0.75,
                                            { antialias: true });
-    var container = document.getElementById('whiteboard');
+
     PIXI.dontSayHello = true;
 
     this.Canvas.stage = stage;
     this.Canvas.renderer = renderer;
     this.Socket = Socket;
-    this.Canvas.stage = stage;
+    this.Canvas.Shapes.stage = stage;
     this.Canvas.Shapes.socket = Socket;
 
-    container.appendChild(renderer.view);
+    Container.appendChild(renderer.view);
 
     // Start the render loop
     animate();
 
     function animate() {
-      requestAnimFrame(animate);
+      requestAnimationFrame(animate);
       renderer.render(stage);
     }
   }

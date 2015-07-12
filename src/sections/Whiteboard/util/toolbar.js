@@ -27,22 +27,6 @@ function toolbar(elements, AppState) {
 
   this.tools = {};
   this.container = find(elements.whiteboard);
-  //this.socket = AppState.Socket;
-
-  // PIXI.dontSayHello = true;
-
-  // this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
-  //                                         document.body.offsetHeight - 60,
-  //                                         { antialias: true });
-
-  // this.container.appendChild(this.renderer.view);
-  // this.stage = new PIXI.Stage(0xFFFFFF, true);
-
-  // AppState.Canvas.stage = this.stage;
-  // AppState.Canvas.renderer = this.renderer;
-  // AppState.Canvas.Shapes.stage = this.stage;
-  // AppState.Canvas.Shapes.socket = AppState.Socket;
-  // Start Animation loop
 
   // NEED TO GET RID OF THIS
   var settings = {
@@ -69,13 +53,15 @@ function toolbar(elements, AppState) {
     _this.selectedTool = e.target.id;
     var button = e.target;
 
-    button.className = "tool-selected";
+    console.log(button);
 
     if(previouslySelected) {
       previouslySelected.className = "";
     }
-
+    if(button)
+    button.className = "tool-selected";
     previouslySelected = button;
+
   }, false);
 
 

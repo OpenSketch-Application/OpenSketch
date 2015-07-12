@@ -30,7 +30,6 @@ module.exports = function(settings, el, AppState) {
 
     line = new Line(lineSettings);
 
-    console.log("line mouse down", AppState);
   };
 
   function mousemove(data) {
@@ -67,14 +66,12 @@ module.exports = function(settings, el, AppState) {
   function mouseup(data) {
     if(isDown) {
       if(drawBegan) {
-        console.log('line mouseup, draw began');
         line.setEventListeners(AppState);
 
         line.unHighlight();
         // Emit socket event
       }
       else {
-        console.log('line mouseup, draw not began');
 
         shapes.removeShape(line);
 

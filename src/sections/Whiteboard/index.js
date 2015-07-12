@@ -38,7 +38,7 @@ Section.prototype = {
     createTabs();
 
     // Inits AppState with Pixi and adds Socket object to AppState objects
-    AppState.init(PIXI, socket);
+    AppState.init(PIXI, socket, find('#whiteboard-container'));
 
     this.toolbar = new Toolbar({
       whiteboard: '#whiteboard-container',

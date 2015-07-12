@@ -18,16 +18,12 @@ module.exports = function(grunt) {
         src: ['src/*.js'],
         dest: 'app/js/bundle.js',
         'options': {
-                    'debug': true,
-                    'watch': true,
-                    'verbose': true,
-                    'open': true,
-                    'browserifyOptions' : {'debug': true}
-                }
-      },
-      test: {
-        src: ['./src/tests/whiteboard-tests/Toolbar/**/*.js', ],
-        dest: './src/tests/whiteboard-tests/Toolbar/tests/bundle.js'
+          'debug': true,
+          'watch': true,
+          'verbose': true,
+          'open': true,
+          'browserifyOptions' : {'debug': true}
+        }
       }
     },
     watch: {
@@ -58,6 +54,4 @@ module.exports = function(grunt) {
     'browserify:dev',
     'watch'
   ]);
-
-  grunt.registerTask('testTool', ['browserify:test']);
 };

@@ -46,7 +46,6 @@ function activate(settings, AppState) {
     //   stageIndex: curStageIndex + 1
     // });
 
-    console.log("drawing");
   };
 
   stage.mousemove = function(data) {

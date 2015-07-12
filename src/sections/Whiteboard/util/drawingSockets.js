@@ -27,52 +27,53 @@ module.exports = function(AppState) {
 
   });
 
+  // Specific Shape Events
+  // INCLUDE in only Socket Event, as first parameter
+  // 'add'
+  // 'draw'
+  // 'drawEnd'
+  // 'move'
+  // 'modify'
+  // 'remove'
+  // shapeLock
+  // shapeUnLock
+
   socket.on(EVENT.shapeObject, function(eventType, shapeData) {
-    console.log('event shapeObject recieved ', eventType);
 
     switch(eventType) {
       case 'draw':
-        console.log('received draw shape', shapeData);
         shapes[shapeData._id].draw(shapeData);
         shapes[shapeData._id].highlight();
         break;
 
       // Any interaction that involves a mouseup or mousedown
-      case 'interactionEnd':
-        //console.log('eventType', eventType, 'shape', shapeData);
+      case 'drawEnd':
         // shapeData is just an _id property
-        shapes[shapeData].setRectMoveListeners(AppState);
-        shapes[shapeData].unHighlight();
+        shapes[shapeData._id].setMoveListeners(AppState);
+        shapes[shapeData._id].unHighlight();
         break;
 
-      case 'interactionBegin':
-        shapes[shapeData].interactive = false;
-        shapes[shapeData].highlight();
-        //shapes[shapeData._id].interact(shapeData);
-        break;
       case 'shapeLock':
         shapes[id].lockShape();
         break;
+
       case 'shapeUnlock':
         shapes[id].unlockShape();
         break;
+
       case 'move':
         //console.log('moving shape', shapeData);
         shapes[shapeData._id].move(shapeData);
         break;
 
       case 'add':
-
+        // Uses helper function defined below
         addShapeBasedOnType(shapeData);
-
         break;
 
       case 'modify':
-        console.log('modify shape', shapeData);
         // redraw the shape with new properties
         shapes[shapeData._id].draw(shapeData);
-
-        //shapes[shapeData._id].highlight();
         break;
 
       case 'remove':
@@ -81,11 +82,11 @@ module.exports = function(AppState) {
     }
   })
 
+  // Calls the right constructor based on the Object's shapeType
   function addShapeBasedOnType(shapeData) {
-    console.log('recieved add', shapeData);
     var shape;
 
-    switch(shapeData.objectType) {
+    switch(shapeData.shapeType) {
       case 'rectangle':
         //AppState.Canvas.stage.addChild(shapeData);
         shape = new Rectangle(shapeData);
@@ -96,7 +97,7 @@ module.exports = function(AppState) {
     }
 
     // Add Shape to the Shapes hashmap
-    if(shape) shapes.addNew(rect);
+    if(shape) shapes.addNew(shape);
     else console.log('ERROR: Did not create a Shape of requested type', shapeData);
   }
 

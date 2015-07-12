@@ -22,15 +22,14 @@ module.exports = function(AppState, el) {
 
   var mousedown = function(data) {
     //data.originalEvent.preventDefault();
-    console.log('mouse down fired');
     isDown = true;
     if(select.selectedObject !== null) {
 
       select.selectedObject.unHighlight();
       select.selectedObject.selected = false;
 
-      // Fire off selected ObjectId to server
-      socket.emit(EVENT.interactionEnd, 'interactionEnd', select.selectedObject._id);
+      // Fire off unLock ObjectId to server
+      socket.emit(EVENT.lockShape, 'unLockShape', { _id: select.selectedObject._id });
 
       select.selectedObject = null;
     }
@@ -55,8 +54,9 @@ module.exports = function(AppState, el) {
   var mouseup = function(data) {
     if(select.selectedObject) {
       var shapeId = select.selectedObject._id;
-      // Emit socket interactionEnd Event, since drawing has ended on mouse up
-      socket.emit(EVENT.shapeObject, 'interactionEnd', shapeId);
+
+      // Emit socket shapeLock Event
+      socket.emit(EVENT.lockShape, 'lockShape', { _id: select.selectedObject._id });
     }
     isDown = false;
   }

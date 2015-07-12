@@ -5,7 +5,6 @@ var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(settings, el, AppState) {
-  console.log('AppState', AppState);
   var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
   var shapes = AppState.Canvas.Shapes;
@@ -17,9 +16,6 @@ module.exports = function(settings, el, AppState) {
 
   el.addEventListener('click', function(data) {
     data.preventDefault();
-    console.log('Selected shapes...');
-    //if(settings.toolbar.toolSelected) return;
-    //// Return early if toolbar Select was picked
 
     // Set the selected tool on AppState
     AppState.Tools.selected = 'rectangle';
@@ -33,11 +29,6 @@ module.exports = function(settings, el, AppState) {
     originalCoords = data.getLocalPosition(this);
 
     rect = new Rectangle(Tools.rectangle);
-    // rect.setProperties(Tools.rectangle);
-    console.log('RECT', rect.graphics);
-    //socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
-    //console.log(rect);
-    //console.log('rect added', rect.getProperties());
   };
 
   var mousemove = function(data) {
@@ -67,12 +58,13 @@ module.exports = function(settings, el, AppState) {
       rect.highlight();
 
       if(drawBegan) {
+
         socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
       }
       else {
         // Adds shape to the shapes object/container and stage
         rect = shapes.addNew(rect);
-
+        var RectProp = rect.getProperties();
         // Send socket info since drawing has began now
         socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
       }
@@ -89,9 +81,7 @@ module.exports = function(settings, el, AppState) {
       // just simply press mouse down, which is not considered drawing
       if(drawBegan) {
 
-        rect.setRectMoveListeners(AppState);
-
-        console.log('rect._id', rect);
+        rect.setMoveListeners(AppState);
 
         rect.unHighlight();
 
@@ -106,21 +96,9 @@ module.exports = function(settings, el, AppState) {
         socket.emit(EVENT.shapeObject, 'remove', rect._id);
       }
     }
+
     isDown = drawBegan = false;
   };
-
-  // var mouseout = function(data) {
-  //   if(isDown) {
-  //     if(drawBegan) {
-  //       rect.setRectMoveListeners(AppState);
-  //     }
-  //     else {
-  //       shapes.removeShape(rect);
-  //     }
-  //   }
-
-  //   isDown = drawBegan = false;
-  // }
 
   function activate() {
     stage.mousedown = mousedown;

@@ -8,7 +8,7 @@ module.exports = Line;
 function Line(shapeProperties) {
   BaseShape.call(this, shapeProperties);
 
-  this.objectType = 'line';
+  this.shapeType = 'line';
 
   this.setProperties(shapeProperties);
 }
@@ -19,8 +19,8 @@ Line.prototype = Object.create(BaseShape.prototype);
 Line.prototype.constructor = Line;
 
 function setEventListeners(AppState) {
-  console.log('setting line mouse listeners');
-  console.log('Vector', this);
+  //console.log('setting line mouse listeners');
+  //console.log('Vector', this);
   this.interactive = true;
   var Tools = AppState.Tools;
   // Set the hit area for interaction
@@ -48,7 +48,7 @@ function setEventListeners(AppState) {
 
     if(Tools.selected === 'select' && !this.selected) {
       // Highlight Shape outline
-      this.highlight(0x0000FF);
+      this.highlight();
     }
 
   }.bind(this);//mouseover.bind(_this);
@@ -68,7 +68,7 @@ function setEventListeners(AppState) {
 Object.defineProperties(Line.prototype, {
   setProperties: {
     value: function(shapeProperties) {
-      console.log('calling line set properties');
+      //console.log('calling line set properties');
       // Set Base properties by calling Base's set method
       BaseShape.prototype.setProperties.call(this, shapeProperties);
 
@@ -145,7 +145,7 @@ Object.defineProperties(Line.prototype, {
       this.lineColor = shapeProperties.lineColor || this.lineColor;
 
       //this.graphics.lineWidth = 1;
-      console.log('shapeProperties lineWidth', shapeProperties.lineWidth, this.lineWidth);
+      //console.log('shapeProperties lineWidth', shapeProperties.lineWidth, this.lineWidth);
       this.graphics.moveTo(this.x, this.y);
       this.graphics.lineTo(this.x2, this.y2);
 
