@@ -110,7 +110,7 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
 
 };
 //DISCONNECT
-whiteboardSockets.disconnectCB = function(socket,nspWb){
+whiteboardSockets.disconnectCB = function(socket, nspWb){
   return function() {
     sessionid = socket.adapter.nsp.name.split('/');
     sessionid = sessionid[sessionid.length - 1];
@@ -139,7 +139,12 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
        }
        session.save(function(err){
            if(err) console.log(err);
-           else console.log(session);
+           else {
+            console.log(session);
+
+            socket.disconnect();
+
+           }
         });
       }
     });

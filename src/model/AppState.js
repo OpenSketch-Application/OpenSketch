@@ -7,6 +7,7 @@ var Tools = {
   // Currently selected tool from the ToolBar
   selected: '',
   importer: {
+    imageUrl: '',
     maxSize: 5
   },
   fill: {

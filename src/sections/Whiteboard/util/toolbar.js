@@ -47,8 +47,8 @@ function toolbar(elements, AppState) {
 
   // Need to fix Shapes selection state
   toolbox.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    //e.preventDefault();
+    //e.stopPropagation();
 
     _this.selectedTool = e.target.id;
     var button = e.target;
@@ -111,7 +111,7 @@ function toolbar(elements, AppState) {
       case 'import':
         this.import = el;
         //settings, el, AppState
-        createImport(settings, el, AppState);
+        createImport(el, AppState);
         break;
       case 'color':
         this.color = el;

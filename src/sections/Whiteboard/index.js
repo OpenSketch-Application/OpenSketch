@@ -74,10 +74,10 @@ Section.prototype = {
 
     var close = find('#close-whiteboard');
 
-    close.addEventListener('click', function(e) {
-      e.preventDefault();
-      framework.go('/home');
-    }, false)
+    // close.addEventListener('click', function(e) {
+    //   e.preventDefault();
+    //   framework.go('/home');
+    // }, false)
 
     console.log('end init');
 
@@ -88,6 +88,7 @@ Section.prototype = {
        framework.go('/home');
       }
     },1000);
+
   },
 
   resize: function(w, h) {
@@ -110,6 +111,8 @@ Section.prototype = {
 
     Cookies.expire('username');
     Cookies.expire('create');
+
+    AppState.Socket.emit('disconnect');
 
     this.section.parentNode.removeChild(this.section);
     done();

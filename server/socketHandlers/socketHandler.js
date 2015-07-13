@@ -55,6 +55,7 @@ module.exports = function(io,DB) {
 
       socket.on(EVENT.saveObject,wbLogic.saveObjectCB(socket,nspWb));
       socket.on(EVENT.updateObject, wbLogic.updateObjectCB(socket));
+
     };
   }
 

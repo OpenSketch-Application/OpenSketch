@@ -148,9 +148,9 @@ var setMoveListeners = function(AppState) {
   }.bind(this);
 };
 
-var move = function(moveObject) {
-  this.graphics.position.x = moveObject.x;
-  this.graphics.position.y = moveObject.y;
+var move = function(vector) {
+  this.graphics.position.x = vector.x;
+  this.graphics.position.y = vector.y;
 };
 
 // Returns the Current graphics container, it can be either a Graphic or Sprite
