@@ -2,14 +2,13 @@
 var PIXI = require('pixi');
 var BaseShape = require('./BaseShape');
 
-module.exports = Rectangle;
+module.exports = Ellipse;
 
-function Rectangle(shapeProperties) {
-  BaseShape.call(this, shapeProperties);
-  // this.graphics = new PIXI.Graphics();
-  // this.highlightShape = new PIXI.Graphics();
-  // this.graphics.addChild(this.highlightShape);
-  this.objectType = 'rectangle';
+function Ellipse(shapeProperties) {
+  this.graphics = new PIXI.Graphics();
+  this.highlightShape = new PIXI.Graphics();
+  this.graphics.addChild(this.highlightShape);
+  this.objectType = 'ellipse';
 
   // Prefill Shape Model
   // this.shape = {
@@ -33,14 +32,12 @@ function Rectangle(shapeProperties) {
 }
 
 // Set prototype to the BaseShape
-//Rectangle.prototype = new BaseShape();
-Rectangle.prototype = Object.create(BaseShape.prototype);
-Rectangle.prototype.constructor = Rectangle;
+Ellipse.prototype = new BaseShape();
 
 // Get Properties for Socket (Does not include graphics object)
-Rectangle.prototype.getProperties = function() {
+Ellipse.prototype.getProperties = function() {
 
-  // Get Rectangle properties
+  // Get Ellipse properties
   var shape = {
     x: this.x,
     y: this.y,
@@ -60,7 +57,7 @@ Rectangle.prototype.getProperties = function() {
   return shape;
 };
 
-Rectangle.prototype.setProperties = function(shapeProperties) {
+Ellipse.prototype.setProperties = function(shapeProperties) {
 
   // Set Base properties by calling Base's set method
   BaseShape.prototype.setProperties.call(this, shapeProperties);
@@ -86,7 +83,7 @@ Rectangle.prototype.setProperties = function(shapeProperties) {
   this.graphics.alpha = this.fillAlpha;
 };
 
-Rectangle.prototype.draw = function(shapeProperties) {
+Ellipse.prototype.draw = function(shapeProperties) {
   //console.log('calling draw')
   this.graphics.clear();
   this.graphics.interactive = false;
@@ -113,7 +110,7 @@ Rectangle.prototype.draw = function(shapeProperties) {
   this.graphics.beginFill(this.fillColor);
 
   // Redraw the shape
-  this.graphics.drawRect(
+  this.graphics.drawEllipse(
     this.x,
     this.y,
     this.width,
@@ -123,17 +120,19 @@ Rectangle.prototype.draw = function(shapeProperties) {
   return this;
 };
 
-//Rectangle.prototype.update = function(shapeProperties) {}
+//Ellipse.prototype.update = function(shapeProperties) {}
 
-// Rectangle.prototype.move = function(x, y) {
+// Ellipse.prototype.move = function(x, y) {
 //   this.graphics.position.x = x;
 //   this.graphics.position.y = y;
 // };
 
 // To keep track of the number of shapes of this type
-//Rectangle.prototype.shapeCount = 0;
+Ellipse.prototype.shapeCount = 0;
 
-Rectangle.prototype.getGraphicsData = function() {
+Ellipse.prototype.hashKeys = ['#', '@', '&', '*', '%'];
+
+Ellipse.prototype.getGraphicsData = function() {
   var graphicsData = this.graphics.graphicsData[0];
 
   var graphics = {
@@ -147,7 +146,7 @@ Rectangle.prototype.getGraphicsData = function() {
   return graphics;
 }
 
-Rectangle.prototype.setGraphicsData = function(shapeProperties) {
+Ellipse.prototype.setGraphicsData = function(shapeProperties) {
   var graphicsData = this.graphics.graphicsData[0];
 
   graphicsData.lineWidth = this.lineWidth = (shapeProperties.lineWidth || this.lineWidth);
@@ -158,14 +157,14 @@ Rectangle.prototype.setGraphicsData = function(shapeProperties) {
 
 }
 
-Rectangle.prototype.highlight = function(color) {
+Ellipse.prototype.highlight = function(color) {
   this.highlightShape.clear();
   this.highlightShape.lineWidth = this.lineWidth + 2;
   this.highlightShape.lineColor = 0x2D8EF0;
   //this.highlightShape.lineColor = color || 0x0000FF;
   this.highlightShape.alpha = 1;
 
-  this.highlightShape.drawRect(
+  this.highlightShape.drawEllipse(
     this.x,
     this.y,
     this.width,
@@ -175,11 +174,11 @@ Rectangle.prototype.highlight = function(color) {
   this.graphics.addChildAt(this.highlightShape, 0);
 }
 
-Rectangle.prototype.unHighlight = function() {
+Ellipse.prototype.unHighlight = function() {
   this.highlightShape.clear();
 }
 
-Rectangle.prototype.setShapeMoveListeners = function(AppState) {
+Ellipse.prototype.setShapeMoveListeners = function(AppState) {
   var _this = this;
   var Tools = AppState.Tools;
   this.setMoveListeners(AppState);

@@ -4,7 +4,7 @@ var EVENT = require('../../../../model/model').socketEvents;
 module.exports = function(AppState, el) {
 
   el.addEventListener('click', function(e) {
-    //console.log('click fired');
+
     AppState.Tools.selected = 'select';
     activate();
   });
@@ -19,7 +19,11 @@ module.exports = function(AppState, el) {
     y: 0,
     _id: ''
   };
-
+  var saveObject = {
+    x: 0,
+    y: 0,
+    _id: ''
+  };
   var mousedown = function(data) {
     //data.originalEvent.preventDefault();
     console.log('mouse down fired');
@@ -46,9 +50,12 @@ module.exports = function(AppState, el) {
       moveObject.y = data.global.y - selectedObject.origin.y;
       moveObject._id = selectedObject._id;
 
+
       selectedObject.move(moveObject);
 
+
       socket.emit(EVENT.shapeObject, 'move', moveObject);
+
     }
   };
 
@@ -57,7 +64,17 @@ module.exports = function(AppState, el) {
       var shapeId = select.selectedObject._id;
       // Emit socket interactionEnd Event, since drawing has ended on mouse up
       socket.emit(EVENT.shapeObject, 'interactionEnd', shapeId);
+
+      saveObject.moveX = moveObject.x;
+      saveObject.moveY = moveObject.y;
+      saveObject._id = moveObject._id;
+      saveObject.x = select.selectedObject.x;
+      saveObject.y = select.selectedObject.y;
+
+      socket.emit(EVENT.saveObject, saveObject);
+
     }
+
     isDown = false;
   }
 

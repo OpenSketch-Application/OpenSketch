@@ -13,7 +13,11 @@ var Tools = {
   },
   pencil: {
     fillColor: 0x000000,
-    strokeWidth: 1
+    strokeWidth: 1,
+    lineColor: 0x000000,
+    lineWidth: 2,
+    lineAlpha: 1
+
   },
   select: {
     clickedObject: false,
@@ -76,7 +80,7 @@ Object.defineProperty(Shapes, 'originalUser', {
 
 // Use test case to ensure userId, canvasID and Object Type are set
 // userId: AppState.Users.currentUser._id,
-function addNew(shapeObject, layerLevel) {
+function addNew(shapeObject, layerLevel, shapeID) {
   // increment object type number
   var shapeNumRef = this._shapeTypes[shapeObject.objectType];
   var keyIndex = 0;
@@ -113,7 +117,7 @@ function addNew(shapeObject, layerLevel) {
 
   this._shapeTypes[shapeObject.objectType] = shapeNumRef;
 
-  console.log('ADD NEW', shapeObject);
+
   return shapeObject;
 }
 

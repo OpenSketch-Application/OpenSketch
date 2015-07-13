@@ -1,14 +1,19 @@
 var PIXI = require('pixi');
+var Pencil = require('../shapes/Pencil')
 var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(info, el, AppState) {
   var userID = info.userID;
-  var stage = info.stage;
-  var renderer = info.renderer;
+  var stage = AppState.Canvas.stage;
+  var socket = AppState.Socket;
+  var shapes = AppState.Canvas.Shapes; 
   var isDown = false;
   var prevPos = { x: null, y: null };
   var graphics;
-
+  var pencil;
+  var path;
+  var prevID;
+  isFirst=false;
   var settings = {
     el: el,
     color: 0x000000,
@@ -17,47 +22,45 @@ module.exports = function(info, el, AppState) {
 
   function mousedown(data) {
     isDown = true;
-
+    isFirst = true;
     prevPos.x = data.global.x;
     prevPos.y = data.global.y;
-
+    prevID = 0; 
+    path = [];
+    path.push(prevPos.x);
+    path.push(prevPos.y);
     graphics = new PIXI.Graphics();
+    pencil = new Pencil(AppState.Tools.pencil);
   }
 
   function mousemove(data) {
     if(isDown) {
-      graphics.lineStyle(settings.strokeWeight, settings.color)
-      graphics.moveTo(prevPos.x, prevPos.y);
+      //Removing oldpath
+      if(!isFirst)
+        shapes.removeShapeByID(prevID);
+      isFirst=false;
 
       var prevX = prevPos.x;
       var prevY = prevPos.y;
 
-      graphics.lineTo(data.global.x, data.global.y);
       prevPos.x = data.global.x;
       prevPos.y = data.global.y;
-      stage.addChild(graphics);
-
-      var shapeinfo = {
-        x1: prevX,
-        y1: prevY,
-        x2: data.global.x,
-        y2: data.global.y,
-        color: settings.color,
-        strokeWeight: settings.strokeWeight
-      };
-
-      info.socket.emit(EVENT.sendPencil,shapeinfo);
+      path.push(prevPos.x);
+      path.push(prevPos.y);
+      pencil.draw({path: path});
+      prevID = shapes.addNew(pencil)._id;
+      console.log('movin');
+      socket.emit(EVENT.shapeObject,'add',pencil.getProperties());
     }
   }
 
   function mouseup() {
-    if(isDown) AppState.Canvas.addNew('pencil', graphics);
-
+      //shapes.addNew(pencil);
+    socket.emit(EVENT.saveObject,pencil.getProperties());
     isDown = false;
   }
 
   function mouseout(data) {
-    if(isDown) AppState.Canvas.addNew('pencil', graphics);
 
     isDown = false;
     graphics = undefined;

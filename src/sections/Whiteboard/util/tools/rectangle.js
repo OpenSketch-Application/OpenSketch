@@ -17,9 +17,6 @@ module.exports = function(settings, el, AppState) {
 
   el.addEventListener('click', function(data) {
     data.preventDefault();
-    console.log('Selected shapes...');
-    //if(settings.toolbar.toolSelected) return;
-    //// Return early if toolbar Select was picked
 
     // Set the selected tool on AppState
     AppState.Tools.selected = 'rectangle';
@@ -33,11 +30,7 @@ module.exports = function(settings, el, AppState) {
     originalCoords = data.getLocalPosition(this);
 
     rect = new Rectangle(Tools.rectangle);
-    // rect.setProperties(Tools.rectangle);
-    console.log('RECT', rect.graphics);
-    //socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
-    //console.log(rect);
-    //console.log('rect added', rect.getProperties());
+
   };
 
   var mousemove = function(data) {
@@ -67,14 +60,13 @@ module.exports = function(settings, el, AppState) {
       rect.highlight();
 
       if(drawBegan) {
-        socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
+       socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
       }
       else {
         // Adds shape to the shapes object/container and stage
         rect = shapes.addNew(rect);
-
-        // Send socket info since drawing has began now
         socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
+
       }
 
       drawBegan = true;
@@ -83,8 +75,12 @@ module.exports = function(settings, el, AppState) {
 
   var mouseup = function(data) {
     //data.originalEvent.preventDefault();
-    // Flag that tells us that mouse button was pressed down before
-    if(isDown) {
+    //
+        //rect = shapes.addNew(rect);
+
+        // Send socket info since drawing has began now
+     //   socket.emit(EVENT.saveObject, rect.getProperties());
+     if(isDown) {
       // Add Shape to Canvas shapes map
       //rect.addNew(shapes, AppState.Users.currentUser._id);
 
@@ -94,14 +90,13 @@ module.exports = function(settings, el, AppState) {
 
       if(drawBegan) {
 
-        rect.setRectMoveListeners(AppState);
-
-        console.log('rect._id', rect);
+        rect.setShapeMoveListeners(AppState);
 
         rect.unHighlight();
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
         socket.emit(EVENT.shapeObject, 'interactionEnd', rect._id);
+        socket.emit(EVENT.saveObject, rect.getProperties());
       }
       else {
         shapes.removeShape(rect);
@@ -110,21 +105,9 @@ module.exports = function(settings, el, AppState) {
         socket.emit(EVENT.shapeObject, 'remove', rect._id);
       }
     }
+
     isDown = drawBegan = false;
   };
-
-  // var mouseout = function(data) {
-  //   if(isDown) {
-  //     if(drawBegan) {
-  //       rect.setRectMoveListeners(AppState);
-  //     }
-  //     else {
-  //       shapes.removeShape(rect);
-  //     }
-  //   }
-
-  //   isDown = drawBegan = false;
-  // }
 
   function activate() {
     stage.mousedown = mousedown;
