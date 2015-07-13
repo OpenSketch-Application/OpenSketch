@@ -33,7 +33,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 
               session.save(function(err){
                  if(err) console.log(err);
-                 else{
+                 else {
                    console.log(session);
                    socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
@@ -42,7 +42,21 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 
                    socket.emit(EVENT.updateChatList, session.messages);
 
-                   socket.emit(EVENT.populateCanvas,session.canvasShapes);
+                   //socket.emit(EVENT.populateCanvas,session.canvasShapes);
+
+                   // Should just emit as one object,
+                   // addNewParticipant
+                   // var sessionData = {
+                   //  currentUser: userId,
+                   //  users: [],
+                   //  messages: [],
+                   //  shapes: [],
+                   //  defaults: {}
+                   // };
+                   /**
+
+
+                    */
                  }
               });
             }
@@ -150,7 +164,7 @@ whiteboardSockets.shapeObjectCB = function(socket, nspWb) {
     console.log(eventType);
     console.log(data);
 
-    socket.broadcast.emit(EVENT.shapeObject, eventType, data);
+    socket.broadcast.emit(EVENT.shapeEvent, eventType, data);
   }
 }
 

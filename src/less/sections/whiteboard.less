@@ -47,6 +47,7 @@
         float: left;
         width: 50px;
         position: relative;
+
         img {
           position: relative;
           top: 50%;
@@ -102,39 +103,40 @@
 
           color: #FFF;
           transform: translate(-39%, -10%);
+
           li {
+            //position: relative;
             background-color: #132531;
             display: inline-block;
-            width: 50px;
+            // width: 50px;
             height: 100%;
             padding: 0 10px;
             margin: 0 1px;
+            text-align: center;
+            //padding: 0 10px;
+            //margin: 0 1px;
             float: left;
-            div {
-              font-size: x-large;
-              font-weight: 900;
-              min-height: 45px;
-              position: relative;
-              transform: translateY(50%);
-              width: 90%;
-              text-align: center;
-              line-height: 0.5;
+
+            img:hover, img.tool-selected {
+              left: -10%;
+              width: 120%;
             }
-            &:hover, &.tool-selected {
-              left: auto;
-              width: 50px;
-              height: 100%;
-              padding: 0 10px;
-              margin: 0 1px;
-              width: 50px;
-              cursor: pointer;
-              cursor: hand;
+
+            // &:hover, &.tool-selected {
+            //   left: auto;
+            //   width: 50px;
+            //   height: 100%;
+            //   padding: 0 10px;
+            //   margin: 0 1px;
+            //   width: 50px;
+            //   cursor: pointer;
+            //   cursor: hand;
 
 
-              background-color: #3F3075;
-              -webkit-transition: opacity .25s ease;
-              -moz-transition: opacity .25s ease;
-            }
+            //   background-color: #3F3075;
+            //   -webkit-transition: opacity .25s ease;
+            //   -moz-transition: opacity .25s ease;
+            // }
             // &.tool-selected {
 
             // }

@@ -58,9 +58,11 @@ function toolbar(elements, AppState) {
     if(previouslySelected) {
       previouslySelected.className = "";
     }
-    if(button)
-    button.className = "tool-selected";
-    previouslySelected = button;
+
+    if(button) {
+      button.className = "tool-selected";
+      previouslySelected = button;
+    }
 
   }, false);
 

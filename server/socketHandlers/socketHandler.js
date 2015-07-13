@@ -49,7 +49,7 @@ module.exports = function(io,DB) {
       socket.on(EVENT.chatMessage, wbLogic.chatMessageCB(socket, nspWb));
       socket.on('disconnect', wbLogic.disconnectCB(socket, nspWb));
       socket.on(EVENT.sendPencil, wbLogic.sendPencilCB(socket, nspWb));
-      socket.on(EVENT.shapeObject, wbLogic.shapeObjectCB(socket, nspWb));
+      socket.on(EVENT.shapeEvent, wbLogic.shapeObjectCB(socket, nspWb));
       socket.on(EVENT.saveObject,wbLogic.saveObjectCB(socket,nspWb));
     };
   }

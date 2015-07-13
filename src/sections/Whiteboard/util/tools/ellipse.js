@@ -66,12 +66,12 @@ module.exports = function(settings, el, AppState) {
         // Draw event by default lock shape, since this Event manipulates
         // a Shape dimensions and other Users should not change its properties
         // during drawing
-        socket.emit(EVENT.shapeObject, 'draw', ellipse.getProperties());
+        socket.emit(EVENT.shapeEvent, 'draw', ellipse.getProperties());
       }
       else {
         // Adds shape to the shapes object/container and stage
         ellipse = shapes.addNew(ellipse);
-        socket.emit(EVENT.shapeObject, 'add', ellipse.getProperties());
+        socket.emit(EVENT.shapeEvent, 'add', ellipse.getProperties());
       }
 
       drawBegan = true;
@@ -96,7 +96,7 @@ module.exports = function(settings, el, AppState) {
         shapes.removeShape(ellipse);
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        //socket.emit(EVENT.shapeObject, 'remove', ellipse._id);
+        //socket.emit(EVENT.shapeEvent, 'remove', ellipse._id);
       }
     }
 

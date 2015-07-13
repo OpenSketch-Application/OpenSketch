@@ -54,7 +54,7 @@ module.exports = function(AppState, el) {
       selectedObject.move(moveObject);
 
 
-      socket.emit(EVENT.shapeObject, 'move', moveObject);
+      socket.emit(EVENT.shapeEvent, 'move', moveObject);
 
     }
   };
@@ -64,7 +64,7 @@ module.exports = function(AppState, el) {
       var shapeId = select.selectedObject._id;
 
       // Emit socket interactionEnd Event, since drawing has ended on mouse up
-      //socket.emit(EVENT.shapeObject, 'interactionEnd', shapeId);
+      //socket.emit(EVENT.shapeEvent, 'interactionEnd', shapeId);
 
       saveObject.moveX = moveObject.x;
       saveObject.moveY = moveObject.y;

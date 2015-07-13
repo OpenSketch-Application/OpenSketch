@@ -55,7 +55,7 @@ module.exports = function(settings, el, AppState) {
     // text.setProperties(Tools.textangle);
     //console.log('Text', Tools.text);
     // Adds shape to the shapes object/container and stage
-    //socket.emit(EVENT.shapeObject, 'add', text.getProperties());
+    //socket.emit(EVENT.shapeEvent, 'add', text.getProperties());
     //console.log(text);
     //console.log('text added', text.getProperties());
   };
@@ -89,14 +89,14 @@ module.exports = function(settings, el, AppState) {
     //   text.highlight();
 
     //   if(drawBegan) {
-    //     socket.emit(EVENT.shapeObject, 'draw', text.getProperties());
+    //     socket.emit(EVENT.shapeEvent, 'draw', text.getProperties());
     //   }
     //   else {
     //     // Adds shape to the shapes object/container and stage
     //     text = shapes.addNew(text);
 
     //     // Send socket info since drawing has began now
-    //     socket.emit(EVENT.shapeObject, 'add', text.getProperties());
+    //     socket.emit(EVENT.shapeEvent, 'add', text.getProperties());
     //   }
 
       drawBegan = true;
@@ -118,14 +118,14 @@ module.exports = function(settings, el, AppState) {
         //text.unHighlight();
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        //socket.emit(EVENT.shapeObject, 'interactionEnd', text._id);
+        //socket.emit(EVENT.shapeEvent, 'interactionEnd', text._id);
       }
       else {
         // Remove add shape if user had not actually drawn fully
         //if(text) shapes.removeShape(text);
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        //socket.emit(EVENT.shapeObject, 'remove', text._id);
+        //socket.emit(EVENT.shapeEvent, 'remove', text._id);
       }
     }
     isDown = drawBegan = false;

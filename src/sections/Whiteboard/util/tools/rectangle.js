@@ -58,7 +58,8 @@ module.exports = function(settings, el, AppState) {
       rect.highlight();
 
       if(drawBegan) {
-        socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
+        console.log('Draw Began, emit shape', rect.getProperties());
+        socket.emit(EVENT.shapeEvent, 'draw', rect.getProperties());
       }
       else {
         // Adds shape to the shapes object/container and stage
@@ -66,7 +67,9 @@ module.exports = function(settings, el, AppState) {
 
         var RectProp = rect.getProperties();
         // Send socket info since drawing has began now
-        socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
+        console.log('ADDING as new Rect', RectProp);
+        console.log('Socket', socket);
+        socket.emit(EVENT.shapeEvent, 'add', RectProp);
 
       }
 
@@ -86,7 +89,7 @@ module.exports = function(settings, el, AppState) {
         rect.unHighlight();
 
         // Emit socket drawEnd Event, since drawing has ended on mouse up
-        //socket.emit(EVENT.shapeObject, 'drawEnd', rect._id);
+        //socket.emit(EVENT.shapeEvent, 'drawEnd', rect._id);
         socket.emit(EVENT.saveObject, rect.getProperties());
       }
       else {
@@ -94,7 +97,7 @@ module.exports = function(settings, el, AppState) {
         shapes.removeShape(rect);
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        socket.emit(EVENT.shapeObject, 'remove', rect._id);
+        socket.emit(EVENT.shapeEvent, 'remove', rect._id);
       }
     }
 

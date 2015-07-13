@@ -23,11 +23,11 @@ module.exports = {
     'badSession': 'badSession',
 
     // Pixi/Canvas Draw Events
-    'shapeObject':'shapeObject',
+    'shapeEvent':'shapeEvent',
     'saveObject' : 'saveObject',
     'populateCanvas' : 'populateCanvas',
 
-   
+
     'sendDrawing': 'sendDrawing',
     'sendPencil' : 'sendPencil',
     // 'sendLine' : 'sendLine'

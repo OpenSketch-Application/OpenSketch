@@ -33,7 +33,7 @@ module.exports = function(AppState) {
   // shapeLock
   // shapeUnLock
   function handleShapeEvent(eventType, shapeData) {
-
+    console.log('handle shape event');
     switch(eventType) {
       case 'draw':
         shapes[shapeData._id].draw(shapeData);
@@ -48,11 +48,11 @@ module.exports = function(AppState) {
         break;
 
       case 'shapeLock':
-        shapes[id].lockShape();
+        shapes[shapeData._id].lockShape();
         break;
 
       case 'shapeUnlock':
-        shapes[id].unlockShape();
+        shapes[shapeData._id].unlockShape();
         break;
 
       case 'move':

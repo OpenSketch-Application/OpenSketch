@@ -111,7 +111,7 @@ var setMoveListeners = function(AppState) {
 
       // use socket emit to other User's that this object is selected by this user, and should
       // be locked for them
-      socket.emit(EVENT.shapeObject, 'interactionBegin', this._id);
+      socket.emit(EVENT.shapeEvent, 'lockShape', { _id: this._id });
     }
     // If the selected tool is Fill tool
     else if(Tools.selected === 'fill') {
@@ -123,7 +123,7 @@ var setMoveListeners = function(AppState) {
       // Emit a modify event, and send the Shape properties
       // We probably should only send the new Color rather than all Shape
       // properties
-      socket.emit(EVENT.shapeObject, 'modify', this.getProperties());
+      socket.emit(EVENT.shapeEvent, 'modify', this.getProperties());
 
       // Turn interactive back on after clearing Graphics
       this.interactive = this.graphics.interactive = true;
@@ -164,10 +164,20 @@ BaseShape.prototype = {
   move: move,
   moveTo: moveTo,
 
-  // UI indicator methods
+  // UI indicator methods, will be abstract
   highlight: function() { console.log('called base highlight'); },
-  unhighlight: function() { console.log('called base UnHighLight'); }
+  unhighlight: function() { console.log('called base UnHighLight'); },
 
+  // Shape locking/unlocking methods
+  lockShape: function(userId) {
+    this.currentUserId = userId;
+    this.interactive = this.graphics.interactive = false;
+    this.locked = true;
+  },
+  unLockShape: function() {
+    this.interactive = this.graphics.interactive = true;
+    this.locked = false;
+  }
   /*To Do: Potentially implement methods that shows UI features around the shape */
   // showSelectableUI
   // hideSelectableUI

@@ -50,7 +50,7 @@ module.exports = function(info, el, AppState) {
       pencil.draw({path: path});
       prevID = shapes.addNew(pencil)._id;
       console.log('movin');
-      socket.emit(EVENT.shapeObject,'add',pencil.getProperties());
+      socket.emit(EVENT.shapeEvent,'add',pencil.getProperties());
     }
   }
 
