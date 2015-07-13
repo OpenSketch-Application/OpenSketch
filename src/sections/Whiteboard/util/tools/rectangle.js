@@ -58,7 +58,7 @@ module.exports = function(settings, el, AppState) {
       rect.highlight();
 
       if(drawBegan) {
-        console.log('Draw Began, emit shape', rect.getProperties());
+        //console.log('Draw Began, emit shape', rect.getProperties());
         socket.emit(EVENT.shapeEvent, 'draw', rect.getProperties());
       }
       else {
@@ -66,11 +66,9 @@ module.exports = function(settings, el, AppState) {
         rect = shapes.addNew(rect);
 
         var RectProp = rect.getProperties();
-        // Send socket info since drawing has began now
-        console.log('ADDING as new Rect', RectProp);
-        console.log('Socket', socket);
+        // Send socket info since drawing has began now, use the getProperties() to
+        // return only the Shape properties we need and nothing else
         socket.emit(EVENT.shapeEvent, 'add', RectProp);
-
       }
 
       drawBegan = true;

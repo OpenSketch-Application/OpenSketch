@@ -111,7 +111,11 @@ var setMoveListeners = function(AppState) {
 
       // use socket emit to other User's that this object is selected by this user, and should
       // be locked for them
-      socket.emit(EVENT.shapeEvent, 'lockShape', { _id: this._id });
+      socket.emit(EVENT.shapeEvent, 'lockShape', {
+          _id: this._id,
+          currentUserId: this.currentUserId
+        }
+      );
     }
     // If the selected tool is Fill tool
     else if(Tools.selected === 'fill') {

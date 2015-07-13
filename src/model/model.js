@@ -27,9 +27,8 @@ module.exports = {
     'saveObject' : 'saveObject',
     'populateCanvas' : 'populateCanvas',
 
-
     'sendDrawing': 'sendDrawing',
-    'sendPencil' : 'sendPencil',
+    'sendPencil' : 'sendPencil'
     // 'sendLine' : 'sendLine'
   }
 };
