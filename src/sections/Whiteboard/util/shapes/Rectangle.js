@@ -197,7 +197,7 @@ Rectangle.prototype.setMoveListeners = function(AppState) {
 
   // Mouse handlers for highlighting shapes
   this.graphics.mouseover = function(data) {
-
+    if(this.locked) return;
     if(Tools.selected === 'select' && !this.selected) {
       // Highlight Shape outline
       this.highlight();
@@ -206,7 +206,7 @@ Rectangle.prototype.setMoveListeners = function(AppState) {
   }.bind(this);//mouseover.bind(_this);
 
   this.graphics.mouseout = function(data) {
-
+    if(this.locked) return;
     if(Tools.selected === 'select' && !this.selected) {
       // Unhighlight
       this.unHighlight();

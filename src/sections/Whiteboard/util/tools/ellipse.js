@@ -4,7 +4,7 @@ var Ellipse = require('../shapes/Ellipse');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
-module.exports = function(settings, el, AppState) {
+module.exports = function(el, AppState) {
   console.log('AppState', AppState);
   var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
@@ -22,22 +22,21 @@ module.exports = function(settings, el, AppState) {
     // Set the selected tool on AppState
     AppState.Tools.selected = 'ellipse';
 
-    activate(settings, AppState);
+    activate(AppState);
   });
 
   var mousedown = function(data) {
-    data.originalEvent.preventDefault();
+    //data.originalEvent.preventDefault();
     isDown = true;
 
     originalCoords = data.getLocalPosition(this);
 
-    ellipse = new Ellipse(Tools.ellipse);
 
+    ellipse = new Ellipse(Tools.ellipse);
   };
 
   var mousemove = function(data) {
-    data.originalEvent.preventDefault();
-
+    //data.originalEvent.preventDefault();
     if(isDown) {
       data.originalEvent.preventDefault();
       var localPos = data.getLocalPosition(this);
@@ -79,17 +78,17 @@ module.exports = function(settings, el, AppState) {
   };
 
   var mouseup = function(data) {
-    data.originalEvent.preventDefault();
+    //data.originalEvent.preventDefault();
 
     if(isDown) {
       if(drawBegan) {
         ellipse.setShapeMoveListeners(AppState);
 
         ellipse.unHighlight();
-
+        socket.emit(EVENT.shapeEvent, 'drawEnd', ellipse.getProperties());
         // Emit socket save Event, since drawing has ended on mouse up
         // and User has finished saving Shape Object
-        socket.emit(EVENT.saveObject, ellipse.getProperties());
+        //socket.emit(EVENT.saveObject, ellipse.getProperties());
       }
       else {
         // Remove Shape from Shapes hashmap

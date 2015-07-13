@@ -2,16 +2,17 @@
 var PIXI = require('pixi');
 var Line = require('../shapes/Line');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
+var EVENT = require('../../../../model/model').socketEvents;
 
-module.exports = function(settings, el, AppState) {
+module.exports = function(el, AppState) {
   var isDown = false;
   var originalPoint;
   var drawBegan = false;
 
   var lineSettings = AppState.Tools.line
   var line;
-  var stage = settings.stage;
-  var renderer = settings.renderer;
+  var stage = AppState.Canvas.stage;
+  var socket = AppState.Socket;
   var shapes = AppState.Canvas.Shapes;
 
   el.addEventListener('click', function(data) {
@@ -51,13 +52,14 @@ module.exports = function(settings, el, AppState) {
       //SocketObject.emitDrawingObject(graphics);
       if(drawBegan) {
         // Emite socket draw event
-
+        socket.emit(EVENT.shapeEvent, 'draw', line.getProperties());
       }
       else {
         // Add line to Shapes container
         line = shapes.addNew(line);
 
         // Emit socket add shape event
+        socket.emit(EVENT.shapeEvent, 'add', line.getProperties());
       }
       drawBegan = true;
     }
@@ -69,13 +71,14 @@ module.exports = function(settings, el, AppState) {
         line.setEventListeners(AppState);
 
         line.unHighlight();
+
         // Emit socket event
+        socket.emit(EVENT.shapeEvent, 'drawEnd', line.getProperties());
+
       }
       else {
 
         shapes.removeShape(line);
-
-        // Emit socket remove event
       }
     }
     drawBegan = isDown = false;

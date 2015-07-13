@@ -30,10 +30,10 @@ module.exports = function(AppState) {
   // 'move'
   // 'modify'
   // 'remove'
-  // shapeLock
-  // shapeUnLock
+  // lockShape
+  // unlockShape
   function handleShapeEvent(eventType, shapeData) {
-    console.log('handle shape event');
+    console.log('handle shape event', eventType, shapeData);
     switch(eventType) {
       case 'draw':
         shapes[shapeData._id].draw(shapeData);
@@ -47,12 +47,15 @@ module.exports = function(AppState) {
         shapes[shapeData._id].unHighlight();
         break;
 
-      case 'shapeLock':
+      case 'lockShape':
+        console.log('lock current shape');
+
         shapes[shapeData._id].lockShape();
         break;
 
-      case 'shapeUnlock':
-        shapes[shapeData._id].unlockShape();
+      case 'unlockShape':
+        console.log('unlock shape');
+        shapes[shapeData._id].unLockShape();
         break;
 
       case 'move':
@@ -89,6 +92,7 @@ module.exports = function(AppState) {
         shape = new Line(shapeData);
         break;
       case 'ellipse':
+        shape = new Ellipse(shapeData);
         break;
       // Flow Chart Shapes
       case 'flowChartFunction':

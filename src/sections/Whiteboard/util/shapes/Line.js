@@ -68,7 +68,7 @@ function setEventListeners(AppState) {
 Object.defineProperties(Line.prototype, {
   setProperties: {
     value: function(shapeProperties) {
-      //console.log('calling line set properties');
+      console.log('calling line set properties', shapeProperties);
       // Set Base properties by calling Base's set method
       BaseShape.prototype.setProperties.call(this, shapeProperties);
 
@@ -80,6 +80,24 @@ Object.defineProperties(Line.prototype, {
       this.lineWidth = shapeProperties.lineWidth || 1;
       this.lineColor = shapeProperties.lineColor || 0;
       this.lineAlpha = shapeProperties.lineAlpha || 1;
+    }
+  },
+  getProperties: {
+    value: function() {
+      // Set Base properties by calling Base's set method
+      var shape = BaseShape.prototype.getProperties.call(this);
+
+      shape.shapeType = this.shapeType;
+
+      shape.x = this.x;
+      shape.y = this.y;
+      shape.x2 = this.x2;
+      shape.y2 = this.y2;
+      shape.lineWidth = this.lineWidth;
+      shape.lineColor = this.lineColor;
+      shape.lineAlpha = this.lineAlpha;
+
+      return shape;
     }
   },
   x2: {
@@ -240,9 +258,9 @@ Object.defineProperties(Line.prototype, {
       //   return y;
       // });
 
-      container.beginFill(0);
+      container.beginFill(0x2D8EF0);
       container.lineWidth += 2;
-      container.lineColor = 0;
+      container.lineColor = 0x2D8EF0;
       //console.log('PIVOT point:', { x: x, y: y });
       //container.pivot = { x: 0.5 * x, y: 0.5 * y };
       //container.rotation = rotateVector;
@@ -250,6 +268,7 @@ Object.defineProperties(Line.prototype, {
       //container.drawPolygon(newVerts);
       container.drawRect(x, y, len, len);
       container.drawRect(x2, y2, len, len);
+      container.endFill();
     }
   }
 });

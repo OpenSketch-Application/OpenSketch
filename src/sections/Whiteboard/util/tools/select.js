@@ -38,7 +38,7 @@ module.exports = function(AppState, el) {
 
       // UnLock at this point, since user is just clicking the Canvas and
       // not the previously selected Shape
-      socket.emit(EVENT.shapeEvent, 'shapeUnlock', { _id: select.selectedObject._id });
+      socket.emit(EVENT.shapeEvent, 'unlockShape', { _id: select.selectedObject._id });
       select.selectedObject = null;
     }
   };
@@ -91,18 +91,19 @@ module.exports = function(AppState, el) {
         // Update the Shape Object
         // and it should also unlock the Shape
         socket.emit(EVENT.saveObject, modifiedShape);
+
       }
 
       // Due to our inability to do proper delegation yet, we had to wait to BaseShape class's
       // mouseDown event to attach the shape that experienced a mouseDown to attach the shape
       // to AppState.select.selectedObject
-      else {
-        // Emit socket shapeLock Event, since we know a Shape had been selected by now
-        socket.emit(EVENT.lockShape, 'lockShape', {
-          _id: select.selectedObject._id,
-          currentUserId: Users.currentUserId
-        });
-      }
+      //else {
+      // Emit socket lockShape Event, since we know a Shape had been selected by now
+      socket.emit(EVENT.lockShape, 'lockShape', {
+        _id: select.selectedObject._id,
+        currentUserId: Users.currentUserId
+      });
+      //}
     }
 
     // Reset back to default

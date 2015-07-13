@@ -84,6 +84,7 @@ var setMoveListeners = function(AppState) {
   // Since we don't have event bubbling, we need to have a close relationship between
   // Select tool's mouse events and the selected Shape's events
   this.graphics.mousedown = function(data) {
+    console.log('Mouse Down called');
     // Do early return if shape is locked, due to another User manipulating this Shape
     if(this.locked) return;
 
@@ -170,16 +171,21 @@ BaseShape.prototype = {
 
   // UI indicator methods, will be abstract
   highlight: function() { console.log('called base highlight'); },
-  unhighlight: function() { console.log('called base UnHighLight'); },
+  unHighlight: function() { console.log('called base UnHighLight'); },
 
   // Shape locking/unlocking methods
   lockShape: function(userId) {
+    console.log('LOCKing shape');
     this.currentUserId = userId;
-    this.interactive = this.graphics.interactive = false;
+    this.highlight(0xFF0000);
+    //this.interactive = this.graphics.interactive = false;
     this.locked = true;
   },
   unLockShape: function() {
+    console.log('unLOCKing shape');
+
     this.interactive = this.graphics.interactive = true;
+    this.unHighlight();
     this.locked = false;
   }
   /*To Do: Potentially implement methods that shows UI features around the shape */

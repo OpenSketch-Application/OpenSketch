@@ -90,15 +90,15 @@ function toolbar(elements, AppState) {
         break;
       case 'line':
         this.line = el;
-        createLine(settings, el, AppState);
+        createLine(el, AppState);
         break;
       case 'ellipse':
         this.ellipse = el;
-        createEllipse(settings, el, AppState);
+        createEllipse(el, AppState);
         break;
       case 'rectangle':
         this.rectangle = el;
-        createRectangle(settings, el, AppState);
+        createRectangle(el, AppState);
         break;
       case 'text':
         this.text = el;

@@ -4,7 +4,7 @@ var Rectangle = require('../shapes/Rectangle');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
-module.exports = function(settings, el, AppState) {
+module.exports = function(el, AppState) {
   var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
   var shapes = AppState.Canvas.Shapes;
@@ -20,7 +20,7 @@ module.exports = function(settings, el, AppState) {
     // Set the selected tool on AppState
     AppState.Tools.selected = 'rectangle';
 
-    activate(settings, AppState);
+    activate(AppState);
   });
 
   var mousedown = function(data) {
@@ -87,8 +87,9 @@ module.exports = function(settings, el, AppState) {
         rect.unHighlight();
 
         // Emit socket drawEnd Event, since drawing has ended on mouse up
-        //socket.emit(EVENT.shapeEvent, 'drawEnd', rect._id);
+        socket.emit(EVENT.shapeEvent, 'drawEnd', rect.getProperties());
         socket.emit(EVENT.saveObject, rect.getProperties());
+
       }
       else {
         // We always add a Shape Id to hash on
