@@ -1,6 +1,6 @@
 var PIXI = require('pixi');
 var BaseShape = require('./BaseShape');
-var Matter = require('matter-js');
+// var Matter = require('matter-js');
 var Vector = Matter.Vector;
 
 module.exports = Line;
