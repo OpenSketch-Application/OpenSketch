@@ -5,7 +5,6 @@ var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(el, AppState) {
-  console.log('AppState', AppState);
   var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
   var shapes = AppState.Canvas.Shapes;
@@ -85,10 +84,12 @@ module.exports = function(el, AppState) {
         ellipse.setShapeMoveListeners(AppState);
 
         ellipse.unHighlight();
+
         socket.emit(EVENT.shapeEvent, 'drawEnd', ellipse.getProperties());
+
         // Emit socket save Event, since drawing has ended on mouse up
         // and User has finished saving Shape Object
-        //socket.emit(EVENT.saveObject, ellipse.getProperties());
+        socket.emit(EVENT.saveObject, ellipse.getProperties());
       }
       else {
         // Remove Shape from Shapes hashmap

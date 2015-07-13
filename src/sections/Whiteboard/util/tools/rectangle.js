@@ -96,7 +96,7 @@ module.exports = function(el, AppState) {
         shapes.removeShape(rect);
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        socket.emit(EVENT.shapeEvent, 'remove', rect._id);
+        //socket.emit(EVENT.shapeEvent, 'remove', rect._id);
       }
     }
 

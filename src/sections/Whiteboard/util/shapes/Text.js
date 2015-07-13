@@ -5,7 +5,7 @@ var Rectangle = require('./Rectangle');
 var keyboardManager = require('../keyboardManager');
 var PixiTextInput = require('./PixiTextInput');
 
-keyboardManager.init();
+//keyboardManager.init();
 
 module.exports = Text;
 

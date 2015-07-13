@@ -74,10 +74,10 @@ module.exports = function(el, AppState) {
 
         // Emit socket event
         socket.emit(EVENT.shapeEvent, 'drawEnd', line.getProperties());
+        socket.emit(EVENT.saveObject, line.getProperties());
 
       }
       else {
-
         shapes.removeShape(line);
       }
     }

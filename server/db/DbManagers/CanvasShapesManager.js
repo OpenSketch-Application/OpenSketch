@@ -112,7 +112,7 @@ Shapes.updateOne = function(id, shapeId, newShape, callback) {
       },
       function(err, result) {
         callback(err, result);
-        
+
         console.log('updating a shape');
       //  callback(err, result && result.canvasShapes.length && result.canvasShapes[0]);
       }

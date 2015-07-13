@@ -24,11 +24,13 @@ module.exports = {
 
     // Pixi/Canvas Draw Events
     'shapeEvent':'shapeEvent',
-    'saveObject' : 'saveObject',
     'populateCanvas' : 'populateCanvas',
 
-    'sendDrawing': 'sendDrawing',
-    'sendPencil' : 'sendPencil'
+    'saveObject' : 'saveObject',
+    'updateObject' : 'updateObject',
+    'deleteObject' : 'deleteObject'
+
+    //'sendPencil' : 'sendPencil'
     // 'sendLine' : 'sendLine'
   }
 };

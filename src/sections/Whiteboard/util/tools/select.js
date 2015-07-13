@@ -90,8 +90,7 @@ module.exports = function(AppState, el) {
       if(isDown && shapeModified) {
         // Update the Shape Object
         // and it should also unlock the Shape
-        socket.emit(EVENT.saveObject, modifiedShape);
-
+        socket.emit(EVENT.updateObject, select.selectedObject.getProperties());
       }
 
       // Due to our inability to do proper delegation yet, we had to wait to BaseShape class's

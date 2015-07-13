@@ -50,7 +50,11 @@ module.exports = function(io,DB) {
       socket.on('disconnect', wbLogic.disconnectCB(socket, nspWb));
       socket.on(EVENT.sendPencil, wbLogic.sendPencilCB(socket, nspWb));
       socket.on(EVENT.shapeEvent, wbLogic.shapeObjectCB(socket, nspWb));
+
+      //socket.on(EVENT.populateCanvas, wbLogic.populateCanvasCB(socket));
+
       socket.on(EVENT.saveObject,wbLogic.saveObjectCB(socket,nspWb));
+      socket.on(EVENT.updateObject, wbLogic.updateObjectCB(socket));
     };
   }
 

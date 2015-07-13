@@ -55,8 +55,6 @@ Ellipse.prototype.getProperties = function() {
   shape.fillAlpha = this.fillAlpha;
   shape.shapeType = this.shapeType;
 
-  console.log(shape);
-
   return shape;
 };
 
@@ -134,8 +132,6 @@ Ellipse.prototype.draw = function(shapeProperties) {
 
 // To keep track of the number of shapes of this type
 Ellipse.prototype.shapeCount = 0;
-
-Ellipse.prototype.hashKeys = ['#', '@', '&', '*', '%'];
 
 Ellipse.prototype.getGraphicsData = function() {
   var graphicsData = this.graphics.graphicsData[0];

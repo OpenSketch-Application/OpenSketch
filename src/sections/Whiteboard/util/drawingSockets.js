@@ -18,8 +18,17 @@ module.exports = function(AppState) {
   });
 
   // Handles populating a new participant's Canvas with Shapes
-  socket.on(EVENT.populateCanvas, function(shapelist){
-    //AppState.Shapes.addAll(shapeList);
+  socket.on(EVENT.populateCanvas, function(shapelist) {
+    console.log('POPULATE', shapelist);
+    if(shapelist) {
+      shapelist.forEach(function(shape) {
+        console.log('Adding shape', shape);
+        var addedShape = addShapeBasedOnType(shape);
+        addedShape.draw(shape);
+        addedShape.unHighlight();
+        addedShape.setMoveListeners(AppState);
+      });
+    }
   });
 
   // Specific Shape Events
@@ -82,7 +91,7 @@ module.exports = function(AppState) {
   // Calls the right constructor based on the Object's shapeType
   function addShapeBasedOnType(shapeData) {
     var shape;
-
+    console.log('About to Add', shapeData);
     switch(shapeData.shapeType) {
       case 'rectangle':
         //AppState.Canvas.stage.addChild(shapeData);
@@ -100,8 +109,12 @@ module.exports = function(AppState) {
     }
 
     // Add Shape to the Shapes hashmap
-    if(shape) shapes.addNew(shape);
+    if(shape) return shapes.addNew(shape);
     else console.log('ERROR: Did not create a Shape of requested type', shapeData);
+
+    return shape;
   }
+
+
 };
 
