@@ -30,7 +30,8 @@ describe('AppState', function() {
   })
 
   it('should instantiate stage and renderer, and attach socket to itself', function() {
-    AppState.init(PIXI, {});
+    var Container = document.createElement('div');
+    AppState.init(PIXI, {}, Container);
     expect(AppState.Canvas.stage).toBeDefined();
     expect(AppState.Canvas.renderer).toBeDefined();
 
@@ -40,6 +41,10 @@ describe('AppState', function() {
 
   it('should contain Shapes object', function() {
     expect(AppState.Canvas.Shapes).toBeDefined();
+  })
+
+  it('should attach socket and stage to Canvas Shapes', function() {
+    expect(AppState.Canvas.Shapes);
   })
 })
 

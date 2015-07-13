@@ -43,8 +43,7 @@ describe('Homepage test suite', function() {
         maxUsers = element(By.id('inputMax'));
         canChat = element(By.id('roundedOne'));
         canDraw = element(By.id('roundedTwo'));
-        createBtn = element(By.css('.btn'))
-
+        createBtn = element(By.css('.btn'));
       })
       Given(function() {
         emailField.sendKeys('iamlegend');

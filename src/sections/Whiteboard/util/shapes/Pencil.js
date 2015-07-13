@@ -6,7 +6,7 @@ module.exports = Pencil;
 
 function Pencil(shapeProperties) {
   this.graphics = new PIXI.Graphics();
-  this.objectType = 'pencil';
+  this.shapeType = 'pencil';
 
   // Prefill Shape Model
   // this.shape = {
@@ -30,7 +30,8 @@ function Pencil(shapeProperties) {
 }
 
 // Set prototype to the BaseShape
-Pencil.prototype = new BaseShape();
+Pencil.prototype = Object.create(BaseShape.prototype);
+Pencil.prototype.constructor = Pencil;
 
 // Get Properties for Socket (Does not include graphics object)
 Pencil.prototype.getProperties = function() {
@@ -89,7 +90,7 @@ Pencil.prototype.draw = function(shapeProperties) {
   this.graphics.drawPolygon(
     this.path
   );
-    
+
 
   return this;
 };
@@ -104,7 +105,6 @@ Pencil.prototype.draw = function(shapeProperties) {
 // To keep track of the number of shapes of this type
 Pencil.prototype.shapeCount = 0;
 
-Pencil.prototype.hashKeys = ['#', '@', '&', '*', '%'];
 
 Pencil.prototype.getGraphicsData = function() {
   var graphicsData = this.graphics.graphicsData[0];
@@ -126,7 +126,7 @@ Pencil.prototype.setGraphicsData = function(shapeProperties) {
   graphicsData.lineWidth = this.lineWidth = (shapeProperties.lineWidth || this.lineWidth);
   graphicsData.lineColor = this.lineColor = (shapeProperties.lineColor || this.lineColor);
   graphicsData.lineAlpha = this.lineAlpha = (shapeProperties.lineAlpha || this.lineAlpha);
-  
+
 }
 
 

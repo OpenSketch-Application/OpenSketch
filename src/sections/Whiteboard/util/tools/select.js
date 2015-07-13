@@ -26,15 +26,15 @@ module.exports = function(AppState, el) {
   };
   var mousedown = function(data) {
     //data.originalEvent.preventDefault();
-    console.log('mouse down fired');
     isDown = true;
     if(select.selectedObject !== null) {
 
       select.selectedObject.unHighlight();
       select.selectedObject.selected = false;
 
-      // Fire off selected ObjectId to server
-      socket.emit(EVENT.interactionEnd, 'interactionEnd', select.selectedObject._id);
+      // UnLock at this point, since user is just clicking the Canvas and
+      // not the previously selected Shape
+      //socket.emit(EVENT.lockShape, 'unLockShape', { _id: select.selectedObject._id });
 
       select.selectedObject = null;
     }
@@ -58,12 +58,13 @@ module.exports = function(AppState, el) {
 
     }
   };
-
+  // On mouseUp: deselect object and remove lock
   var mouseup = function(data) {
     if(select.selectedObject) {
       var shapeId = select.selectedObject._id;
+
       // Emit socket interactionEnd Event, since drawing has ended on mouse up
-      socket.emit(EVENT.shapeObject, 'interactionEnd', shapeId);
+      //socket.emit(EVENT.shapeObject, 'interactionEnd', shapeId);
 
       saveObject.moveX = moveObject.x;
       saveObject.moveY = moveObject.y;
@@ -71,8 +72,11 @@ module.exports = function(AppState, el) {
       saveObject.x = select.selectedObject.x;
       saveObject.y = select.selectedObject.y;
 
+      // Save Shape Object should also deselect the Shape, since by default once
       socket.emit(EVENT.saveObject, saveObject);
 
+      // Emit socket shapeLock Event
+      //socket.emit(EVENT.lockShape, 'lockShape', { _id: select.selectedObject._id });
     }
 
     isDown = false;

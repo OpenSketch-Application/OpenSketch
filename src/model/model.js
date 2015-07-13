@@ -30,16 +30,6 @@ module.exports = {
    
     'sendDrawing': 'sendDrawing',
     'sendPencil' : 'sendPencil',
-    'sendLine' : 'sendLine',
-
-    // Specific Shape Events
-    // INCLUDE in only Socket Event, as first parameter
-    'add': 'add',
-    'draw': 'draw',
-    'move': 'move',
-    'modify': 'modify',
-    'remove': 'remove',
-    'interactionStart': 'interactionStart',
-    'interactionEnd': 'interactionEnd'
+    // 'sendLine' : 'sendLine'
   }
 };

@@ -1,7 +1,7 @@
 var PIXI = require('pixi');
 var setMoveShapeListeners = require('./setMoveShapeListeners');
 
-module.exports = function(files, settings, AppState, event) {
+module.exports = function(files, AppState, event) {
   var reader = new FileReader();
   reader.readAsDataURL(files[0]);
 
@@ -30,7 +30,7 @@ module.exports = function(files, settings, AppState, event) {
 
     AppState.Canvas.addNew('image', imageSprite);
 
-    setMoveShapeListeners(imageSprite, settings, AppState);
+    //setMoveShapeListeners(imageSprite, settings, AppState);
   }
 };
 

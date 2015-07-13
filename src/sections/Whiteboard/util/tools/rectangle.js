@@ -5,7 +5,6 @@ var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(settings, el, AppState) {
-  console.log('AppState', AppState);
   var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
   var shapes = AppState.Canvas.Shapes;
@@ -30,7 +29,6 @@ module.exports = function(settings, el, AppState) {
     originalCoords = data.getLocalPosition(this);
 
     rect = new Rectangle(Tools.rectangle);
-
   };
 
   var mousemove = function(data) {
@@ -60,11 +58,14 @@ module.exports = function(settings, el, AppState) {
       rect.highlight();
 
       if(drawBegan) {
-       socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
+        socket.emit(EVENT.shapeObject, 'draw', rect.getProperties());
       }
       else {
         // Adds shape to the shapes object/container and stage
         rect = shapes.addNew(rect);
+
+        var RectProp = rect.getProperties();
+        // Send socket info since drawing has began now
         socket.emit(EVENT.shapeObject, 'add', rect.getProperties());
 
       }
@@ -74,31 +75,22 @@ module.exports = function(settings, el, AppState) {
   };
 
   var mouseup = function(data) {
-    //data.originalEvent.preventDefault();
-    //
-        //rect = shapes.addNew(rect);
-
-        // Send socket info since drawing has began now
-     //   socket.emit(EVENT.saveObject, rect.getProperties());
-     if(isDown) {
-      // Add Shape to Canvas shapes map
-      //rect.addNew(shapes, AppState.Users.currentUser._id);
-
-      // Set active listeners on added Shape
-      //rect.setRectMoveListeners(AppState);
-      //var socketRect = rect.getProperties();
-
+    // Flag that tells us that mouse button was pressed down before
+    if(isDown) {
+      // Check if Shape was actually drawn, ie. did user press mouse down and mouse move, which draws a Shape, or
+      // just simply press mouse down, which is not considered drawing
       if(drawBegan) {
 
-        rect.setShapeMoveListeners(AppState);
+        rect.setMoveListeners(AppState);
 
         rect.unHighlight();
 
-        // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        socket.emit(EVENT.shapeObject, 'interactionEnd', rect._id);
+        // Emit socket drawEnd Event, since drawing has ended on mouse up
+        //socket.emit(EVENT.shapeObject, 'drawEnd', rect._id);
         socket.emit(EVENT.saveObject, rect.getProperties());
       }
       else {
+        // We always add a Shape Id to hash on
         shapes.removeShape(rect);
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up

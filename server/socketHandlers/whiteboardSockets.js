@@ -9,14 +9,19 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
   return function(uName,sessionid) {
         //validate name
         console.log('joinsession');
+        // FOR TESTING AND DEVELOPMENT
+        if(sessionid === 'session41') {
+          console.log('Development session Enabled');
+          return;
+        }
 
         Session.findById(sessionid, function(err, session){
           if(err){
-            throw new Error('Error retrieving Session');
+            console.warn('Error Retrieving Session: at ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+            //throw new Error('Error retrieving Session');
           }
-          else if(session._id){
+          else if(session && session._id) {
             //push user to db
-
             if(session.users.length < session.sessionProperties.maxUsers){
               session.users.push({
                 username: uName,
@@ -42,9 +47,11 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
               });
             }
           }
+          else {
+            console.warn('Null Sesson returned, Date: ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+          }
         });
   };
-
 };
 //CHAT
 whiteboardSockets.chatMessageCB = function(socket,nsp){
@@ -132,20 +139,18 @@ whiteboardSockets.sendPencilCB = function(socket,nspWb){
     //add drawing to db
     //emit drawing to other users
     socket.broadcast.emit(EVENT.sendPencil, info);
-
   };
 };
 
 whiteboardSockets.shapeObjectCB = function(socket, nspWb) {
   console.log('send Rect socket connected');
+
   return function(eventType, data) {
     console.log('recieved socket shape event');
     console.log(eventType);
     console.log(data);
 
     socket.broadcast.emit(EVENT.shapeObject, eventType, data);
-
-     
   }
 }
 
@@ -160,22 +165,18 @@ whiteboardSockets.saveObjectCB = function(socket, nspWb) {
         if(result.canvasShapes.length > 0){
           var newObj = result.canvasShapes[0];
           for(var prop in data){
-           newObj[prop] = data[prop]; 
+           newObj[prop] = data[prop];
           }
-          console.log('newobj: ',newObj); 
-          ShapeManager.updateOne(sessionid,data._id,newObj,function(){}) 
+          console.log('newobj: ',newObj);
+          ShapeManager.updateOne(sessionid,data._id,newObj,function(){})
         }else{
           ShapeManager.addOne(sessionid,data,function(){});
         }
       }
-      
+
     });
-
-
-        
-    
-    };
-  }
+  };
+}
 
 
 
