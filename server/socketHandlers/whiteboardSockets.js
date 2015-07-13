@@ -17,7 +17,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 
         Session.findById(sessionid, function(err, session){
           if(err){
-            console.warn('Error Retrieving Session: at ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+            console.warn('Error Retrieving Session: at ', new Date().toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
             //throw new Error('Error retrieving Session');
           }
           else if(session && session._id) {

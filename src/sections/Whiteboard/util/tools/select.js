@@ -75,13 +75,11 @@ module.exports = function(AppState, el) {
 
       // Emit socket interactionEnd Event, since drawing has ended on mouse up
       //socket.emit(EVENT.shapeEvent, 'interactionEnd', shapeId);
-
-      // saveObject.moveX = modifiedShape.x;
-      // saveObject.moveY = modifiedShape.y;
-      // saveObject._id = modifiedShape._id;
-      // saveObject.x = select.selectedObject.x;
-      // saveObject.y = select.selectedObject.y;
-
+       saveObject = select.selectedObject.getProperties();  
+       saveObject.hasMoved = true;
+       saveObject.moveX = modifiedShape.x;
+       saveObject.moveY = modifiedShape.y;
+       
       // Remember we don't wish to keep hitting the database for every move events, since
       // we fire off 100+ events, and accessing the DB each time for every pixil is
       // retarded, only persist changes User has completed the modification
@@ -90,8 +88,8 @@ module.exports = function(AppState, el) {
       if(isDown && shapeModified) {
         // Update the Shape Object
         // and it should also unlock the Shape
-        socket.emit(EVENT.updateObject, select.selectedObject.getProperties());
-      }
+        socket.emit(EVENT.updateObject, saveObject);
+     }
 
       // Due to our inability to do proper delegation yet, we had to wait to BaseShape class's
       // mouseDown event to attach the shape that experienced a mouseDown to attach the shape

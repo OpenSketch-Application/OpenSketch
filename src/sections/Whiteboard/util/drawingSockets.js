@@ -27,6 +27,9 @@ module.exports = function(AppState) {
         addedShape.draw(shape);
         addedShape.unHighlight();
         addedShape.setMoveListeners(AppState);
+        if(shape.hasMoved){
+          addedShape.move({x:shape.moveX,y:shape.moveY});
+        }
       });
     }
   });
