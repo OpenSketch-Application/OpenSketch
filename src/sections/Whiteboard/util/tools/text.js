@@ -1,83 +1,142 @@
+'use strict';
 var PIXI = require('pixi');
+var Text = require('../shapes/Text');
+//var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
+var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(settings, el, AppState) {
-  el.addEventListener('click', function(data) {
-    console.log('Selected Text...');
+  console.log('AppState', AppState);
+  var stage = AppState.Canvas.stage;
+  var socket = AppState.Socket;
+  var shapes = AppState.Canvas.Shapes;
+  var Tools = AppState.Tools;
+  var isDown = false;
+  var drawBegan = false;
+  var text;
+  var originalCoords;
 
-    selectPressed = true;
-    activate(settings.stage, settings.renderer, AppState);
+  el.addEventListener('click', function(data) {
+    data.preventDefault();
+    console.log('Selected Text...');
+    //if(settings.toolbar.toolSelected) return;
+    //// Return early if toolbar Select was picked
+
+    // Set the selected tool on AppState
+    AppState.Tools.selected = 'text';
+
+    activate(settings, AppState);
   });
+
+  var mousedown = function(data) {
+    isDown = true;
+    //data.originalEvent.preventDefault();
+    originalCoords = data.getLocalPosition(this);
+
+    if(text) text.unHighlight();
+
+    text = new Text(Tools.text);
+    text.text.x = originalCoords.x;
+    text.text.y = originalCoords.y;
+
+    text.draw({
+      x: originalCoords.x,
+      y: originalCoords.y,
+      width: text.text.width,
+      height: text.text.height
+    });
+
+    text = shapes.addNew(text);
+    text.highlight();
+    // var input = new PIXI.DOM.Sprite(
+    //   '<input type="text" placeholder="enter message" />',
+    //   { x: originalCoords.x, y: originalCoords.y }
+    // );
+
+    // text.setProperties(Tools.textangle);
+    //console.log('Text', Tools.text);
+    // Adds shape to the shapes object/container and stage
+    //socket.emit(EVENT.shapeEvent, 'add', text.getProperties());
+    //console.log(text);
+    //console.log('text added', text.getProperties());
+  };
+
+  var mousemove = function(data) {
+    if(isDown) {
+      //data.originalEvent.preventDefault();
+      var localPos = data.getLocalPosition(this);
+      var topX = 0;
+      var topY = 0;
+      var width = localPos.x - originalCoords.x;
+      var height = localPos.y - originalCoords.y;
+
+      // Ensure height and width are positive
+      if(width < 0) width *= -1;
+      if(height < 0) height *= -1;
+
+      topX = Math.min(originalCoords.x, localPos.x);
+      topY = Math.min(localPos.y, originalCoords.y);
+
+      text.draw({
+        x: topX,
+        y: topY,
+        width: width,
+        height: height
+      });
+
+      //console.log(text);
+
+    //   //console.log(text);
+    //   text.highlight();
+
+    //   if(drawBegan) {
+    //     socket.emit(EVENT.shapeEvent, 'draw', text.getProperties());
+    //   }
+    //   else {
+    //     // Adds shape to the shapes object/container and stage
+    //     text = shapes.addNew(text);
+
+    //     // Send socket info since drawing has began now
+    //     socket.emit(EVENT.shapeEvent, 'add', text.getProperties());
+    //   }
+
+      drawBegan = true;
+    }
+  };
+
+  var mouseup = function(data) {
+    //data.originalEvent.preventDefault();
+    // Flag that tells us that mouse button was pressed down before
+    if(isDown) {
+      console.log('Setting text listeners');
+      text.setListeners(AppState);
+      // Check if Shape was actually drawn, ie. did user press mouse down and mouse move, which draws a Shape, or
+      // just simply press mouse down, which is not considered drawing
+      if(drawBegan) {
+
+        console.log('text._id', text);
+
+        //text.unHighlight();
+
+        // Emit socket interactionEnd Event, since drawing has ended on mouse up
+        //socket.emit(EVENT.shapeEvent, 'interactionEnd', text._id);
+      }
+      else {
+        // Remove add shape if user had not actually drawn fully
+        //if(text) shapes.removeShape(text);
+
+        // Emit socket interactionEnd Event, since drawing has ended on mouse up
+        //socket.emit(EVENT.shapeEvent, 'remove', text._id);
+      }
+    }
+    isDown = drawBegan = false;
+  };
+
+  function activate() {
+    stage.mousedown = mousedown;
+    stage.mousemove = mousemove;
+    stage.mouseup = mouseup;
+    stage.mouseout = mouseup;
+  }
+
 };
 
-function activate(stage, renderer, AppState) {
-  var color = 0xff92A1;
-  var path = [];
-  // var isActive = true;
-  var isDown = false;
-  var posOld;
-  var stageIndex = 0;
-  var lines = 0;
-
-  stage.mousedown = function(data) {
-
-    //if(!isActive) return;
-    isDown = true;
-    lines = 0;
-    path = [];
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    stageIndex = stage.children.length - 1;
-    //graphics.moveTo(data.global.x, data.global.y);
-  };
-
-  stage.mousemove = function(data) {
-    //if(!isActive) return;
-    if(isDown) {
-      var graphics = new PIXI.Graphics().lineStyle(2, color);
-      //path.push(data.global.y);
-      //var newPosition = this.data.getLocalPosition(this.parent);
-      graphics.moveTo(posOld[0], posOld[1]);
-      //console.log(data.global.x, data.global.y);
-      graphics.lineTo(data.global.x, data.global.y);
-      posOld = [data.global.x, data.global.y];
-      path.push(posOld[0],posOld[1]);
-      lines++;
-      stage.addChild(graphics);
-    }
-    //renderer.render(stage);
-  };
-
-  stage.mouseup = function() {
-    if(!path.length) return;
-    //graphics.lineStyle(5, 0xFF0000);
-    //graphics.moveTo(path[0][0], path[0][1]);
-    //graphics.drawPolygon(path);
-
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-
-    graphics.drawPolygon(path);
-
-    graphics.interactive = true;
-
-    graphics.hitArea = graphics.getBounds();
-
-    if(isDown) {
-      AppState.Canvas.addNew('text', graphics);
-      // graphics.graphicsData[0].shape.points
-    }
-    stage.addChild(graphics);
-
-    // CanvasObjects.push({
-    //   _id: CanvasObjects.length + 1,
-    //   type: 'pencil',
-    //   coords: path
-    // });
-
-    isDown = false;
-  };
-
-  stage.mouseout = function(data) {
-    isDown = false;
-    graphics = undefined;
-  }
-}

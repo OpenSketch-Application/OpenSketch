@@ -10,16 +10,20 @@ module.exports = function(grunt) {
       }
     },
     browserify: {
+      options: {
+        debug: true,
+        watch: true
+      },
       dev: {
         src: ['src/*.js'],
         dest: 'app/js/bundle.js',
         'options': {
-                    'debug': true,
-                    'watch': true,
-                    'verbose': true,
-                    'open': true,
-                    'browserifyOptions' : {'debug': true}
-                }
+          'debug': true,
+          'watch': true,
+          'verbose': true,
+          'open': true,
+          'browserifyOptions' : {'debug': true}
+        }
       }
     },
     watch: {

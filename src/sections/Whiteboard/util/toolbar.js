@@ -1,4 +1,3 @@
-var PIXI = require('pixi');
 var find = require('dom-select');
 var createSelect = require('./tools/select');
 var createPencil = require('./tools/pencil');
@@ -28,34 +27,13 @@ function toolbar(elements, AppState) {
 
   this.tools = {};
   this.container = find(elements.whiteboard);
-  this.socket = AppState.Socket;
-  PIXI.dontSayHello = true;
-
-  this.renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
-                                          document.body.offsetHeight - 60,
-                                          { antialias: true });
-
-  this.container.appendChild(this.renderer.view);
-  this.stage = new PIXI.Stage(0xFFFFFF, true);
-
-  AppState.Canvas.stage = this.stage;
-  AppState.Canvas.renderer = this.renderer;
-  AppState.Canvas.Shapes.stage = this.stage;
-  AppState.Canvas.Shapes.socket = AppState.Socket;
-  // Start Animation loop
-  animate();
-
-  function animate() {
-    requestAnimFrame(animate);
-    _this.renderer.render(_this.stage);
-  }
 
   // NEED TO GET RID OF THIS
   var settings = {
     container: this.container,
-    renderer: this.renderer,
-    stage: this.stage,
-    socket: this.socket,
+    renderer: AppState.Canvas.renderer,
+    stage: AppState.Canvas.stage,
+    socket: AppState.Socket,
     selectedTool: function() {
       return _this.selectedTool;
     }
@@ -65,23 +43,27 @@ function toolbar(elements, AppState) {
   setDrawingSockets(AppState);
 
   // Enables drag N drop functionality for Canvas images
-  dragndrop(settings, AppState);
+  dragndrop(AppState);
 
   // Need to fix Shapes selection state
   toolbox.addEventListener('click', function(e) {
-    e.preventDefault();
-    e.stopPropagation();
+    //e.preventDefault();
+    //e.stopPropagation();
 
     _this.selectedTool = e.target.id;
     var button = e.target;
 
-    button.className = "tool-selected";
+    console.log(button);
 
     if(previouslySelected) {
       previouslySelected.className = "";
     }
 
-    previouslySelected = button;
+    if(button) {
+      button.className = "tool-selected";
+      previouslySelected = button;
+    }
+
   }, false);
 
 
@@ -108,15 +90,15 @@ function toolbar(elements, AppState) {
         break;
       case 'line':
         this.line = el;
-        createLine(settings, el, AppState);
+        createLine(el, AppState);
         break;
       case 'ellipse':
         this.ellipse = el;
-        createEllipse(settings, el, AppState);
+        createEllipse(el, AppState);
         break;
       case 'rectangle':
         this.rectangle = el;
-        createRectangle(settings, el, AppState);
+        createRectangle(el, AppState);
         break;
       case 'text':
         this.text = el;
@@ -129,7 +111,7 @@ function toolbar(elements, AppState) {
       case 'import':
         this.import = el;
         //settings, el, AppState
-        createImport(settings, el, AppState);
+        createImport(el, AppState);
         break;
       case 'color':
         this.color = el;

@@ -34,9 +34,9 @@ module.exports = {
         sendMessage();
 
       _this.inputBox.value = "";
-      
+
     });
-    
+
     _this.inputBox.onkeydown = function(e) {
       if(e.keyCode == 13) {
         sendMessage();
@@ -79,11 +79,17 @@ module.exports = {
       console.log('chat msg recieved', data);
       _this.addMsg(data);
     });
-    _this.socket.on(EVENT.updateChatList, function(data) {
+
+    _this.socket.on(EVENT.updateChatList, function(data, shapes) {
+      console.log('AllShapes', shapes);
       for(var i = 0;i<data.length;i++){
         _this.addMsg(data[i]);
       }
     });
+
+    // _this.socket.on(EVENT.populateCanvas, function(shapelist) {
+    //   console.log('Update ShapeList', shapelist);
+    // })
 
     _this.socket.on(EVENT.announcement, function(msg){
       console.log('announcement received', msg);

@@ -1,5 +1,6 @@
 var Session = require('../db/models/Session');
 
+var ShapeManager = require('../db/DbManagers/CanvasShapesManager');
 var EVENT = require('../../src/model/model').socketEvents;
 var whiteboardSockets = {};
 
@@ -8,14 +9,19 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
   return function(uName,sessionid) {
         //validate name
         console.log('joinsession');
+        // FOR TESTING AND DEVELOPMENT
+        if(sessionid === 'session41') {
+          console.log('Development session Enabled');
+          return;
+        }
 
         Session.findById(sessionid, function(err, session){
           if(err){
-            throw new Error('Error retrieving Session');
+            console.warn('Error Retrieving Session: at ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+            //throw new Error('Error retrieving Session');
           }
-          else if(session._id){
+          else if(session && session._id) {
             //push user to db
-
             if(session.users.length < session.sessionProperties.maxUsers){
               session.users.push({
                 username: uName,
@@ -27,23 +33,39 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 
               session.save(function(err){
                  if(err) console.log(err);
-                 else{
+                 else {
                    console.log(session);
                    socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
 
                    socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, session.users.length - 1);
 
-                   socket.emit(EVENT.updateChatList, session.messages);
+                   socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
 
-  //                 socket.emit(EVENT.populateCanvas,session.canvasShapes);
+                   socket.emit(EVENT.populateCanvas, session.canvasShapes);
+
+                   // Should just emit as one object,
+                   // addNewParticipant
+                   // var sessionData = {
+                   //  currentUser: userId,
+                   //  users: [],
+                   //  messages: [],
+                   //  shapes: [],
+                   //  defaults: {}
+                   // };
+                   /**
+
+
+                    */
                  }
               });
             }
           }
+          else {
+            console.warn('Null Sesson returned, Date: ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+          }
         });
   };
-
 };
 //CHAT
 whiteboardSockets.chatMessageCB = function(socket,nsp){
@@ -88,7 +110,7 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
 
 };
 //DISCONNECT
-whiteboardSockets.disconnectCB = function(socket,nspWb){
+whiteboardSockets.disconnectCB = function(socket, nspWb){
   return function() {
     sessionid = socket.adapter.nsp.name.split('/');
     sessionid = sessionid[sessionid.length - 1];
@@ -117,7 +139,12 @@ whiteboardSockets.disconnectCB = function(socket,nspWb){
        }
        session.save(function(err){
            if(err) console.log(err);
-           else console.log(session);
+           else {
+            console.log(session);
+
+            socket.disconnect();
+
+           }
         });
       }
     });
@@ -131,47 +158,70 @@ whiteboardSockets.sendPencilCB = function(socket,nspWb){
     //add drawing to db
     //emit drawing to other users
     socket.broadcast.emit(EVENT.sendPencil, info);
-
   };
 };
 
 whiteboardSockets.shapeObjectCB = function(socket, nspWb) {
   console.log('send Rect socket connected');
+
   return function(eventType, data) {
     console.log('recieved socket shape event');
     console.log(eventType);
     console.log(data);
-    socket.broadcast.emit(EVENT.shapeObject, eventType, data);
+
+    socket.broadcast.emit(EVENT.shapeEvent, eventType, data);
   }
 }
 
 whiteboardSockets.saveObjectCB = function(socket, nspWb) {
   return function(data) {
-    console.log('recieved socket ssave event');
+    console.log('recieved socket save event');
     console.log(data);
     var sessionid = socket.adapter.nsp.name.split('/');
     sessionid = sessionid[sessionid.length - 1];
 
-    Session.findById(sessionid, function(err, session){
-          if(err){
-            throw new Error('Error retrieving Session');
-          }
-          else if(session._id){
-            //push user to db
-              session.canvasShapes.push(data); 
-              session.save(function(err){
-                 if(err) console.log(err);
-                 else{
-                   console.log('saved obj');
+    console.log('SAVING to sessionid', sessionid);
+    // ShapeManager.findOne(sessionid, data._id, function(err,result){
+    ShapeManager.addOne(sessionid, data, function(err, result){
+      if(err) console.error('Unable to save Shape', new Date().getUTCDate(), 'Shape: ', data);
+      else console.log('Shape added to DB');
+    });
 
-                 }
-              });
-           }
-          
-        });
-   };
-  }
+  };
+}
 
+whiteboardSockets.updateObjectCB = function(socket) {
+  return function(data) {
+    console.log('recieved socket update event');
+    console.log(data);
+    var sessionid = socket.adapter.nsp.name.split('/');
+    sessionid = sessionid[sessionid.length - 1];
 
+    console.log('updating and saving to sessionid', sessionid);
+
+    ShapeManager.updateOne(sessionid, data._id, data, function(err,result){
+      if(err) console.error('Unable to update Shape', new Date().getUTCDate(), 'Shape: ', data);
+      else console.log('Updated shape', data);
+    });
+
+  };
+}
+
+whiteboardSockets.populateCanvasCB = function(socket) {
+  return function(shapes) {
+    console.log('recieved socket update event');
+    console.log(data);
+    var sessionid = socket.adapter.nsp.name.split('/');
+    sessionid = sessionid[sessionid.length - 1];
+
+    console.log('updating and saving to sessionid', sessionid);
+
+    ShapeManager.updateOne(sessionid, data._id, data, function(err,result){
+      if(err) console.error('Unable to update Shape', new Date().getUTCDate(), 'Shape: ', data);
+      else console.log('Updated shape', data);
+    });
+
+  };
+}
 
 module.exports = whiteboardSockets;

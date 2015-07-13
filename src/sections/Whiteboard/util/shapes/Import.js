@@ -2,13 +2,15 @@
 var PIXI = require('pixi');
 var BaseShape = require('./BaseShape');
 
-module.exports = Rectangle;
+module.exports = Importer;
 
-function Rectangle(shapeProperties) {
+function Importer(shapeProperties) {
   // Call BaseShape constructor to instantiate BaseShape's properties
   BaseShape.call(this, shapeProperties);
 
-  this.shapeType = 'rectangle';
+  this.graphics.addChild(new PIXI.Sprite());
+
+  this.shapeType = 'import';
 
   // Invoke Derived Class's setProperties method to add all shapeProperties to
   // this object
@@ -16,13 +18,13 @@ function Rectangle(shapeProperties) {
 }
 
 // Set prototype to the BaseShape
-Rectangle.prototype = Object.create(BaseShape.prototype);
+Importer.prototype = Object.create(BaseShape.prototype);
 
 // Ensure constructor points to Derived Class and not its BaseShape
-Rectangle.prototype.constructor = Rectangle;
+Importer.prototype.constructor = Importer;
 
 // Get Properties for Socket (Does not include graphics object)
-Rectangle.prototype.getProperties = function() {
+Importer.prototype.getProperties = function() {
   // Get the BaseShape's properties and attach its properties to temporary our
   // shape object that we will return
   var shape = BaseShape.prototype.getProperties.call(this);
@@ -35,15 +37,15 @@ Rectangle.prototype.getProperties = function() {
   shape.height = this.height;
   shape.lineWidth = this.lineWidth;
   shape.lineColor = this.lineColor;
-  shape.fillColor = this.fillColor;
+  //shape.fillColor = this.fillColor;
   shape.lineAlpha = this.lineAlpha;
-  shape.fillAlpha = this.fillAlph;
+  //shape.fillAlpha = this.fillAlph;
 
   return shape;
 };
 
 // Set the Dervied's properties, this is seperate from the BaseShape's setProperties
-Rectangle.prototype.setProperties = function(shapeProperties) {
+Importer.prototype.setProperties = function(shapeProperties) {
 
   // Set BaseShape's properties by calling BaseShape's set method
   BaseShape.prototype.setProperties.call(this, shapeProperties);
@@ -56,16 +58,16 @@ Rectangle.prototype.setProperties = function(shapeProperties) {
 
   this.lineWidth = shapeProperties.lineWidth || 1;
   this.lineColor = shapeProperties.lineColor || 0x000000;
-  this.fillColor = shapeProperties.fillColor || 0xFFFFFF;
+  //this.fillColor = shapeProperties.fillColor || 0xFFFFFF;
   this.lineAlpha = shapeProperties.lineAlpha || 1;
-  this.fillAlpha = Number.parseFloat(shapeProperties.fillAlpha || 1);
+  //this.fillAlpha = Number.parseFloat(shapeProperties.fillAlpha || 1);
 
   // Set Style properties to the internal Graphics object
   this.graphics.lineWidth = this.lineWidth;
   this.graphics.lineColor = this.lineColor;
-  this.graphics.fillColor = this.fillColor;
+  //this.graphics.fillColor = this.fillColor;
   this.graphics.lineAlpha = this.lineAlpha;
-  this.graphics.fillAlpha = this.fillAlpha;
+  //this.graphics.fillAlpha = this.fillAlpha;
   this.graphics.alpha = this.fillAlpha;
 };
 
@@ -73,7 +75,7 @@ Rectangle.prototype.setProperties = function(shapeProperties) {
 // resize or change the properties
 // Whenever you wish to change graphics properties of Shape, ie. lineWidth, width or height,
 // call this method with the new properties you wish to update the Shape with;
-Rectangle.prototype.draw = function(shapeProperties) {
+Importer.prototype.draw = function(shapeProperties) {
 
   this.graphics.clear();
   this.graphics.interactive = false;
@@ -82,7 +84,7 @@ Rectangle.prototype.draw = function(shapeProperties) {
   if(shapeProperties.y) this.y = shapeProperties.y;
   if(shapeProperties.width) this.width = shapeProperties.width;
   if(shapeProperties.height) this.height = shapeProperties.height;
-
+  if(shapeProperties.imageUrl) this.graphics.
   // Since we cleared all the draw properties for redrawing, we need to set the styles again
   this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
                                                       : this.lineWidth;
@@ -92,12 +94,12 @@ Rectangle.prototype.draw = function(shapeProperties) {
   this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
                                                       : this.lineAlpha;
 
-  this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
-                                                      : this.fillAlpha;
-  this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
-                                                      : this.fillColor;
+  //this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
+  //                                                    : this.fillAlpha;
+  //this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
+  //                                                    : this.fillColor;
 
-  this.graphics.beginFill(this.fillColor);
+  //this.graphics.beginFill(this.fillColor);
 
   // Redraw the shape
   this.graphics.drawRect(
@@ -107,7 +109,7 @@ Rectangle.prototype.draw = function(shapeProperties) {
     this.height
   );
 
-  this.graphics.endFill();
+  //this.graphics.endFill();
 
   return this;
 };
@@ -115,7 +117,7 @@ Rectangle.prototype.draw = function(shapeProperties) {
 /*
   Will be used later if we wish to access the actual graphics data object
  */
-Rectangle.prototype.getGraphicsData = function() {
+Importer.prototype.getGraphicsData = function() {
 
   var graphicsData = this.graphics.graphicsData[0];
 
@@ -133,7 +135,7 @@ Rectangle.prototype.getGraphicsData = function() {
 /*
   Will be used later if we wish to access the actual graphics data object
  */
-Rectangle.prototype.setGraphicsData = function(shapeProperties) {
+Importer.prototype.setGraphicsData = function(shapeProperties) {
 
   var graphicsData = this.graphics.graphicsData[0];
 
@@ -149,7 +151,7 @@ Rectangle.prototype.setGraphicsData = function(shapeProperties) {
 }
 
 // Highlights the Shape
-Rectangle.prototype.highlight = function(color) {
+Importer.prototype.highlight = function(color) {
 
   this.highlightShape.clear();
   this.highlightShape.lineWidth = this.lineWidth + 2;
@@ -165,14 +167,14 @@ Rectangle.prototype.highlight = function(color) {
 }
 
 // Unhighlights the shape
-Rectangle.prototype.unHighlight = function() {
+Importer.prototype.unHighlight = function() {
   this.highlightShape.clear();
 }
 
 // Sets the Listeners for Mouse and potentially Keyboard events
 // NOTE: always ensure graphics object interactivity is set to true
 // else the listeners will not be activated
-Rectangle.prototype.setMoveListeners = function(AppState) {
+Importer.prototype.setMoveListeners = function(AppState) {
 
   var Tools = AppState.Tools;
 

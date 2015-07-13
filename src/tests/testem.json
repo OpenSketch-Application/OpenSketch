@@ -1,0 +1,7 @@
+{
+  "launch_in_dev": ["Chrome"],
+  "framework": "jasmine",
+  "src_files": [
+      "./tests/bundle.js"
+  ]
+}

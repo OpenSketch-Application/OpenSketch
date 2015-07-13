@@ -5,10 +5,11 @@ var BaseShape = require('./BaseShape');
 module.exports = Ellipse;
 
 function Ellipse(shapeProperties) {
-  this.graphics = new PIXI.Graphics();
-  this.highlightShape = new PIXI.Graphics();
-  this.graphics.addChild(this.highlightShape);
-  this.objectType = 'ellipse';
+  BaseShape.call(this, shapeProperties);
+  //this.graphics = new PIXI.Graphics();
+  //this.highlightShape = new PIXI.Graphics();
+  //this.graphics.addChild(this.highlightShape);
+  this.shapeType = 'ellipse';
 
   // Prefill Shape Model
   // this.shape = {
@@ -32,27 +33,27 @@ function Ellipse(shapeProperties) {
 }
 
 // Set prototype to the BaseShape
-Ellipse.prototype = new BaseShape();
+Ellipse.prototype = Object.create(BaseShape.prototype);
+Ellipse.prototype.constructor = Ellipse;
 
 // Get Properties for Socket (Does not include graphics object)
 Ellipse.prototype.getProperties = function() {
 
-  // Get Ellipse properties
-  var shape = {
-    x: this.x,
-    y: this.y,
-    width: this.width,
-    height: this.height,
-    lineWidth: this.lineWidth,
-    lineColor: this.lineColor,
-    fillColor: this.fillColor,
-    lineAlpha: this.lineAlpha,
-    fillAlpha: this.fillAlpha,
-    objectType: this.objectType
-  }
-
   // Get the base properties and attach base properties to temporary our shape object
-  BaseShape.prototype.getProperties.call(this, shape);
+  var shape = BaseShape.prototype.getProperties.call(this);
+
+  // Get Ellipse properties
+
+  shape.x = this.x;
+  shape.y = this.y;
+  shape.width = this.width;
+  shape.height = this.height;
+  shape.lineWidth = this.lineWidth;
+  shape.lineColor = this.lineColor;
+  shape.fillColor = this.fillColor;
+  shape.lineAlpha = this.lineAlpha;
+  shape.fillAlpha = this.fillAlpha;
+  shape.shapeType = this.shapeType;
 
   return shape;
 };
@@ -117,6 +118,8 @@ Ellipse.prototype.draw = function(shapeProperties) {
     this.height
   );
 
+  this.graphics.endFill();
+
   return this;
 };
 
@@ -129,8 +132,6 @@ Ellipse.prototype.draw = function(shapeProperties) {
 
 // To keep track of the number of shapes of this type
 Ellipse.prototype.shapeCount = 0;
-
-Ellipse.prototype.hashKeys = ['#', '@', '&', '*', '%'];
 
 Ellipse.prototype.getGraphicsData = function() {
   var graphicsData = this.graphics.graphicsData[0];
@@ -160,7 +161,7 @@ Ellipse.prototype.setGraphicsData = function(shapeProperties) {
 Ellipse.prototype.highlight = function(color) {
   this.highlightShape.clear();
   this.highlightShape.lineWidth = this.lineWidth + 2;
-  this.highlightShape.lineColor = 0x2D8EF0;
+  this.highlightShape.lineColor = color || 0x2D8EF0;
   //this.highlightShape.lineColor = color || 0x0000FF;
   this.highlightShape.alpha = 1;
 
@@ -191,7 +192,7 @@ Ellipse.prototype.setShapeMoveListeners = function(AppState) {
   // Mouse handlers for highlighting shapes
   this.graphics.mouseover = function(data) {
     data.originalEvent.preventDefault();
-
+    if(this.locked) return;
     if(Tools.selected === 'select' && !_this.selected) {
       // Highlight Shape outline
       this.highlight(0x0000FF);
@@ -201,7 +202,7 @@ Ellipse.prototype.setShapeMoveListeners = function(AppState) {
 
   this.graphics.mouseout = function(data) {
     data.originalEvent.preventDefault();
-
+    if(this.locked) return;
     if(Tools.selected === 'select' && !_this.selected) {
       // Unhighlight
       this.unHighlight();

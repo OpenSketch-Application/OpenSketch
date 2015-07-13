@@ -17,7 +17,7 @@ module.exports = function(io, framework, AppState){
 
   socket.emit(EVENT.validateSession,curSessionId);
 
-  socket = io.connect(SERVERNAME +curSession);
+  socket = io.connect(SERVERNAME + curSession);
 
   if(Cookies.get('username') != null && Cookies.get('created')!=null){
     socket.emit(EVENT.joinSession,Cookies.get('username'),curSessionId);

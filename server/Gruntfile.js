@@ -52,8 +52,7 @@ module.exports = function(grunt) {
     browserify: {
       options: {
         debug: true,
-        watch: true,
-        exclude: ['../src/tests']
+        watch: true
       },
       dev: {
         src: ['../src/**/*.js', '!../src/tests/**/*.js'],

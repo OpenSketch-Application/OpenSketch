@@ -32,10 +32,11 @@ Shapes.findOne = function(id, shapeId, callback) {
       'canvasShapes': true
     },
     function(err, result) {
-      if(err) callback(err, result);
+      //console.log('err',err);
+      //console.log('res:',result);
+      callback(err, result);
 
-      console.log(result);
-      callback(err, result.canvasShapes.length && result.canvasShapes[0]);
+ //     callback(err, result.canvasShapes.length && result.canvasShapes[0]);
     }
   );
 };
@@ -64,12 +65,13 @@ Shapes.findSome = function(criteria, callback) {
 // Insert / Create methods
 Shapes.addOne = function(id, shape, callback) {
   Session.findById(id, function(err, session) {
-
+    console.log('adding shape to collection');
     session.canvasShapes.push(shape);
 
     session.save(function(err) {
+
       callback(err, shape);
-    })
+    });
   })
 }
 
@@ -109,9 +111,10 @@ Shapes.updateOne = function(id, shapeId, newShape, callback) {
         }
       },
       function(err, result) {
-        if(err) callback(err, result);
+        callback(err, result);
 
-        callback(err, result && result.canvasShapes.length && result.canvasShapes[0]);
+        console.log('updating a shape');
+      //  callback(err, result && result.canvasShapes.length && result.canvasShapes[0]);
       }
     )
 }

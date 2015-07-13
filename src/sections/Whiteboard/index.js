@@ -1,6 +1,7 @@
 var fs = require('fs');
 var io = require('io');
 var f1 = require('f1');
+var PIXI = require('pixi');
 var find = require('dom-select');
 var framework = require('../../framework/index');
 var Model = require('../../model/model');
@@ -26,7 +27,7 @@ Section.prototype = {
   init: function(req, done) {
     console.log('start init');
 
-    AppState.Socket = socketSetup(io, framework, AppState);
+    var socket = socketSetup(io, framework, AppState);
 
     var content = find('#content');
 
@@ -35,6 +36,9 @@ Section.prototype = {
     content.appendChild(this.section);
 
     createTabs();
+
+    // Inits AppState with Pixi and adds Socket object to AppState objects
+    AppState.init(PIXI, socket, find('#whiteboard-container'));
 
     this.toolbar = new Toolbar({
       whiteboard: '#whiteboard-container',
@@ -70,10 +74,10 @@ Section.prototype = {
 
     var close = find('#close-whiteboard');
 
-    close.addEventListener('click', function(e) {
-      e.preventDefault();
-      framework.go('/home');
-    }, false)
+    // close.addEventListener('click', function(e) {
+    //   e.preventDefault();
+    //   framework.go('/home');
+    // }, false)
 
     console.log('end init');
 
@@ -84,6 +88,7 @@ Section.prototype = {
        framework.go('/home');
       }
     },1000);
+
   },
 
   resize: function(w, h) {
@@ -106,6 +111,8 @@ Section.prototype = {
 
     Cookies.expire('username');
     Cookies.expire('create');
+
+    AppState.Socket.emit('disconnect');
 
     this.section.parentNode.removeChild(this.section);
     done();

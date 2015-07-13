@@ -1,6 +1,6 @@
 //var importFileToPixi = require('./tools/shapeHelpers/importFileToPixi');
 var importFileToPixi = require('./tools/shapeHelpers/importFileToPixi');
-module.exports = function(settings, AppState) {
+module.exports = function(AppState) {
   var dropbox;
 
   dropbox = document.getElementById("whiteboard-container");
@@ -26,7 +26,7 @@ module.exports = function(settings, AppState) {
     var dt = e.dataTransfer;
 
     console.log('import file to pixi', importFileToPixi);
-    if(dt && dt.files) importFileToPixi(dt.files, settings, AppState, e);
+    if(dt && dt.files) importFileToPixi(dt.files, AppState, e);
     else console.log('error unable to import image');
   }
 

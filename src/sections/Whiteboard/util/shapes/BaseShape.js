@@ -1,160 +1,197 @@
 'use strict';
-PIXI = require('pixi');
+var PIXI = require('pixi');
 var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = BaseShape;
 
-// Abstract class, don't instantiate object
-function BaseShape() {};
-
-var init = function(shapeProperties) {
-  this.graphics = new PIXI.Graphics();
-  this.hightlightShape = new PIXI.Graphics();
-
-  this.graphics.addChild(this.hightlightShape);
-
-
-
-  // User properties will be set by Shapes class
-  this._id = '';
-  this.originalUserId = '';
-  this.currentUserId = '';
-
-  this.layerLevel = shapeProperties.layerLevel || 0;
-  this.selected = false;
-
-  // Set Graphics specific properties
-  this.scale = this.graphics.scale = shapeProperties.scale || 1;
-  this.rotation = this.graphics.rotation = shapeProperties.rotation || 0;
-  this.interactive = this.graphics.interactive = this.interactive = shapeProperties.interactive || false;
-}
-
-// Should be called only by Shape objects that inherit BaseShape
-var getProperties = function(shapeModel) {
-  shapeModel._id = this._id;
-  shapeModel.originalUserId = this.originalUserId;
-  shapeModel.currentUserId = this.currentUserId;
-  shapeModel.layerLevel = this.layerLevel;
-  shapeModel.rotation = this.rotation;
-  shapeModel.interactive = this.interactive;
-  shapeModel.scale = this.scale;
-
-  return shapeModel;
+// Abstract class, don't instantiate the object to draw anything,
+// since this class is meant to represent the Base properties all other
+// basic shapes and Complex shapes need, Free hand drawing (pencil) is the exception
+function BaseShape(shapeProperties, graphicsType) {
+  switch(graphicsType) {
+    case 'sprite':
+      this.graphics = new PIXI.Sprite();
+      break;
+    default:
+      this.graphics = new PIXI.Graphics();
+      break;
+  }
+  this.highlightShape = new PIXI.Graphics();
+  this.selectablePoints = new PIXI.Graphics();
+  this.graphics.addChildAt(this.highlightShape, 0);
+  this.graphics.addChildAt(this.selectablePoints, 1);
+  this.layerLevel = 0;
 };
 
+// Normally called by Shape objects that inherit BaseShape
+var getProperties = function() {
+  var shapeProperties = {
+    _id: this._id,
+    originalUserId: this.originalUserId,
+    currentUserId: this.currentUserId,
+    layerLevel: this.layerLevel,
+    rotation: this.rotation,
+    interactive: this.interactive,
+    scale: this.scale
+  };
+
+  return shapeProperties;
+};
+
+// Called by shape objects that need to set Base properties
+// Eg. BaseShape.prototype.setProperties.call(DerviedShape, {});
 var setProperties = function(shapeProperties) {
+  // These properties will be set by AppState's Shapes object
+  // It will set these properties based on the Session context and
+  // User
   this._id = shapeProperties._id || '';
   this.originalUserId = shapeProperties.originalUserId;
   this.currentUserId = shapeProperties.currentUserId;
   this.layerLevel = shapeProperties.layerLevel || 0;
-  this.scale = shapeProperties.scale || 1;
+
+  // This will indicate whether the user has selected this object in the Canvas
+  // This is normally toggled when Select tool is selected and User clicks on
+  // this shape
   this.selected = false;
 
+  // This will be set by socket events when another participant has selected
+  // this object to manipulate
+  this.locked = false;
+
   // Set Graphics specific properties
+  this.scale = shapeProperties.scale || { x: 1, y: 1 };
   this.rotation = this.graphics.rotation = shapeProperties.rotation || 0;
   this.interactive = this.graphics.interactive = this.interactive = shapeProperties.interactive || false;
 };
 
+// Sets the listeners to handle Movement and Selection as well
 var setMoveListeners = function(AppState) {
   var Tools = AppState.Tools;
   var Users = AppState.Users;
   var socket = AppState.Socket;
-  var _this = this;
+
+  // The current position of this Shape, ie. its Top, Left coordinates
+  // relative to Canvas' Top, Left coords
   this.origin = {
     x: this.x,
     y: this.y
   };
 
-  console.log('SETTINGS MOVE LISTENERS', this.origin);
-
+  // Interactivity allows User's to interact with this shape, the listeners
+  // will actually be toggled based on whether interactive is set to true/false
   this.interactive = this.graphics.interactive = true;
 
+  // Since we don't have event bubbling, we need to have a close relationship between
+  // Select tool's mouse events and the selected Shape's events
   this.graphics.mousedown = function(data) {
-    //console.log('mouseDownRecieved on shape', data);
+    console.log('Mouse Down called');
+    // Do early return if shape is locked, due to another User manipulating this Shape
+    if(this.locked) return;
+
     //data.originalEvent.preventDefault();
-    console.log('click fired with', Tools.selected);
     if(Tools.selected === 'select') {
-      _this.origin = data.getLocalPosition(this);
+      this.origin = data.getLocalPosition(this.graphics);
       this.alpha = 0.9;
 
-      //graphics.selected = true;
-      console.log('origin', _this.origin);
-      console.log('current User', Users.currentUser);
-      _this.currentUserId = Users.currentUser._id;
+      // Set the User who is currently manipulating the Shape,
+      // Note: the currentUserId can be different from OriginalUserId
+      // if a user other than the current user manipulates this Shape
+      // via Socket events
+      this.currentUserId = Users.currentUser._id;
 
-      Tools.select.selectedObject = _this;
-      Tools.select.clickedObject = true;
+      Tools.select.selectedObject = this;
 
-      socket.emit(EVENT.shapeObject, 'interactionBegin', _this._id);
+      // Since the Selected tool is the 'Select' tool, if we register a mouse click
+      // we should set the selected property to true
+      this.selected = true;
+
+      // Since tool is selected we should also highlight the tool
+      // Normally highlight() will be defined by Derived tool, since the shape of
+      // the highlight tool might vary depending on the Shape, ie. Ellipse or Rectangle
+      this.highlight();
+
+      // use socket emit to other User's that this object is selected by this user, and should
+      // be locked for them
+      socket.emit(EVENT.shapeEvent, 'lockShape', {
+          _id: this._id,
+          currentUserId: this.currentUserId
+        }
+      );
     }
+    // If the selected tool is Fill tool
     else if(Tools.selected === 'fill') {
-      this.clear();
-      console.log('fill Color: ' + Tools.fill.fillColor);
-      console.log('fill this', _this);
-      console.log('socket', socket);
-      _this.draw({fillColor: Tools.fill.fillColor});
+      this.graphics.clear();
 
-      socket.emit(EVENT.shapeObject, 'modify', _this.getProperties());
+      // Pass the new Fill color to the Shape's draw method
+      this.draw({ fillColor: Tools.fill.fillColor });
 
-      _this.interactive = this.interactive = true;
+      // Emit a modify event, and send the Shape properties
+      // We probably should only send the new Color rather than all Shape
+      // properties
+      socket.emit(EVENT.shapeEvent, 'modify', this.getProperties());
+
+      // Turn interactive back on after clearing Graphics
+      this.interactive = this.graphics.interactive = true;
     }
-  }.bind(this.graphics);
+  }.bind(this);
 
+  // Need this for Select tool, since it needs to know if
+  // Shape had been moved, thus it will read the this.origin property
   this.graphics.mouseup = function(data) {
     if(Tools.selected === 'select') {
-
       this.alpha = 1;
-
+      this.origin = {
+        x: this.graphics.position.x,
+        y: this.graphics.position.y
+      };
     }
-    //movingSelf = false;
-    //SocketObject.emitObjectMoveDone(stage.getChildIndex(this));
-  }.bind(this.graphics);
+  }.bind(this);
 };
 
-var move = function(moveObject) {
-  this.graphics.position.x = moveObject.x;
-  this.graphics.position.y = moveObject.y;
+var move = function(vector) {
+  this.graphics.position.x = vector.x;
+  this.graphics.position.y = vector.y;
 };
 
-var moveTo = function(vector) {
-  console.log('vector', vector, 'origin', this.origin);
-  this.x = vector.x - this.origin.x;
-  this.y = vector.y - this.origin.y;
-  this.graphics.position.x = this.x;
-  this.graphics.position.y = this.y;
+// Returns the Current graphics container, it can be either a Graphic or Sprite
+var getGraphics = function() {
+  return this.graphics;
 }
 
-// Use Parasitic Combination Inheritance Pattern
 BaseShape.prototype = {
-
   // Getter/Setters
   getProperties: getProperties,
   setProperties: setProperties,
+  getGraphics: getGraphics,
 
   // Mouse Events
   setMoveListeners: setMoveListeners,
   move: move,
-  moveTo: moveTo
-};
+  moveTo: moveTo,
 
-// Object.defineProperties(BaseShape.prototype, {
-//   layerLevel: {
-//     get: function() {
-//       if(this.graphics.stage)
-//         return this._layerLevel = this.graphics.stage.getChildAt(this.graphics);
-//       else
-//         return this._layerLevel;
-//     },
-//     set: function(level) {
-//       this._layerLevel = level;
-//       //if(this.graphics.stage)
-//       //this.graphics.stage.addChildAt(level);
-//       // else
-//       //   throw new Error('stage not set yet');
-//         //console.log('Warning!: Stage has not yet been set');
-//     }
-//   }
-// });
+  // UI indicator methods, will be abstract
+  highlight: function() { console.log('called base highlight'); },
+  unHighlight: function() { console.log('called base UnHighLight'); },
+
+  // Shape locking/unlocking methods
+  lockShape: function(userId) {
+    console.log('LOCKing shape');
+    this.currentUserId = userId;
+    this.highlight(0xFF0000);
+    //this.interactive = this.graphics.interactive = false;
+    this.locked = true;
+  },
+  unLockShape: function() {
+    console.log('unLOCKing shape');
+
+    this.interactive = this.graphics.interactive = true;
+    this.unHighlight();
+    this.locked = false;
+  }
+  /*To Do: Potentially implement methods that shows UI features around the shape */
+  // showSelectableUI
+  // hideSelectableUI
+};
 
 
 

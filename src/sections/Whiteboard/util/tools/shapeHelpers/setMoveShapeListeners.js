@@ -9,6 +9,8 @@ module.exports = function(graphics, shapeObject, AppState) {
   //var graphics = shapeObject.graphics;
   var socket = AppState.Socket;
 
+  graphics.interactive = true;
+  console.log('setting move listeners');
   graphics.mousedown = function(data) {
     //console.log('mouseDownRecieved on shape', data);
     data.originalEvent.preventDefault();

@@ -18,14 +18,3 @@ exports.config = {
     global.dv = browser.driver;
   }
 };
-
-/*
-  http://www.protractortest.org/#/tutorial
-
-  multiCapabilities: [{
-    browserName: 'firefox'
-  }, {
-    browserName: 'chrome'
-  }]
-
- */
