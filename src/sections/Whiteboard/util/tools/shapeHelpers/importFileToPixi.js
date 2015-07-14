@@ -1,36 +1,33 @@
 var PIXI = require('pixi');
-var setMoveShapeListeners = require('./setMoveShapeListeners');
+var Import = require('../../shapes/Import');
 
 module.exports = function(files, AppState, event) {
   var reader = new FileReader();
   reader.readAsDataURL(files[0]);
-
+  var Tools = AppState.Tools;
   console.log('dropped called');
+  var importedFile;
+  var shapes = AppState.Canvas.Shapes;
 
   reader.onloadend = function() {
-    //console.log(e);
-    var imageSprite = new PIXI.Sprite.fromImage(reader.result);
-    var xPos;
-    var yPos;
+
+    importedFile = new Import(Tools.importer, reader.result);
 
     if(event) {
-      xPos = event.x;
-      yPos = event.y;
+      importedFile.graphics.x = event.x;
+      importedFile.graphics.y = event.y
     }
     else {
-      xPos = AppState.Canvas.renderer.width/2 - imageSprite.width/2;
-      yPos = AppState.Canvas.renderer.height/2 - imageSprite.height/2;
+      // Set the image to occupy the center of the Canvas
+      importedFile.graphics.x = AppState.Canvas.renderer.width/2 - importedFile.imageSprite.width/2;
+      importedFile.graphics.y = AppState.Canvas.renderer.height/2 - importedFile.imageSprite.height/2;
+
     }
 
-    imageSprite.x = xPos;
-    imageSprite.y = yPos;
-    imageSprite.interactive = true;
+    shapes.addNew(importedFile);
 
-    AppState.Canvas.stage.addChild(imageSprite);
+    importedFile.setMoveListeners(AppState);
 
-    //AppState.Canvas.Shapes.addNew(imageSprite);
-
-    //setMoveShapeListeners(imageSprite, imageSprite, AppState);
   }
 };
 

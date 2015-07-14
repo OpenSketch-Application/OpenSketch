@@ -10,6 +10,12 @@ function Rectangle(shapeProperties) {
 
   this.shapeType = 'rectangle';
 
+  this.lineWidth = 1;
+  this.lineColor = 0x000000;
+  this.fillColor = 0xFFFFFF;
+  this.lineAlpha = 1;
+  this.fillAlpha = 1;
+
   // Invoke Derived Class's setProperties method to add all shapeProperties to
   // this object
   this.setProperties(shapeProperties);
@@ -37,7 +43,7 @@ Rectangle.prototype.getProperties = function() {
   shape.lineColor = this.lineColor;
   shape.fillColor = this.fillColor;
   shape.lineAlpha = this.lineAlpha;
-  shape.fillAlpha = this.fillAlph;
+  shape.fillAlpha = this.fillAlpha;
 
   return shape;
 };
@@ -54,11 +60,11 @@ Rectangle.prototype.setProperties = function(shapeProperties) {
   if(shapeProperties.width) this.width = shapeProperties.width || 0;
   if(shapeProperties.height) this.height = shapeProperties.height || 0;
 
-  this.lineWidth = shapeProperties.lineWidth || 1;
-  this.lineColor = shapeProperties.lineColor || 0x000000;
-  this.fillColor = shapeProperties.fillColor || 0xFFFFFF;
-  this.lineAlpha = shapeProperties.lineAlpha || 1;
-  this.fillAlpha = Number.parseFloat(shapeProperties.fillAlpha || 1);
+  if(shapeProperties.lineWidth) this.lineWidth = shapeProperties.lineWidth;
+  if(shapeProperties.lineColor) this.lineColor = shapeProperties.lineColor;
+  if(shapeProperties.fillColor) this.fillColor = shapeProperties.fillColor;
+  if(shapeProperties.lineAlpha) this.lineAlpha = shapeProperties.lineAlpha;
+  if(shapeProperties.fillAlpha) this.fillAlpha = Number.parseFloat(shapeProperties.fillAlpha);
 
   // Set Style properties to the internal Graphics object
   this.graphics.lineWidth = this.lineWidth;
@@ -67,6 +73,35 @@ Rectangle.prototype.setProperties = function(shapeProperties) {
   this.graphics.lineAlpha = this.lineAlpha;
   this.graphics.fillAlpha = this.fillAlpha;
   this.graphics.alpha = this.fillAlpha;
+
+  // Set shape graphics data properties of the primary Shape
+  if(this.graphics.graphicsData) {
+    var graphicsData = this.graphics.graphicsData[0];
+
+    if(shapeProperties.fillColor)
+      graphicsData._fillTint = graphicsData.fillColor = shapeProperties.fillColor;
+    if(shapeProperties.fillAlpha)
+      graphicsData.fillAlpha = shapeProperties.fillAlpha;
+    if(shapeProperties.fillColor)
+      graphicsData.fillColor = shapeProperties.fillColor;
+    if(shapeProperties.lineAlpha)
+      graphicsData.lineAlpha = shapeProperties.lineAlpha;
+    if(shapeProperties.lineColor)
+      graphicsData.lineColor = shapeProperties.lineColor;
+    if(shapeProperties.lineWidth)
+      graphicsData.lineWidth = shapeProperties.lineWidth;
+    if(shapeProperties.height)
+      graphicsData.shape.height = shapeProperties.height;
+    if(shapeProperties.width)
+      graphicsData.shape.width = shapeProperties.width;
+    if(shapeProperties.x)
+      graphicsData.shape.x = shapeProperties.x;
+    if(shapeProperties.y)
+      graphicsData.shape.y = shapeProperties.y;
+
+    this.dirty = true;
+    this.clearDirty = true;
+  }
 };
 
 // Draw method can be used when attempting to constantly resize or when User is attempting to

@@ -4,13 +4,16 @@ var BaseShape = require('./BaseShape');
 
 module.exports = Importer;
 
-function Importer(shapeProperties) {
+function Importer(shapeProperties, file) {
   // Call BaseShape constructor to instantiate BaseShape's properties
   BaseShape.call(this, shapeProperties);
-
-  this.graphics.addChild(new PIXI.Sprite());
+  this.imageSprite = new PIXI.Sprite.fromImage(file);
+  this.graphics.addChild(this.imageSprite);
 
   this.shapeType = 'import';
+
+  this.width = this.imageSprite.width;
+  this.height = this.imageSprite.height;
 
   // Invoke Derived Class's setProperties method to add all shapeProperties to
   // this object
@@ -53,8 +56,8 @@ Importer.prototype.setProperties = function(shapeProperties) {
   if(shapeProperties.x) this.x = shapeProperties.x || 0;
   if(shapeProperties.y) this.y = shapeProperties.y || 0;
 
-  if(shapeProperties.width) this.width = shapeProperties.width || 0;
-  if(shapeProperties.height) this.height = shapeProperties.height || 0;
+  if(shapeProperties.width) this.width = shapeProperties.width;
+  if(shapeProperties.height) this.height = shapeProperties.height;
 
   this.lineWidth = shapeProperties.lineWidth || 1;
   this.lineColor = shapeProperties.lineColor || 0x000000;
@@ -84,7 +87,8 @@ Importer.prototype.draw = function(shapeProperties) {
   if(shapeProperties.y) this.y = shapeProperties.y;
   if(shapeProperties.width) this.width = shapeProperties.width;
   if(shapeProperties.height) this.height = shapeProperties.height;
-  if(shapeProperties.imageUrl) this.graphics.
+  if(shapeProperties.imageUrl) this.imageSprite = new PIXI.Sprite.fromImage(shapeProperties.imageUrl);
+
   // Since we cleared all the draw properties for redrawing, we need to set the styles again
   this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
                                                       : this.lineWidth;
