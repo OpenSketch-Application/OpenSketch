@@ -20,7 +20,10 @@ function BaseShape(shapeProperties, graphicsType) {
   this.selectablePoints = new PIXI.Graphics();
   this.graphics.addChildAt(this.highlightShape, 0);
   this.graphics.addChildAt(this.selectablePoints, 1);
+
   this.layerLevel = 0;
+  this.graphics.scale = this.scale = { x: 1, y: 1 };
+
 };
 
 // Normally called by Shape objects that inherit BaseShape
@@ -81,17 +84,31 @@ var setMoveListeners = function(AppState) {
   // will actually be toggled based on whether interactive is set to true/false
   this.interactive = this.graphics.interactive = true;
 
+  this.attachSelectableArea();
+
   // Since we don't have event bubbling, we need to have a close relationship between
   // Select tool's mouse events and the selected Shape's events
   this.graphics.mousedown = function(data) {
     console.log('Mouse Down called');
+
     // Do early return if shape is locked, due to another User manipulating this Shape
     if(this.locked) return;
 
     //data.originalEvent.preventDefault();
     if(Tools.selected === 'select') {
       this.origin = data.getLocalPosition(this.graphics);
-      this.alpha = 0.9;
+
+      //this.alpha = 0.9;
+      // Check if click was within the defined area for selectable UI of the Shape,
+      // i.e. not within the center of the Shape, only show UI if its on the outer edge
+      if(!this.bounds.contains(this.origin.x, this.origin.y)) {
+
+        // Show the Shape UI graphics around the Shape
+        this.showSelectableUI();
+
+
+      }
+
 
       // Set the User who is currently manipulating the Shape,
       // Note: the currentUserId can be different from OriginalUserId
@@ -158,6 +175,43 @@ var getGraphics = function() {
   return this.graphics;
 }
 
+// Reveal a UI area around the shape, for user to change Shape properties
+var showSelectableUI = function() {
+  // Creates a hit area to determine if mouse clicked inside
+  // Note: getDimensions() is normally defined by Derived classes that know
+  // the dimensions of its Shape
+  console.log('SHOWING selectable UI');
+
+}
+
+var attachSelectableArea = function(boundaryPolygon) {
+  // Default use local bounds of BaseShape + 5;
+  if(!boundaryPolygon) boundaryPolygon = this.getBoundary();
+  //this.bounds = this.graphics.getLocalBounds();
+  console.log(this.bounds);
+  // Array of x,y,x,y... points, expands containing Shapes hitArea to allow for
+  // selectable UI area
+  this.graphics.hitArea = new Polygon(boundaryPolygon);//new Polygon(this.getBoundary());
+
+}
+
+// Draw the selectable points around the perimeter of the Shape
+var drawSelectablePoints = function() {}
+
+// Updates the Shape's localBounds, not including UI child graphics objects
+var updateBounds = function() {
+  //if(!this.bounds) this.bounds = {};
+  console.log('This points to ', this);
+  this.bounds = new PIXI.Polygon([this.x, this.y, this.x + this.width, this.y + this.height]);
+}
+
+// Gets the Shape's local bounds, not including the UI child graphics objects
+var getBoundary = function() {
+  if(!this.bounds) this.updateBounds();
+
+  return this.bounds;
+}
+
 BaseShape.prototype = {
   // Getter/Setters
   getProperties: getProperties,
@@ -187,9 +241,31 @@ BaseShape.prototype = {
     this.interactive = this.graphics.interactive = true;
     this.unHighlight();
     this.locked = false;
-  }
+  },
+
+  getDimensions: function() {
+    var bounds = this.graphics.getLocalBounds();
+
+    // Ensure UI shows up within visible area of the Canvas
+    if(bounds.x > 5)
+      bounds.x = 5;
+    if(bounds.y > 5)
+      bounds.y = 5;
+
+    // The selectable area should be 5 units more than the shape it contains
+    bounds.width += 5;
+    bounds.height += 5;
+
+    return bounds;
+  },
+
+
   /*To Do: Potentially implement methods that shows UI features around the shape */
-  // showSelectableUI
+  showSelectableUI : showSelectableUI,
+  drawSelectablePoints: drawSelectablePoints,
+  attachSelectableArea: attachSelectableArea,
+  getBoundary: getBoundary,
+  updateBounds: updateBounds
   // hideSelectableUI
 };
 

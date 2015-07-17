@@ -4,7 +4,7 @@ var BaseShape = require('./BaseShape');
 
 module.exports = Rectangle;
 
-function Rectangle(shapeProperties) {
+function Rectangle(shapeProperties, vector) {
   // Call BaseShape constructor to instantiate BaseShape's properties
   BaseShape.call(this, shapeProperties);
 
@@ -16,9 +16,53 @@ function Rectangle(shapeProperties) {
   this.lineAlpha = 1;
   this.fillAlpha = 1;
 
+  if(vector){
+    this.x = vector.x;
+    this.y = vector.y;
+  }
+  else {
+    this.x = shapeProperties.x || 0;
+    this.y = shapeProperties.y || 0;
+  }
+
+  this.width = shapeProperties.width || 200;
+  this.height = shapeProperties.height || 100;
+
+  this.lineWidth = shapeProperties.lineWidth || 1;
+  this.lineColor = shapeProperties.lineColor || 0;
+  this.fillColor = shapeProperties.fillColor || 0xFFFFFF;
+  this.lineAlpha = shapeProperties.lineAlpha || 0;
+  this.fillAlpha = Number.parseFloat(shapeProperties.fillAlpha) || 1;
+
+  // Since we cleared all the draw properties for redrawing, we need to set the styles again
+  this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
+                                                      : this.lineWidth;
+
+  this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
+                                                      : this.lineColor;
+  this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
+                                                      : this.lineAlpha;
+
+  this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
+                                                      : this.fillAlpha;
+  this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
+                                                      : this.fillColor;
+
+  this.graphics.beginFill(this.fillColor);
+
+  // Redraw the shape
+  this.graphics.drawRect(
+    this.x,
+    this.y,
+    this.width,
+    this.height
+  );
+
+  this.graphics.endFill();
+
   // Invoke Derived Class's setProperties method to add all shapeProperties to
   // this object
-  this.setProperties(shapeProperties);
+  //this.setProperties(shapeProperties);
 }
 
 // Set prototype to the BaseShape
@@ -75,33 +119,9 @@ Rectangle.prototype.setProperties = function(shapeProperties) {
   this.graphics.alpha = this.fillAlpha;
 
   // Set shape graphics data properties of the primary Shape
-  if(this.graphics.graphicsData) {
-    var graphicsData = this.graphics.graphicsData[0];
+  this.setGraphicsData(shapeProperties);
 
-    if(shapeProperties.fillColor)
-      graphicsData._fillTint = graphicsData.fillColor = shapeProperties.fillColor;
-    if(shapeProperties.fillAlpha)
-      graphicsData.fillAlpha = shapeProperties.fillAlpha;
-    if(shapeProperties.fillColor)
-      graphicsData.fillColor = shapeProperties.fillColor;
-    if(shapeProperties.lineAlpha)
-      graphicsData.lineAlpha = shapeProperties.lineAlpha;
-    if(shapeProperties.lineColor)
-      graphicsData.lineColor = shapeProperties.lineColor;
-    if(shapeProperties.lineWidth)
-      graphicsData.lineWidth = shapeProperties.lineWidth;
-    if(shapeProperties.height)
-      graphicsData.shape.height = shapeProperties.height;
-    if(shapeProperties.width)
-      graphicsData.shape.width = shapeProperties.width;
-    if(shapeProperties.x)
-      graphicsData.shape.x = shapeProperties.x;
-    if(shapeProperties.y)
-      graphicsData.shape.y = shapeProperties.y;
-
-    this.dirty = true;
-    this.clearDirty = true;
-  }
+  return this;
 };
 
 // Draw method can be used when attempting to constantly resize or when User is attempting to
@@ -110,39 +130,9 @@ Rectangle.prototype.setProperties = function(shapeProperties) {
 // call this method with the new properties you wish to update the Shape with;
 Rectangle.prototype.draw = function(shapeProperties) {
 
-  this.graphics.clear();
-  this.graphics.interactive = false;
+  //this.graphics.clear();
+  //this.graphics.interactive = false;
 
-  if(shapeProperties.x) this.x = shapeProperties.x;
-  if(shapeProperties.y) this.y = shapeProperties.y;
-  if(shapeProperties.width) this.width = shapeProperties.width;
-  if(shapeProperties.height) this.height = shapeProperties.height;
-
-  // Since we cleared all the draw properties for redrawing, we need to set the styles again
-  this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
-                                                      : this.lineWidth;
-
-  this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
-                                                      : this.lineColor;
-  this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
-                                                      : this.lineAlpha;
-
-  this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
-                                                      : this.fillAlpha;
-  this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
-                                                      : this.fillColor;
-
-  this.graphics.beginFill(this.fillColor);
-
-  // Redraw the shape
-  this.graphics.drawRect(
-    this.x,
-    this.y,
-    this.width,
-    this.height
-  );
-
-  this.graphics.endFill();
 
   return this;
 };
@@ -169,18 +159,36 @@ Rectangle.prototype.getGraphicsData = function() {
   Will be used later if we wish to access the actual graphics data object
  */
 Rectangle.prototype.setGraphicsData = function(shapeProperties) {
+  var graphicsData;
+  if(this.graphics.graphicsData[0]) {
+    graphicsData = this.graphics.graphicsData[0];
+    console.log('Graphics data', graphicsData);
+    if(shapeProperties.fillColor)
+      graphicsData._fillTint = graphicsData.fillColor = shapeProperties.fillColor;
+    if(shapeProperties.fillAlpha)
+      graphicsData.fillAlpha = shapeProperties.fillAlpha;
+    if(shapeProperties.fillColor)
+      graphicsData.fillColor = shapeProperties.fillColor;
+    if(shapeProperties.lineAlpha)
+      graphicsData.lineAlpha = shapeProperties.lineAlpha;
+    if(shapeProperties.lineColor)
+      graphicsData.lineColor = shapeProperties.lineColor;
+    if(shapeProperties.lineWidth)
+      graphicsData.lineWidth = shapeProperties.lineWidth;
+    if(shapeProperties.height)
+      graphicsData.shape.height = shapeProperties.height;
+    if(shapeProperties.width)
+      graphicsData.shape.width = shapeProperties.width;
+    if(shapeProperties.x)
+      graphicsData.shape.x = shapeProperties.x;
+    if(shapeProperties.y)
+      graphicsData.shape.y = shapeProperties.y;
 
-  var graphicsData = this.graphics.graphicsData[0];
+    this.dirty = true;
+    this.clearDirty = true;
+  }
 
-  graphicsData.lineWidth = this.lineWidth = (shapeProperties.lineWidth || this.lineWidth);
-  graphicsData.lineColor = this.lineColor = (shapeProperties.lineColor || this.lineColor);
-  graphicsData.lineAlpha = this.lineAlpha = (shapeProperties.lineAlpha || this.lineAlpha);
-  graphicsData.fillAlpha = this.fillAlpha = (shapeProperties.fillAlpha || this.fillAlpha);
-  graphicsData.fillColor = this.fillColor = (shapeProperties.fillColor || this.fillColor);
-
-  // Ensure renderer knows that this Graphics Object needs to be rendered
-  this.graphics.dirty = true;
-  this.graphics.clearDirty = true;
+  return graphicsData;
 }
 
 // Highlights the Shape
@@ -197,11 +205,15 @@ Rectangle.prototype.highlight = function(color) {
     this.width,
     this.height
   );
+
+  return this;
 }
 
 // Unhighlights the shape
 Rectangle.prototype.unHighlight = function() {
   this.highlightShape.clear();
+
+  return this;
 }
 
 // Sets the Listeners for Mouse and potentially Keyboard events
@@ -248,6 +260,8 @@ Rectangle.prototype.setMoveListeners = function(AppState) {
     }
 
   }.bind(this);
+
+  return this;
 }
 
 

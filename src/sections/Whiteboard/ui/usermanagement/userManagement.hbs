@@ -1,0 +1,18 @@
+<!-- Template for User Management Cell -->
+{{#users}}
+  <li id="{{_id}}" data-content="Users">
+    <!-- <img class="profilePicture" alt="U"/> -->
+    <p>
+      {{^username}}{{_id}}{{/username}}
+      {{username}}
+    </p>
+    <div class="user-management-button-container">
+
+      <img class="chatToggle {{#permissions.canChat}} canChat{{/permissions.canChat}}" alt="C"/>
+      <img class="drawToggle {{#permissions.canDraw}} canDraw{{/permissions.canDraw}}" alt="D"/>
+      <img class="remove" alt="R"/>
+
+    </div>
+  </li>
+{{/users}}
+

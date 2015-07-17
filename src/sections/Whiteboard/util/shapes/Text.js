@@ -14,7 +14,7 @@ function Text(shapeProperties) {
   BaseShape.call(this, shapeProperties, 'text');
 
   //this.text = new PIXI.Text('sfjksdjflskjflsfhjhfjakshdjasdhkasd', shapeProperties);
-  this.text = new PixiTextInput('sfjksdjflskjflsd', shapeProperties);
+  this.text = new PixiTextInput('sfjksdjfl\nskj\nflsd', shapeProperties);
 
   // We want text to be on top of the two other child graphics objects
   this.graphics.addChildAt(this.text, 2);

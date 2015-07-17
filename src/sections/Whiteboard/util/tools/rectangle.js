@@ -1,7 +1,7 @@
 'use strict';
 var PIXI = require('pixi');
 var Rectangle = require('../shapes/Rectangle');
-var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
+//var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(el, AppState) {
@@ -27,8 +27,12 @@ module.exports = function(el, AppState) {
     isDown = true;
     //data.originalEvent.preventDefault();
     originalCoords = data.getLocalPosition(this);
+    console.log('orginal coords', originalCoords);
 
-    rect = new Rectangle(Tools.rectangle);
+    rect = new Rectangle(Tools.rectangle, originalCoords);
+
+    shapes.addNew(rect);
+    console.log('rect', rect);
   };
 
   var mousemove = function(data) {
@@ -37,39 +41,38 @@ module.exports = function(el, AppState) {
       var localPos = data.getLocalPosition(this);
       var topX = 0;
       var topY = 0;
-      var width = localPos.x - originalCoords.x;
-      var height = localPos.y - originalCoords.y;
+      // var width = localPos.x - originalCoords.x;
+      // var height = localPos.y - originalCoords.y;
+      //console.log(data.global);
+      // rect.graphics.x = localPos.x;
+      // rect.graphics.y = localPos.y;
+      //rect.move(localPos);
+      //rect.graphics.x = rect.scale.x = Math.ceil(width/rect.width);
+      //rect.graphics.y = rect.scale.y = Math.ceil(height/rect.height);
 
-      // Ensure height and width are positive
-      if(width < 0) width *= -1;
-      if(height < 0) height *= -1;
 
-      topX = Math.min(originalCoords.x, localPos.x);
-      topY = Math.min(localPos.y, originalCoords.y);
+      // // Ensure height and width are positive
+      // if(width < 0) width *= -1;
+      // if(height < 0) height *= -1;
 
-      rect.draw({
-        x: topX,
-        y: topY,
-        width: width,
-        height: height
-      });
+      // topX = Math.min(originalCoords.x, localPos.x);
+      // topY = Math.min(localPos.y, originalCoords.y);
+      // //console.log(rect);
+      //rect.highlight();
 
-      //console.log(rect);
-      rect.highlight();
+      // if(drawBegan) {
+      //   //console.log('Draw Began, emit shape', rect.getProperties());
+      //   socket.emit(EVENT.shapeEvent, 'draw', rect.getProperties());
+      // }
+      // else {
+      //   // Adds shape to the shapes object/container and stage
+      //   rect = shapes.addNew(rect);
 
-      if(drawBegan) {
-        //console.log('Draw Began, emit shape', rect.getProperties());
-        socket.emit(EVENT.shapeEvent, 'draw', rect.getProperties());
-      }
-      else {
-        // Adds shape to the shapes object/container and stage
-        rect = shapes.addNew(rect);
-
-        var RectProp = rect.getProperties();
-        // Send socket info since drawing has began now, use the getProperties() to
-        // return only the Shape properties we need and nothing else
-        socket.emit(EVENT.shapeEvent, 'add', RectProp);
-      }
+      //   var RectProp = rect.getProperties();
+      //   // Send socket info since drawing has began now, use the getProperties() to
+      //   // return only the Shape properties we need and nothing else
+      //   socket.emit(EVENT.shapeEvent, 'add', RectProp);
+      // }
 
       drawBegan = true;
     }
@@ -80,24 +83,24 @@ module.exports = function(el, AppState) {
     if(isDown) {
       // Check if Shape was actually drawn, ie. did user press mouse down and mouse move, which draws a Shape, or
       // just simply press mouse down, which is not considered drawing
-      if(drawBegan) {
+      //if(drawBegan) {
 
         rect.setMoveListeners(AppState);
 
         rect.unHighlight();
 
         // Emit socket drawEnd Event, since drawing has ended on mouse up
-        socket.emit(EVENT.shapeEvent, 'drawEnd', rect.getProperties());
-        socket.emit(EVENT.saveObject, rect.getProperties());
+        // socket.emit(EVENT.shapeEvent, 'drawEnd', rect.getProperties());
+        // socket.emit(EVENT.saveObject, rect.getProperties());
 
-      }
-      else {
-        // We always add a Shape Id to hash on
-        shapes.removeShape(rect);
+      //}
+      // else {
+      //   // We always add a Shape Id to hash on
+      //   shapes.removeShape(rect);
 
-        // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        //socket.emit(EVENT.shapeEvent, 'remove', rect._id);
-      }
+      //   // Emit socket interactionEnd Event, since drawing has ended on mouse up
+      //   //socket.emit(EVENT.shapeEvent, 'remove', rect._id);
+      // }
     }
 
     isDown = drawBegan = false;
@@ -105,7 +108,7 @@ module.exports = function(el, AppState) {
 
   function activate() {
     stage.mousedown = mousedown;
-    stage.mousemove = mousemove;
+    //stage.mousemove = mousemove;
     stage.mouseup = mouseup;
     stage.mouseout = mouseup;
   }

@@ -23,46 +23,6 @@ module.exports = function(io, framework, AppState){
     socket.emit(EVENT.joinSession,Cookies.get('username'),curSessionId);
   };
 
-  socket.on(EVENT.updateUserList,function(msg,users, curUserIndex) {
-    console.log('in update user list');
-    var Usertab =  find('.cd-tabs-content li[data-content=Users]');
-    var UsertabName = find('a[data-content=Users]');
-
-    UsertabName.innerHTML = 'Users('+msg+')';
-
-    var UserList = find('.userList');
-    if(UserList){
-      UserList.innerHTML = "";
-    }else{
-      UserList = document.createElement('div');
-      UserList.className = 'userList';
-    }
-    for(var i = 0; i< users.length; i++){
-      var user = document.createElement('div');
-      user.className = "user";
-      user.innerHTML = users[i].username;
-
-      UserList.appendChild(user);
-    }
-
-    AppState.Users.users = users;
-    console.log('Current user index: ' + curUserIndex);
-
-    if(curUserIndex !== undefined){
-      console.log('Current user set to: ' + users[curUserIndex]);
-
-      AppState.Users.currentUser = users[curUserIndex];
-    }
-
-    Usertab.appendChild(UserList);
-
-  });
-
-  socket.on(EVENT.userLeft, function(removedUser) {
-    console.log('USER LEFT registered', removedUser);
-
-  })
-
   socket.on(EVENT.announcement,function(msg){
     //update user list clientside
     //update chat tab with msg

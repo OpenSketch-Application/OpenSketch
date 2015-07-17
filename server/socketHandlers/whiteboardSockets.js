@@ -26,8 +26,10 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
               session.users.push({
                 username: uName,
                 userRank: session.users.length,
-                canDraw: session.canDraw,
-                canChat: session.canChat,
+                permissions: {
+                  canDraw: session.sessionProperties.canDraw,
+                  canChat: session.sessionProperties.canChat
+                },
                 _id: socket.id
               });
 
@@ -35,6 +37,8 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                  if(err) console.log(err);
                  else {
                    console.log(session);
+                   console.log(session.users[0]);
+                   console.log(session.users[0].permissions);
                    socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
 

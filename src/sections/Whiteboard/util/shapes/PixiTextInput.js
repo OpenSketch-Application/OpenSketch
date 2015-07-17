@@ -39,17 +39,39 @@ function PixiTextInput(text, style) {
 	this._caretColor = 0x000000;
 	this._background = true;
 
+	this.scrollIndex = 0;
+	this._caretIndex = 0;
+	this._caretYIndex = 0;
+
 	this.style = style;
 	this.textField = new PIXI.Text(this._text, style);
 
 	this.localHeight = this.textField.height;
-	this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+')) + this.textField.style.strokeThickness) * 1.25;
 
-	console.log(this.lineHeight);
+	//var lineHeight = fontProperties.fontSize + this.style.strokeThickness;
+	var fontProperties = this.textField.determineFontProperties(this.textField.style.font);
+	console.log(fontProperties);
+	this._lineHeight = (fontProperties.fontSize
+										+ this.textField.style.strokeThickness);
+	//this.lineHeight += this.lineHeight
+	this.lineSpacing = 0;
+	this._lines = this._text.split(/(?:\r\n|\r|\n)/).length;
+	console.log(this._lineHeight);
 	//debugger;
 	// this.localHeight =
 	// 	this.textField.determineFontHeight('font: ' + this.textField.style.font + ';') +
 	// 	this.textField.style.strokeThickness;
+
+	var txt = [
+		'firstLine\n', // Remember to subtract index by 1, to not count the newLine char
+		'secondLine\n', // Check by looking at charAt(index-1) for mouse click;
+										// And charAt(index)
+		'\n',
+		''
+	];
+
+
+
 
 	this.backgroundGraphics = new PIXI.Graphics();
 	this.textFieldMask = new PIXI.Graphics();
@@ -61,9 +83,6 @@ function PixiTextInput(text, style) {
 	this.addChild(this.caret);
 	this.addChild(this.textFieldMask);
 
-	this.scrollIndex = 0;
-	this._caretIndex = 0;
-	this._caretYIndex = 0;
 
 	this.caretFlashInterval = null;
 	this.blur();
@@ -105,8 +124,12 @@ PixiTextInput.prototype.getLineHeight = function() {
  */
 PixiTextInput.prototype.onBackgroundMouseDown = function(e) {
 	var coords = e.getLocalPosition(this);
-	this._caretIndex = this.getCaretIndexByCoord(coords);
+	var caretIndices = this.getCaretIndexByCoord(coords);
+	this._caretIndex = caretIndices.xIndex;
+	this._caretYIndex = caretIndices.yIndex;
+
 	this.updateCaretPosition();
+	console.log(caretIndices);
 
 	this.focus();
 
@@ -136,20 +159,22 @@ PixiTextInput.prototype.getCaretIndexByCoord = function(coords) {
 			cand = i;
 		}
 	}
-	// var smallest = 10000;
- //  var cand = 0;
- //  var visible = this._text.substring(this.scrollIndex);
 
- //  for (i = 0; i < visible.length + 1; i++) {
- //    var sub = visible.substring(0, i);
- //    var w = this.textField.context.measureText(sub).width;
+	// Unit to divide textbox height by
+	//var lineDiff = this.lineHeight;
 
- //    if (Math.abs(w - x) < smallest) {
- //      smallest = Math.abs(w - x);
- //      cand = i;
- //    }
- //  }
-	return this.scrollIndex + cand;
+	// Determine vertical pixels to map cursor position to
+	var yIndex = Math.ceil(coords.y/this._lineHeight) - 1;
+	if(yIndex > this._lines - 1)
+		yIndex = this._lines - 1;
+
+	console.log(coords);
+
+	// debugger;
+	return  {
+		xIndex: this.scrollIndex + cand,
+		yIndex: yIndex
+	}
 }
 
 
@@ -248,6 +273,7 @@ PixiTextInput.prototype.onKeyEvent = function(e) {
 				this.showCaret();
 				this.updateText();
         e.preventDefault();
+        console.log('curIndex', this._caretIndex, 'char:', this._text.charAt(this._caretIndex));
 
 				break;
 
@@ -261,6 +287,7 @@ PixiTextInput.prototype.onKeyEvent = function(e) {
 				this.showCaret();
 				this.updateText();
         e.preventDefault();
+        console.log('curIndex', this._caretIndex, 'char:', this._text.charAt(this._caretIndex));
 
 				break;
 
@@ -272,6 +299,13 @@ PixiTextInput.prototype.onKeyEvent = function(e) {
       	// Keep current Cursor index
 
         break;
+      case 13: // ENTER
+      	this._caretYIndex += 1;
+      	this._caretIndex = 0;
+      	this._text += '\n';
+      	this._lines++;
+      	this.updateCaretPosition();
+      	break;
 		}
 
 		this.trigger(this.keydown, e);
@@ -337,20 +371,54 @@ PixiTextInput.prototype.onWindowBlur = function() {
  * @private
  */
 PixiTextInput.prototype.updateCaretPosition = function() {
+	var subDimensions;
+	var sub;
+
 	if (this._caretIndex < this.scrollIndex) {
 		this.caret.position.x = -1;
-		debugger;
+
+		// In case we run into the beginning of the line
+		if(this._caretYIndex > 1) {
+
+			//this._caretIndex = 0;
+
+			this._caretYIndex--;
+		}
+		return;
+	}
+	else if(this._text.charAt(this._caretIndex) === '\n') {
+		this.scrollIndex = this._text.indexOf('\n', this._caretIndex + 1) - this._caretIndex;
+		console.log('scrollIndex', this.scrollIndex, 'curIndex', this._caretIndex);
+		// If there are no more newlines after the previously encountered new line, get the end of
+		// the text string, we also need to remove the new lines when calculating
+		if(this.scrollIndex < 0) {
+			this.scrollIndex = (this._text.length - this._lines) - (this._caretIndex);
+			debugger;
+		}
+
+		if(this.style.align === 'center') {
+			sub = this._text.substring(this._caretIndex + 1, this.scrollIndex);
+			subDimensions = this.textField.context.measureText(sub);
+			this._caretIndex = 0;
+			this.caret.position.x = subDimensions.width;
+			debugger;
+		}
+
+		//this._caretIndex = 0;
+		this._caretYIndex++;
+		this.caret.position.y = (this._caretYIndex * this._lineHeight);
+
 		return;
 	}
 
-	var sub = this._text.substring(0, this._caretIndex).substring(this.scrollIndex);
+	sub = this._text.substring(0, this._caretIndex).substring(this.scrollIndex);
 
-	var coords = this.textField.context.measureText(sub);
-	console.log(coords);
+	subDimensions = this.textField.context.measureText(sub);
+	console.log(subDimensions);
 	//debugger;
-	this.caret.position.x = this.textField.context.measureText(sub).width;
-	this.caret.position.y = (this._caretYIndex * this.lineHeight);
-	console.log(this.caret.position.y);
+	this.caret.position.x = subDimensions.width;
+	this.caret.position.y = (this._caretYIndex * this._lineHeight);
+	//console.log(this.caret.position.y);
 
 	// 	this.textField.style.strokeThickness;
 	// 	this.textField.style.font
@@ -374,21 +442,29 @@ PixiTextInput.prototype.updateText = function() {
 PixiTextInput.prototype.drawElements = function() {
 	this.backgroundGraphics.clear();
 	this.backgroundGraphics.beginFill(this._backgroundColor);
+	var lines = this._caretYIndex + 1;
+	console.log('lines', lines);
 
 	if (this._background)
-		this.backgroundGraphics.drawRect(0, 0, this.localWidth, this.localHeight);
+		this.backgroundGraphics.drawRect(0, 0, this.localWidth, this.localHeight * lines);
 
 	this.backgroundGraphics.endFill();
-	this.backgroundGraphics.hitArea = new PIXI.Rectangle(0, 0, this.localWidth, this.localHeight);
+	this.backgroundGraphics.hitArea = new PIXI.Rectangle(0, 0, this.localWidth, this.localHeight * lines);
 
 	this.textFieldMask.clear();
 	this.textFieldMask.beginFill(this._backgroundColor);
-	this.textFieldMask.drawRect(0, 0, this.localWidth, this.localHeight);
+	this.textFieldMask.drawRect(0, 0, this.localWidth, this.localHeight * lines);
 	this.textFieldMask.endFill();
+
+
+  //this.canvas.height = height * this.resolution;
+ 	console.log('RESOLUTION', this.textField.resolution);
+ 	//linePositionY = (this.style.strokeThickness / 2 + i * lineHeight) + fontProperties.ascent;
+  //this.context.scale( this.resolution, this.resolution);
 
 	this.caret.clear();
 	this.caret.beginFill(this._caretColor);
-	this.caret.drawRect(1, 1, 1, this.lineHeight);
+	this.caret.drawRect(1, 1, 1, this._lineHeight);
 	this.caret.endFill();
 }
 
@@ -450,6 +526,19 @@ Object.defineProperty(PixiTextInput.prototype, "width", {
 		this.ensureCaretInView();
 		this.updateText();
 	}
+});
+
+Object.defineProperty(PixiTextInput.prototype, 'height', {
+    get: function() {
+    	return this.scale.y * this.getLocalBounds().height;
+    },
+    set: function(v) {
+    	this.localHeight = v;
+      this.localWidth = v;
+			this.drawElements();
+			this.ensureCaretInView();
+			this.updateText();
+    }
 });
 
 /**
