@@ -1,0 +1,51 @@
+#userManagement {
+  width: 100%;
+  height: 100%;
+  position: relative;
+
+  li {
+    width: 100%;
+    height: 60px;
+    margin: 0 auto;
+    text-align: center;
+    display: inline-block;
+
+    p {
+      display: inline-block;
+      font-size: 1.2em;
+      position: relative;
+      transform: translateY(50%);
+    }
+
+    .user-management-button-container {
+      display: inline-block;
+      height: 100%;
+      float: right;
+      margin-right: 15px;
+      position: relative;
+
+      img {
+        display: inline-block;
+        width: 25px;
+        height: 25px;
+        transform: translateY(50%);
+      }
+      // Default is no chat
+      .chatToggle {
+        background-color: red;
+      }
+
+      .canChat {
+        background-color: green;
+      }
+
+      .drawToggle {
+        background-color: red;
+      }
+
+      .canDraw {
+        background-color: green;
+      }
+    }
+  }
+}

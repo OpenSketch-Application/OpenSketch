@@ -1,6 +1,7 @@
 var $ = require('jquery');
 var EVENT = require('../../../model/model').socketEvents;
 var Cookies = require('cookies-js');
+
 module.exports = {
   init: function(AppState) {
     var _this = this;
