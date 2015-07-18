@@ -7,7 +7,6 @@ module.exports = function(settings, el) {
     AppState.Tools.selected = 'color';
 
     selectPressed = true;
-    activate(settings.stage, settings.renderer);
   });
 };
 

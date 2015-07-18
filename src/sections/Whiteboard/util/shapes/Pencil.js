@@ -42,7 +42,7 @@ Pencil.prototype.getProperties = function() {
     lineWidth: this.lineWidth,
     lineColor: this.lineColor,
     lineAlpha: this.lineAlpha,
-    objectType: this.objectType
+    shapeType: this.shapeType
   }
 
   // Get the base properties and attach base properties to temporary our shape object
