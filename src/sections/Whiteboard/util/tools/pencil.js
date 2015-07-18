@@ -36,8 +36,10 @@ module.exports = function(info, el, AppState) {
   function mousemove(data) {
     if(isDown) {
       //Removing oldpath
-      if(!isFirst)
+      if(!isFirst){
         shapes.removeShapeByID(prevID);
+        socket.emit(EVENT.shapeEvent,'remove',{_id:prevID});
+      }
       isFirst=false;
 
       var prevX = prevPos.x;
@@ -49,7 +51,6 @@ module.exports = function(info, el, AppState) {
       path.push(prevPos.y);
       pencil.draw({path: path});
       prevID = shapes.addNew(pencil)._id;
-      console.log('movin');
       socket.emit(EVENT.shapeEvent,'add',pencil.getProperties());
     }
   }
