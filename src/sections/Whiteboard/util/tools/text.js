@@ -3,6 +3,7 @@ var PIXI = require('pixi');
 var Text = require('../shapes/Text');
 //var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
+var PixiTextInput = require('../shapes/PixiTextInput');
 
 module.exports = function(settings, el, AppState) {
   console.log('AppState', AppState);
@@ -33,20 +34,24 @@ module.exports = function(settings, el, AppState) {
     originalCoords = data.getLocalPosition(this);
 
     if(text) text.unHighlight();
+    var _Text = new PixiTextInput('This textbox\nreally\nsucks', Tools.text);
+    _Text.x = originalCoords.x;
+    _Text.y = originalCoords.y;
 
-    text = new Text(Tools.text);
-    text.text.x = originalCoords.x;
-    text.text.y = originalCoords.y;
+    stage.addChild(_Text);
+    // text = new Text(Tools.text);
+    // text.text.x = originalCoords.x;
+    // text.text.y = originalCoords.y;
 
-    text.draw({
-      x: originalCoords.x,
-      y: originalCoords.y,
-      width: text.text.width,
-      height: text.text.height
-    });
+    // text.draw({
+    //   x: originalCoords.x,
+    //   y: originalCoords.y,
+    //   width: text.text.width,
+    //   height: text.text.height
+    // });
 
-    text = shapes.addNew(text);
-    text.highlight();
+    // text = shapes.addNew(text);
+    // text.highlight();
     // var input = new PIXI.DOM.Sprite(
     //   '<input type="text" placeholder="enter message" />',
     //   { x: originalCoords.x, y: originalCoords.y }
@@ -133,9 +138,9 @@ module.exports = function(settings, el, AppState) {
 
   function activate() {
     stage.mousedown = mousedown;
-    stage.mousemove = mousemove;
-    stage.mouseup = mouseup;
-    stage.mouseout = mouseup;
+    //stage.mousemove = mousemove;
+    //stage.mouseup = mouseup;
+    //stage.mouseout = mouseup;
   }
 
 };

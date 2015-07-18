@@ -339,7 +339,6 @@ PixiTextInput.prototype.onWindowBlur = function() {
 PixiTextInput.prototype.updateCaretPosition = function() {
 	if (this._caretIndex < this.scrollIndex) {
 		this.caret.position.x = -1;
-		debugger;
 		return;
 	}
 

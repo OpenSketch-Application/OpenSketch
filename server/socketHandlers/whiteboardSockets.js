@@ -17,7 +17,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 
         Session.findById(sessionid, function(err, session){
           if(err){
-            console.warn('Error Retrieving Session: at ', new Date().toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+            console.warn('Error Retrieving Session: at ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
             //throw new Error('Error retrieving Session');
           }
           else if(session && session._id) {
@@ -26,8 +26,10 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
               session.users.push({
                 username: uName,
                 userRank: session.users.length,
-                canDraw: session.canDraw,
-                canChat: session.canChat,
+                permissions: {
+                  canDraw: session.sessionProperties.canDraw,
+                  canChat: session.sessionProperties.canChat
+                },
                 _id: socket.id
               });
 
@@ -35,6 +37,8 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                  if(err) console.log(err);
                  else {
                    console.log(session);
+                   console.log(session.users[0]);
+                   console.log(session.users[0].permissions);
                    socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
 
@@ -78,7 +82,7 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
           if(err){
             throw new Error('Error retrieving Session');
           }
-          else if(session._id){
+          else if(session && session._id){
             //push user to db
 
             if(session.users.length < session.sessionProperties.maxUsers){
