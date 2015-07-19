@@ -84,8 +84,6 @@ Section.prototype = {
     //   framework.go('/home');
     // }, false)
 
-    console.log('end init');
-
     setTimeout(function(){
       if(AppState.Socket.nsp != '/home')
         done();
