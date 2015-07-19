@@ -13,7 +13,7 @@ module.exports = function(info, el, AppState) {
   var path;
   var prevID;
   isFirst=false;
-
+  var drawingBegan = false;
   var settings = {
     el: el,
     color: 0x000000,
@@ -31,17 +31,16 @@ module.exports = function(info, el, AppState) {
     path.push(prevPos.y);
 
     pencil = new Pencil(AppState.Tools.pencil);
+    drawingBegan = false;
   }
 
   function mousemove(data) {
     if(isDown) {
       //Removing oldpath
-      if(!isFirst){
-        shapes.removeShapeByID(prevID);
-        socket.emit(EVENT.shapeEvent,'remove',{_id:prevID});
-      }
-      isFirst=false;
-
+      //if(!isFirst){
+      //  shapes.removeShapeByID(prevID);
+      //  socket.emit(EVENT.shapeEvent,'remove',{_id:prevID});
+      // }
       var prevX = prevPos.x;
       var prevY = prevPos.y;
 
@@ -49,9 +48,15 @@ module.exports = function(info, el, AppState) {
       prevPos.y = data.global.y;
       path.push(prevPos.x);
       path.push(prevPos.y);
-      pencil.draw({path: path});
-      prevID = shapes.addNew(pencil)._id;
-      socket.emit(EVENT.shapeEvent,'add',pencil.getProperties());
+      pencil = pencil.draw({path: path});
+      prevID = pencil._id;
+      if(!drawingBegan){
+        pencil = shapes.addNew(pencil);
+        socket.emit(EVENT.shapeEvent,'add',pencil.getProperties());
+      }else{
+        socket.emit(EVENT.shapeEvent,'draw',pencil.getProperties());
+      }
+      drawingBegan = true;
     }
   }
 
@@ -59,7 +64,7 @@ module.exports = function(info, el, AppState) {
     //shapes.addNew(pencil);
     socket.emit(EVENT.saveObject,pencil.getProperties());
 
-    isDown = false;
+    isDown = drawingBegan = false;
   }
 
   function mouseout(data) {

@@ -4,6 +4,24 @@ var ShapeManager = require('../db/DbManagers/CanvasShapesManager');
 var EVENT = require('../../src/model/model').socketEvents;
 var whiteboardSockets = {};
 
+whiteboardSockets.userListCB = function(socket,nsp){
+  return function(sessionId){
+        var sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
+
+        Session.findById(sessionid, function(err, session){
+          if(err){
+            throw new Error('Error retrieving Session');
+          }
+          else if(session && session._id){
+
+           socket.emit(EVENT.UserList,session.users);
+           }
+          
+        });
+
+    };
+};
 //JOIN
 whiteboardSockets.joinSessionCB = function(socket,nsp) {
   return function(uName,sessionid) {
@@ -47,6 +65,8 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                    socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
 
                    socket.emit(EVENT.populateCanvas, session.canvasShapes);
+
+                   socket.broadcast.emit(EVENT.UserList,session.users);
 
                    // Should just emit as one object,
                    // addNewParticipant
@@ -140,6 +160,8 @@ whiteboardSockets.disconnectCB = function(socket, nspWb){
 
          socket.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
          socket.emit(EVENT.userLeft, removedUser);
+         socket.broadcast.emit(EVENT.UserList,session.users);
+
        }
        session.save(function(err){
            if(err) console.log(err);
