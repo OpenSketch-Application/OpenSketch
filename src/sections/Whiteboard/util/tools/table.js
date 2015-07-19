@@ -1,82 +1,107 @@
+'use strict';
 var PIXI = require('pixi');
+var Table = require('../shapes/Table');
+var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
+var EVENT = require('../../../../model/model').socketEvents;
 
-module.exports = function(settings, el) {
-  el.addEventListener('click', function(data) {
-    console.log('Selected Table...');
+module.exports = function(settings, el, AppState) {
 
-    selectPressed = true;
-    activate(settings.stage, settings.renderer);
-  });
-};
+  // Mininum Table Col and Row
+  var minRows = 2;
+  var minCols = 2;
+  var cellHeight = 30;
+  var cellWidth = 65;
+  var drawRows;
+  var drawCols;
+  var curCols;
+  var curRows;
 
-function activate(stage, renderer) {
-  var color = 0xF93FAF;
-  var path = [];
-  // var isActive = true;
+  var stage = AppState.Canvas.stage;
+  var socket = AppState.Socket;
+  var shapes = AppState.Canvas.Shapes;
+  var Tools = AppState.Tools;
   var isDown = false;
-  var posOld;
-  var stageIndex = 0;
-  var lines = 0;
+  var startPos;
+  var table;
 
-  stage.mousedown = function(data) {
+  el.addEventListener('click', function(data) {
+    data.preventDefault();
+    AppState.Tools.selected = 'table';
 
-    //if(!isActive) return;
+    console.log('Drawing table');
+
+    activate(settings, AppState);
+  });
+
+  var mousedown = function(data) {
     isDown = true;
-    lines = 0;
-    path = [];
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    stageIndex = stage.children.length - 1;
-    //graphics.moveTo(data.global.x, data.global.y);
+    drawRows = curRows =  0;
+    drawCols = curCols = 0;
+    startPos = data.getLocalPosition(this);
   };
 
-  stage.mousemove = function(data) {
-    //if(!isActive) return;
-    if(!isDown) return;
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-    //path.push(data.global.y);
-    //var newPosition = this.data.getLocalPosition(this.parent);
-    graphics.moveTo(posOld[0], posOld[1]);
-    //console.log(data.global.x, data.global.y);
-    graphics.lineTo(data.global.x, data.global.y);
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    lines++;
-    stage.addChild(graphics);
+  var mousemove = function(data) {
 
-    //renderer.render(stage);
+    if(isDown) {
+      var curPos = data.getLocalPosition(this);
+      var width = curPos.x - startPos.x;
+      var height = curPos.y - startPos.y;
+      curCols = Math.ceil(width/cellWidth);
+      curRows = Math.ceil(height/cellHeight);
+
+      if(curCols <= 0 || curRows <= 0) {
+        if(table) {
+          drawCols = curCols;
+          drawRows = curRows;
+          shapes.removeShape(table);
+          socket.emit(EVENT.shapeEvent, 'remove', table);
+          table = null;
+        }
+      } else {
+        
+        if (curRows < minRows) curRows = minRows;
+        if (curCols < minCols) curCols = minCols;
+
+        if(curCols != drawCols || curRows != drawRows) {
+          if(!table) {
+            table = shapes.addNew(new Table(Tools.table));
+            socket.emit(EVENT.shapeEvent, 'add', table.getProperties());
+          }
+
+          drawRows = curRows;
+          drawCols = curCols;
+
+          table.draw({
+            x: startPos.x,
+            y: startPos.y,
+            cellWidth: cellWidth,
+            cellHeight: cellHeight,
+            rows: drawRows,
+            cols: drawCols
+          });
+
+          table.highlight();
+          socket.emit(EVENT.shapeEvent, 'draw', table.getProperties());
+        }
+      }
+    }
   };
 
-  stage.mouseup = function() {
-    isDown = false;
-
-    if(!path.length) return;
-    //graphics.lineStyle(5, 0xFF0000);
-    //graphics.moveTo(path[0][0], path[0][1]);
-    //graphics.drawPolygon(path);
-    while(lines) {
-      stage.removeChildAt(stageIndex + lines);
-      lines--;
+  var mouseup = function(data) {
+    if(isDown) {
+      table.unHighlight();
+      socket.emit(EVENT.shapeEvent, 'drawEnd', table.getProperties());
+      socket.emit(EVENT.saveObject, table.getProperties());
+      table = null;
     }
 
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-
-    graphics.drawPolygon(path);
-
-    graphics.interactive = true;
-
-    graphics.hitArea = graphics.getBounds();
-
-    // moveObject(renderer, stage, graphics, { x: graphics.hitArea.x, y: graphics.hitArea.y });
-
-    stage.addChild(graphics);
-
-    // CanvasObjects.push({
-    //   _id: CanvasObjects.length + 1,
-    //   type: 'pencil',
-    //   coords: path
-    // });
-
-    //renderer.render(stage);
+    isDown = false;
   };
-}
+
+  function activate() {
+    stage.mousedown = mousedown;
+    stage.mousemove = mousemove;
+    stage.mouseup = mouseup;
+    stage.mouseout = mouseup;
+  }
+};
