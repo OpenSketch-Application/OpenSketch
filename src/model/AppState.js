@@ -62,8 +62,20 @@ var Tools = {
     // fill : 0xff1010,
     // align : 'center'}
   },
-  templates: {},
-  table: {},
+  templates: {
+    lineColor: 0x000000,
+    lineWidth: 1,
+    lineAlpha: 1,
+    fillColor: 0xFFFFFF,
+    fillAlpha: 1
+  },
+  table: {
+    lineColor: 0x000000,
+    lineWidth: 1,
+    lineAlpha: 1,
+    fillColor: 0xFFFFFF,
+    fillAlpha: 1
+  },
   uml: {}
 };
 

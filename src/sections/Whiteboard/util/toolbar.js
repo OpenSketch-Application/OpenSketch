@@ -53,8 +53,6 @@ function toolbar(elements, AppState) {
     _this.selectedTool = e.target.id;
     var button = e.target;
 
-    console.log(button);
-
     if(previouslySelected) {
       previouslySelected.className = "";
     }
