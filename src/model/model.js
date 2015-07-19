@@ -14,6 +14,7 @@ module.exports = {
     'updateUserList': 'updateUserList',
     'updateChatList': 'updateChatList',
     'userLeft': 'userLeft',
+    'UserList':'UserList',
 
     // Session Creation/Validation Events
     'getSocketID': 'getSocketID',
