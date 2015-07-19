@@ -108,6 +108,8 @@ module.exports = function(AppState) {
       case 'ellipse':
         shape = new Ellipse(shapeData);
         break;
+      case 'pencil':
+        shape = new Pencil(shapeData);
       // Flow Chart Shapes
       case 'flowChartFunction':
         break;
