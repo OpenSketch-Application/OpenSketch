@@ -6,6 +6,7 @@ module.exports = function(AppState, el) {
   el.addEventListener('click', function(e) {
 
     AppState.Tools.selected = 'select';
+
     activate();
   });
 
@@ -110,6 +111,12 @@ module.exports = function(AppState, el) {
     isDown = shapeModified = false;
   }
 
+  var deleteShape = function() {
+    if (e.type == "keypress") {
+      console.log('keypress', e.type);
+    }
+  }
+
   // Return true for now, might decide to implement more complexity for
   // complex shapes
   function activate() {
@@ -117,6 +124,7 @@ module.exports = function(AppState, el) {
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;
     stage.mouseout = mouseup; // should also contain same methods as mouseup
+    document.addEventListener('keypress', deleteShape);
   }
 
   return true;
