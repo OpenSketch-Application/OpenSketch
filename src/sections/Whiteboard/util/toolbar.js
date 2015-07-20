@@ -61,7 +61,6 @@ function toolbar(elements, AppState) {
     }
 
     if(tools && tools.select.selectedObject) {
-      console.dir(tools.select.selectedObject);
       tools.select.selectedObject.unHighlight();
 
       socket.emit(EVENT.shapeEvent, 'unlockShape', {
@@ -70,20 +69,12 @@ function toolbar(elements, AppState) {
 
     }
 
-    if(button) {
+    if(button && button.tagName === 'IMG') {
       button.className = "tool-selected";
       previouslySelected = button;
     }
 
   }, false);
-
-  // window.addEventListener('click', function(e) {
-  //   if(tools && tools.select.selectedObject) {
-  //     console.dir(tools.select.selectedObject);
-  //     tools.select.selectedObject.unHighlight();
-  //    //socket.emit(); //tools.select.selectedObject.emit()
-  //   }
-  // });
 
   for(var tool in elements.tools) {
     el = find(typeof elements.tools[tool] === 'string' ?
