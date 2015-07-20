@@ -6,8 +6,8 @@ module.exports = Pencil;
 
 function Pencil(shapeProperties) {
   this.graphics = new PIXI.Graphics();
+  BaseShape.call(this,shapeProperties);
   this.shapeType = 'pencil';
-
   // Prefill Shape Model
   // this.shape = {
   //   _id: '',
@@ -37,16 +37,15 @@ Pencil.prototype.constructor = Pencil;
 Pencil.prototype.getProperties = function() {
 
   // Get Pencil properties
-  var shape = {
-    path : this.path,
-    lineWidth: this.lineWidth,
-    lineColor: this.lineColor,
-    lineAlpha: this.lineAlpha,
-    objectType: this.objectType
-  }
+ var shape = BaseShape.prototype.getProperties.call(this);
 
-  // Get the base properties and attach base properties to temporary our shape object
-  BaseShape.prototype.getProperties.call(this, shape);
+  shape.path = this.path;
+  shape.lineWidth= this.lineWidth;
+  shape.lineColor= this.lineColor;
+  shape.lineAlpha= this.lineAlpha;
+  shape.shapeType= this.shapeType;
+  
+
 
   return shape;
 };

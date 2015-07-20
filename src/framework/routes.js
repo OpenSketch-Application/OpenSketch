@@ -1,5 +1,6 @@
 module.exports = {
   '/': '/home',
-  '/home': [require('../sections/Home/index')],
-  '/whiteboard/:id': [require('../sections/Whiteboard/index'), require('../sections/Whiteboard/ui/usergate/index')]
+  '/home': {section: [require('../sections/Home/index')], overlap: false },
+  '/whiteboard/:id': { section: [require('../sections/Whiteboard/index'), require('../sections/Whiteboard/ui/usergate/index')], overlap: false},
+  '404': '/'
 };

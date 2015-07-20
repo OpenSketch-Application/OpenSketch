@@ -3,7 +3,33 @@ var Session = require('../db/models/Session');
 var ShapeManager = require('../db/DbManagers/CanvasShapesManager');
 var EVENT = require('../../src/model/model').socketEvents;
 var whiteboardSockets = {};
+whiteboardSockets.deleteSessionCB = function(socket,nsp){
+  return function(){
+    var sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
+    Session.remove({_id:sessionid},function(err){});
+    socket.broadcast.emit(EVENT.deleteSession);
+  };
+}
 
+whiteboardSockets.userListCB = function(socket,nsp){
+  return function(sessionId){
+        var sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
+
+        Session.findById(sessionid, function(err, session){
+          if(err){
+            throw new Error('Error retrieving Session');
+          }
+          else if(session && session._id){
+
+           socket.emit(EVENT.UserList,session.users);
+           }
+          
+        });
+
+    };
+};
 //JOIN
 whiteboardSockets.joinSessionCB = function(socket,nsp) {
   return function(uName,sessionid) {
@@ -26,8 +52,10 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
               session.users.push({
                 username: uName,
                 userRank: session.users.length,
-                canDraw: session.canDraw,
-                canChat: session.canChat,
+                permissions: {
+                  canDraw: session.sessionProperties.canDraw,
+                  canChat: session.sessionProperties.canChat
+                },
                 _id: socket.id
               });
 
@@ -35,6 +63,8 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                  if(err) console.log(err);
                  else {
                    console.log(session);
+                   console.log(session.users[0]);
+                   console.log(session.users[0].permissions);
                    socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
 
@@ -43,6 +73,8 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                    socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
 
                    socket.emit(EVENT.populateCanvas, session.canvasShapes);
+
+                   socket.broadcast.emit(EVENT.UserList,session.users);
 
                    // Should just emit as one object,
                    // addNewParticipant
@@ -62,7 +94,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
             }
           }
           else {
-            console.warn('Null Sesson returned, Date: ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+    //        console.warn('Null Sesson returned, Date: ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
           }
         });
   };
@@ -136,6 +168,8 @@ whiteboardSockets.disconnectCB = function(socket, nspWb){
 
          socket.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
          socket.emit(EVENT.userLeft, removedUser);
+         socket.broadcast.emit(EVENT.UserList,session.users);
+
        }
        session.save(function(err){
            if(err) console.log(err);

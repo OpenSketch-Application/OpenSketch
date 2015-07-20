@@ -47,23 +47,35 @@ var Tools = {
     fontSize: 12,
     fontFamily: 'Arial',
     stroke: 0xff1010,
-    align: 'center',
+    align: 'left',
     strokeThickness: 1,
     wordWrap: true,
-    wordWrapWidth: 100,
+    wordWrapWidth: 500,
 
     // Rectangle class properties
+    // lineColor: 0x000000,
+    // lineWidth: 1,
+    // lineAlpha: 1,
+    // fillColor: 0xFFFFFF,
+    // fillAlpha: 1
+    // {font : '24px Arial',
+    // fill : 0xff1010,
+    // align : 'center'}
+  },
+  templates: {
     lineColor: 0x000000,
     lineWidth: 1,
     lineAlpha: 1,
     fillColor: 0xFFFFFF,
     fillAlpha: 1
-    // {font : '24px Arial',
-    // fill : 0xff1010,
-    // align : 'center'}
   },
-  templates: {},
-  table: {},
+  table: {
+    lineColor: 0x000000,
+    lineWidth: 1,
+    lineAlpha: 1,
+    fillColor: 0xFFFFFF,
+    fillAlpha: 1
+  },
   uml: {}
 };
 
@@ -188,7 +200,19 @@ var AppState = {
   Tools: Object.preventExtensions(Tools),
   Users: {
     currentUser: {},
-    users: [] // index 0 is always for Head
+    users: [], // index 0 is always for Head
+    getUserById: function(id) {
+      var matchedUser;
+      this.users.some(function(user) {
+        if(id === user._id) {
+          matchedUser = user;
+          return true;
+        }
+        return false;
+      })
+
+      return matchedUser;
+    }
   },
   Settings: {}, // General settings, ie. styles or themes
   Messages: [],
@@ -216,7 +240,7 @@ Object.defineProperty(AppState, 'init', {
     var _this = this;
     var stage = new PIXI.Stage(0xFFFFFF, true);
     var renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
-                                           document.body.offsetHeight  * 0.75,
+                                           document.body.offsetHeight  - 60,
                                            { antialias: true });
 
     PIXI.dontSayHello = true;

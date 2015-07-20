@@ -45,7 +45,9 @@ module.exports = function(io,DB) {
   }
   function wbHandler(nspWb) {
     return function(socket) {
+      socket.on(EVENT.deleteSession, wbLogic.deleteSessionCB(socket,nspWb));
       socket.on(EVENT.joinSession, wbLogic.joinSessionCB(socket, nspWb));
+      socket.on(EVENT.UserList,wbLogic.userListCB(socket,nspWb));
       socket.on(EVENT.chatMessage, wbLogic.chatMessageCB(socket, nspWb));
       socket.on('disconnect', wbLogic.disconnectCB(socket, nspWb));
       socket.on(EVENT.sendPencil, wbLogic.sendPencilCB(socket, nspWb));
@@ -63,7 +65,6 @@ module.exports = function(io,DB) {
   io.on('connection', function (socket) {
 
     console.log('connection made', socket.id);
-
     socket.on(EVENT.validateSession, function(sessionid) {
       console.log('in validate');
 
@@ -73,7 +74,6 @@ module.exports = function(io,DB) {
 
       Session.findById(sessionid, function(err, session) {
         var userFound = false;
-
         // FOR TESTING AND DEVELOPMENT
         if(sessionid === 'session41') return;
 
@@ -83,6 +83,7 @@ module.exports = function(io,DB) {
           //console.log('full');
         }
 
+
         // session.users.forEach(function(user) {
         //   if(user._id === userId) {
         //     userFound = true;
@@ -91,7 +92,10 @@ module.exports = function(io,DB) {
 
         //if(!userFound) socket.emit(EVENT.badSession);
       })
-
     });
+  });
+
+  io.on('disconnect', function(socket) {
+    console.log('SOmeone called disconnect');
   });
 };

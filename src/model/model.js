@@ -14,6 +14,7 @@ module.exports = {
     'updateUserList': 'updateUserList',
     'updateChatList': 'updateChatList',
     'userLeft': 'userLeft',
+    'UserList':'UserList',
 
     // Session Creation/Validation Events
     'getSocketID': 'getSocketID',
@@ -21,6 +22,7 @@ module.exports = {
     'validateSession': 'validateSession',
     'createSession': 'createSession',
     'badSession': 'badSession',
+    'deleteSession': 'deleteSession',
 
     // Pixi/Canvas Draw Events
     'shapeEvent':'shapeEvent',
