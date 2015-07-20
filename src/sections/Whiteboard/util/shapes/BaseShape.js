@@ -61,7 +61,7 @@ var setProperties = function(shapeProperties) {
   // Set Graphics specific properties
   this.scale = shapeProperties.scale || { x: 1, y: 1 };
   this.rotation = this.graphics.rotation = shapeProperties.rotation || 0;
-  this.interactive = this.graphics.interactive = this.interactive = shapeProperties.interactive || false;
+  this.graphics.interactive = this.interactive = shapeProperties.interactive || false;
 };
 
 // Sets the listeners to handle Movement and Selection as well

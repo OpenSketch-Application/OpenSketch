@@ -4,11 +4,11 @@ var BaseShape = require('./BaseShape');
 
 module.exports = Importer;
 
-function Importer(shapeProperties) {
+function Importer(shapeProperties, fileUrl) {
   // Call BaseShape constructor to instantiate BaseShape's properties
   BaseShape.call(this, shapeProperties);
 
-  this.graphics.addChild(new PIXI.Sprite());
+  this.graphics.addChild(new PIXI.Sprite.fromTexture(fileUrl));
 
   this.shapeType = 'import';
 
@@ -84,7 +84,7 @@ Importer.prototype.draw = function(shapeProperties) {
   if(shapeProperties.y) this.y = shapeProperties.y;
   if(shapeProperties.width) this.width = shapeProperties.width;
   if(shapeProperties.height) this.height = shapeProperties.height;
-  if(shapeProperties.imageUrl) this.graphics.
+  //if(shapeProperties.imageUrl) //this.graphics.
   // Since we cleared all the draw properties for redrawing, we need to set the styles again
   this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
                                                       : this.lineWidth;

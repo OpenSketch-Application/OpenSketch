@@ -13,6 +13,7 @@ module.exports = function(files, AppState, event) {
 
     importedFile = new Import(Tools.importer, reader.result);
 
+
     if(event) {
       importedFile.graphics.x = event.x;
       importedFile.graphics.y = event.y
@@ -21,8 +22,8 @@ module.exports = function(files, AppState, event) {
       // Set the image to occupy the center of the Canvas
       importedFile.graphics.x = AppState.Canvas.renderer.width/2 - importedFile.imageSprite.width/2;
       importedFile.graphics.y = AppState.Canvas.renderer.height/2 - importedFile.imageSprite.height/2;
-
     }
+
     console.log('Adding Shape');
 
     shapes.addNew(importedFile);
