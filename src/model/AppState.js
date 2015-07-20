@@ -240,7 +240,7 @@ Object.defineProperty(AppState, 'init', {
     var _this = this;
     var stage = new PIXI.Stage(0xFFFFFF, true);
     var renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
-                                           document.body.offsetHeight  * 0.75,
+                                           document.body.offsetHeight  - 60,
                                            { antialias: true });
 
     PIXI.dontSayHello = true;
