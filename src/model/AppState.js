@@ -34,7 +34,7 @@ var Tools = {
     lineColor: 0x000000,
     lineWidth: 1,
     lineAlpha: 1,
-    fillColor: 0x913ce6,
+    fillColor: 0xFFFFFF,
     fillAlpha: 1
   },
   ellipse: {
