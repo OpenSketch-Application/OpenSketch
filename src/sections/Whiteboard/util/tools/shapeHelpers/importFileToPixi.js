@@ -23,6 +23,7 @@ module.exports = function(files, AppState, event) {
       importedFile.graphics.y = AppState.Canvas.renderer.height/2 - importedFile.imageSprite.height/2;
 
     }
+    console.log('Adding Shape');
 
     shapes.addNew(importedFile);
 

@@ -52,7 +52,6 @@ module.exports = function(io,DB) {
       socket.on(EVENT.sendPencil, wbLogic.sendPencilCB(socket, nspWb));
       socket.on(EVENT.shapeEvent, wbLogic.shapeObjectCB(socket, nspWb));
 
-
       //socket.on(EVENT.populateCanvas, wbLogic.populateCanvasCB(socket));
 
       socket.on(EVENT.saveObject,wbLogic.saveObjectCB(socket,nspWb));
@@ -67,7 +66,7 @@ module.exports = function(io,DB) {
     console.log('connection made', socket.id);
     socket.on(EVENT.validateSession, function(sessionid) {
       console.log('in validate');
-      
+
       console.log(socket.request.headers.cookie);
 
       //var userId = socket.request.headers.cookie.match(/userId:.*;/gi);
@@ -92,7 +91,10 @@ module.exports = function(io,DB) {
 
         //if(!userFound) socket.emit(EVENT.badSession);
       })
-
     });
+  });
+
+  io.on('disconnect', function(socket) {
+    console.log('SOmeone called disconnect');
   });
 };
