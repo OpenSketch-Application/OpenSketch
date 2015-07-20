@@ -13,7 +13,7 @@ var Chatbox = require('./util/chatbox');
 var UserManagement = require('./ui/usermanagement/userManagement');
 var Toolbar = require('./util/toolbar');
 var Cookies = require('cookies-js');
-
+var EVENT = Model.socketEvents;
 // A model object can all use it to store Application state properties
 // Mostly information retrieved on-mass from Database
 var AppState = require('../../model/AppState');
@@ -79,10 +79,14 @@ Section.prototype = {
 
     var close = find('#close-whiteboard');
 
-    // close.addEventListener('click', function(e) {
-    //   e.preventDefault();
-    //   framework.go('/home');
-    // }, false)
+     close.addEventListener('click', function(e) {
+       e.preventDefault();
+       socket.emit(EVENT.deleteSession);
+       socket.disconnect();
+       framework.go('/home');
+       location.reload();
+
+     }, false)
 
     setTimeout(function(){
       if(AppState.Socket.nsp != '/home')

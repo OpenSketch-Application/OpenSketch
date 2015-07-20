@@ -3,6 +3,14 @@ var Session = require('../db/models/Session');
 var ShapeManager = require('../db/DbManagers/CanvasShapesManager');
 var EVENT = require('../../src/model/model').socketEvents;
 var whiteboardSockets = {};
+whiteboardSockets.deleteSessionCB = function(socket,nsp){
+  return function(){
+    var sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
+    Session.remove({_id:sessionid},function(err){});
+    socket.broadcast.emit(EVENT.deleteSession);
+  };
+}
 
 whiteboardSockets.userListCB = function(socket,nsp){
   return function(sessionId){
@@ -86,7 +94,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
             }
           }
           else {
-            console.warn('Null Sesson returned, Date: ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+    //        console.warn('Null Sesson returned, Date: ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
           }
         });
   };

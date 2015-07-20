@@ -34,7 +34,11 @@ module.exports = function(io, framework, AppState){
     //adjust all users priority
     //send edited user list to db
   });
-
+  socket.on(EVENT.deleteSession,function(){
+       socket.disconnect();
+       framework.go('/home');
+       location.reload();
+  });
   console.log(curSession);
   return socket;
 

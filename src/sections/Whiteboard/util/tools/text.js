@@ -34,7 +34,7 @@ module.exports = function(settings, el, AppState) {
     originalCoords = data.getLocalPosition(this);
 
     if(text) text.unHighlight();
-    var _Text = new PixiTextInput('This textbox\nreally\nsucks', Tools.text);
+    var _Text = new PixiTextInput('This is a textbox', Tools.text);
     _Text.x = originalCoords.x;
     _Text.y = originalCoords.y;
 

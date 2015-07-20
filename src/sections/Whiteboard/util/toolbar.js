@@ -14,6 +14,7 @@ var createColor = require('./tools/color');
 var createTemplates = require('./tools/templates');
 var setDrawingSockets = require('./drawingSockets');
 
+var EVENT = require('../../../model/model').socketEvents;
 var dragndrop = require('./dragndrop');
 
 module.exports = toolbar;
@@ -25,7 +26,9 @@ function toolbar(elements, AppState) {
   var toolbox = find('#header ul.toolbar');
   var previouslySelected; // Only for toolbar HTML UI functionality
 
-  this.tools = {};
+  var tools = AppState.Tools;
+  var socket = AppState.Socket;
+
   this.container = find(elements.whiteboard);
 
   // NEED TO GET RID OF THIS
@@ -57,6 +60,16 @@ function toolbar(elements, AppState) {
       previouslySelected.className = "";
     }
 
+    if(tools && tools.select.selectedObject) {
+      console.dir(tools.select.selectedObject);
+      tools.select.selectedObject.unHighlight();
+
+      socket.emit(EVENT.shapeEvent, 'unlockShape', {
+        _id: tools.select.selectedObject._id
+      });
+
+    }
+
     if(button) {
       button.className = "tool-selected";
       previouslySelected = button;
@@ -64,6 +77,13 @@ function toolbar(elements, AppState) {
 
   }, false);
 
+  // window.addEventListener('click', function(e) {
+  //   if(tools && tools.select.selectedObject) {
+  //     console.dir(tools.select.selectedObject);
+  //     tools.select.selectedObject.unHighlight();
+  //    //socket.emit(); //tools.select.selectedObject.emit()
+  //   }
+  // });
 
   for(var tool in elements.tools) {
     el = find(typeof elements.tools[tool] === 'string' ?

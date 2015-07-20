@@ -150,17 +150,17 @@ Rectangle.prototype.setGraphicsData = function(shapeProperties) {
 
 // Highlights the Shape
 Rectangle.prototype.highlight = function(color) {
-
+  var highlightWidth = 2;
   this.highlightShape.clear();
-  this.highlightShape.lineWidth = this.lineWidth + 2;
+  this.highlightShape.lineWidth = highlightWidth;
   this.highlightShape.lineColor = color || 0x2D8EF0;
   this.highlightShape.alpha = 1;
 
   this.highlightShape.drawRect(
-    this.x,
-    this.y,
-    this.width,
-    this.height
+    this.x - (this.lineWidth),
+    this.y - (this.lineWidth),
+    this.width + (this.lineWidth) * 2,
+    this.height + (this.lineWidth) * 2
   );
 }
 
