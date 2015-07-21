@@ -38,20 +38,18 @@ function verifyForm(){
       error.errors = [];
 
       if(isNaN(maxUsers) || maxUsers > 30 || maxUsers <=0) {
-         error.errors.push({msg:'Max users: 1 - 30',element: max});
+        error.errors.push({msg:'Max users: 1 - 30',element: max});
       }
       if(userName.value == ''){
-         error.errors.push({msg:'Please Enter a Username',element: userName});
+        error.errors.push({msg:'Please Enter a Username',element: userName});
       }
 
-     console.log('error');
-     if(error.errors.length > 0){
-       return error;
-     }
-     else{
-       return null;
-     }
-
+    if(error.errors.length > 0){
+      return error;
+    }
+    else{
+      return null;
+    }
 }
 
 function Section() {}
