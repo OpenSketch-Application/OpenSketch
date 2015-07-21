@@ -1,7 +1,6 @@
 'use strict';
 var PIXI = require('pixi');
-var Text = require('../shapes/Text');
-//var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
+var Textbox = require('../shapes/Text');
 var EVENT = require('../../../../model/model').socketEvents;
 var PixiTextInput = require('../shapes/PixiTextInput');
 
@@ -40,7 +39,7 @@ module.exports = function(settings, el, AppState) {
     // _Text.y = originalCoords.y;
 
     // stage.addChild(_Text);
-    textbox = new Text(Tools.text);
+    textbox = new Textbox(Tools.text);
 
     var shapeProperties = {
       x: originalCoords.x,
