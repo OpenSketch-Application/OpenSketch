@@ -44,8 +44,9 @@ var Tools = {
   },
   text: {
     // Text Properties
-    fontSize: 12,
-    fontFamily: 'Arial',
+    font: '16px Arial',
+    // fontSize: 5,
+    // fontFamily: 'Arial',
     stroke: 0xff1010,
     align: 'left',
     strokeThickness: 1,
@@ -198,6 +199,7 @@ var AppState = {
     Shapes: Shapes
   },
   Tools: Object.preventExtensions(Tools),
+  ToolBar: {},
   Users: {
     currentUser: {},
     users: [], // index 0 is always for Head

@@ -26,6 +26,7 @@ module.exports = function(settings, el, AppState) {
     AppState.Tools.selected = 'text';
 
     activate(settings, AppState);
+
   });
 
   var mousedown = function(data) {
@@ -39,6 +40,9 @@ module.exports = function(settings, el, AppState) {
     _Text.y = originalCoords.y;
 
     stage.addChild(_Text);
+
+    AppState.ToolBar.select.click();
+
     // text = new Text(Tools.text);
     // text.text.x = originalCoords.x;
     // text.text.y = originalCoords.y;
@@ -63,6 +67,7 @@ module.exports = function(settings, el, AppState) {
     //socket.emit(EVENT.shapeEvent, 'add', text.getProperties());
     //console.log(text);
     //console.log('text added', text.getProperties());
+
   };
 
   var mousemove = function(data) {

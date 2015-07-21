@@ -133,6 +133,7 @@ var setMoveListeners = function(AppState) {
       // Turn interactive back on after clearing Graphics
       this.interactive = this.graphics.interactive = true;
     }
+
   }.bind(this);
 
   // Need this for Select tool, since it needs to know if

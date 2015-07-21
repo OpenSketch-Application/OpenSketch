@@ -3,6 +3,7 @@ var Import = require('../../shapes/Import');
 
 module.exports = function(files, AppState, event) {
   var reader = new FileReader();
+  console.log('files', files);
   reader.readAsDataURL(files[0]);
   var Tools = AppState.Tools;
   console.log('dropped called');
@@ -13,20 +14,19 @@ module.exports = function(files, AppState, event) {
 
     importedFile = new Import(Tools.importer, reader.result);
 
-
-    if(event) {
-      importedFile.graphics.x = event.x;
-      importedFile.graphics.y = event.y
-    }
-    else {
+    // if(event) {
+    //   importedFile.graphics.x = importedFile.x = event.x;
+    //   importedFile.graphics.y = importedFile.y = event.y;
+    // }
+    // else {
       // Set the image to occupy the center of the Canvas
-      importedFile.graphics.x = AppState.Canvas.renderer.width/2 - importedFile.imageSprite.width/2;
-      importedFile.graphics.y = AppState.Canvas.renderer.height/2 - importedFile.imageSprite.height/2;
-    }
+    importedFile.graphics.x = Math.abs(AppState.Canvas.renderer.width/2 - importedFile.imageSprite.width/2);
+    importedFile.graphics.y = Math.abs(AppState.Canvas.renderer.height/2 - importedFile.imageSprite.height/2);
+    //}
 
-    console.log('Adding Shape');
-
-    shapes.addNew(importedFile);
+    console.log('Adding Shape', importedFile);
+    //debugger;
+    importedFile = shapes.addNew(importedFile);
 
     importedFile.setMoveListeners(AppState);
 

@@ -161,6 +161,7 @@ Ellipse.prototype.setGraphicsData = function(shapeProperties) {
 Ellipse.prototype.highlight = function(color) {
   this.highlightShape.clear();
   this.highlightShape.lineWidth = this.lineWidth + 2;
+
   this.highlightShape.lineColor = color || 0x2D8EF0;
   //this.highlightShape.lineColor = color || 0x0000FF;
   this.highlightShape.alpha = 1;
@@ -195,7 +196,7 @@ Ellipse.prototype.setShapeMoveListeners = function(AppState) {
     if(this.locked) return;
     if(Tools.selected === 'select' && !_this.selected) {
       // Highlight Shape outline
-      this.highlight(0x0000FF);
+      this.highlight();
     }
 
   }.bind(this);//mouseover.bind(_this);

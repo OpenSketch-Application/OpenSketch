@@ -8,7 +8,7 @@ module.exports = function(el, AppState) {
     // console.log('Selected Import...', fileSelect);
 
     selectPressed = true;
-
+    AppState.Tools.selected = 'import';
     // // Fire event on the hidden file input field
     fileSelect.click();
   });

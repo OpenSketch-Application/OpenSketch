@@ -80,6 +80,8 @@ function toolbar(elements, AppState) {
     el = find(typeof elements.tools[tool] === 'string' ?
                      elements.tools[tool] : elements.tools[tool].el);
 
+    AppState.ToolBar[tool] = el;
+
     switch(tool) {
       case 'select':
         //this.selectedTool = 'tool-select';

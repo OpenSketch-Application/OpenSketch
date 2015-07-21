@@ -7,8 +7,9 @@ module.exports = Importer;
 function Importer(shapeProperties, fileUrl) {
   // Call BaseShape constructor to instantiate BaseShape's properties
   BaseShape.call(this, shapeProperties);
+  this.imageSprite = new PIXI.Sprite.fromImage(fileUrl);
 
-  this.graphics.addChild(new PIXI.Sprite.fromTexture(fileUrl));
+  this.graphics.addChild(this.imageSprite);
 
   this.shapeType = 'import';
 
@@ -53,8 +54,10 @@ Importer.prototype.setProperties = function(shapeProperties) {
   if(shapeProperties.x) this.x = shapeProperties.x || 0;
   if(shapeProperties.y) this.y = shapeProperties.y || 0;
 
-  if(shapeProperties.width) this.width = shapeProperties.width || 0;
-  if(shapeProperties.height) this.height = shapeProperties.height || 0;
+  //if(shapeProperties.width) this.width = shapeProperties.width || 0;
+  //if(shapeProperties.height) this.height = shapeProperties.height || 0;
+  this.width = this.graphics.width = this.imageSprite.width;
+  this.height = this.graphics.height = this.imageSprite.height;
 
   this.lineWidth = shapeProperties.lineWidth || 1;
   this.lineColor = shapeProperties.lineColor || 0x000000;
@@ -158,17 +161,26 @@ Importer.prototype.highlight = function(color) {
   this.highlightShape.lineColor = color || 0x2D8EF0;
   this.highlightShape.alpha = 1;
 
+  console.log('x,y', this.x, this.y);
+  console.log('graphics z,y', this.graphics.x, this.graphics.y);
+
   this.highlightShape.drawRect(
     this.x,
     this.y,
     this.width,
     this.height
   );
+
 }
 
 // Unhighlights the shape
 Importer.prototype.unHighlight = function() {
   this.highlightShape.clear();
+}
+
+Importer.prototype.move = function(vector) {
+  this.graphics.position.x = vector.x;
+  this.graphics.position.y = vector.y;
 }
 
 // Sets the Listeners for Mouse and potentially Keyboard events
