@@ -4,15 +4,62 @@ var BaseShape = require('./BaseShape');
 
 module.exports = Rectangle;
 
-function Rectangle(shapeProperties) {
+function Rectangle(shapeProperties, vector) {
+
   // Call BaseShape constructor to instantiate BaseShape's properties
   BaseShape.call(this, shapeProperties);
 
   this.shapeType = 'rectangle';
 
-  // Invoke Derived Class's setProperties method to add all shapeProperties to
-  // this object
-  this.setProperties(shapeProperties);
+  this.lineWidth = 1;
+  this.lineColor = 0x000000;
+  this.fillColor = 0xFFFFFF;
+  this.lineAlpha = 1;
+  this.fillAlpha = 1;
+
+  if(vector){
+    this.x = vector.x;
+    this.y = vector.y;
+  }
+  else {
+    this.x = shapeProperties.x || 0;
+    this.y = shapeProperties.y || 0;
+  }
+
+  this.width = shapeProperties.width || 200;
+  this.height = shapeProperties.height || 100;
+
+  this.lineWidth = shapeProperties.lineWidth || 1;
+  this.lineColor = shapeProperties.lineColor || 0;
+  this.fillColor = shapeProperties.fillColor || 0xFFFFFF;
+  this.lineAlpha = shapeProperties.lineAlpha || 0;
+  this.fillAlpha = Number.parseFloat(shapeProperties.fillAlpha) || 1;
+
+  // Since we cleared all the draw properties for redrawing, we need to set the styles again
+  this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
+                                                      : this.lineWidth;
+
+  this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
+                                                      : this.lineColor;
+  this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
+                                                      : this.lineAlpha;
+
+  this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
+                                                      : this.fillAlpha;
+  this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
+                                                      : this.fillColor;
+
+  // this.graphics.beginFill(this.fillColor);
+
+  // // Redraw the shape
+  // this.graphics.drawRect(
+  //   this.x,
+  //   this.y,
+  //   this.width,
+  //   this.height
+  // );
+
+  // this.graphics.endFill();
 }
 
 // Set prototype to the BaseShape
@@ -214,6 +261,15 @@ Rectangle.prototype.setMoveListeners = function(AppState) {
 
   }.bind(this);
 }
+
+// Object.defineProperty(Rectangle.prototype, 'width', {
+//   get: function() {
+//     return this._width;
+//   },
+//   set: function(v) {
+//     this._width = this.graphics.width = v;
+//   }
+// })
 
 
 

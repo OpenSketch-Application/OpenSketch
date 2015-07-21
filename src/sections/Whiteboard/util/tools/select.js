@@ -42,6 +42,11 @@ module.exports = function(AppState, el) {
       socket.emit(EVENT.shapeEvent, 'unlockShape', { _id: select.selectedObject._id });
       select.selectedObject = null;
     }
+
+    var _this = this;
+    setTimeout(function() {
+      _this.isDown = false;
+    }, 0);
   };
 
   var mousemove = function(data) {
@@ -111,10 +116,15 @@ module.exports = function(AppState, el) {
     isDown = shapeModified = false;
   }
 
-  var deleteShape = function() {
+  var deleteShape = function(e) {
+    e.preventDefault();
     if (e.type == "keypress") {
       console.log('keypress', e.type);
     }
+  }
+
+  var documentMouseDownClosure = function() {
+    if(!this.isDown) deactivate();
   }
 
   // Return true for now, might decide to implement more complexity for
@@ -125,9 +135,16 @@ module.exports = function(AppState, el) {
     stage.mouseup = mouseup;
     stage.mouseout = mouseup; // should also contain same methods as mouseup
     document.addEventListener('keypress', deleteShape);
+    document.addEventListener('keydown', deleteShape);
+    document.addEventListener("mousedown", documentMouseDownClosure.bind(this));
+  }
+
+  function deactivate() {
+    document.removeEventListener('keypress', deleteShape);
+    document.removeEventListener('keydown', deleteShape);
+    document.removeEventListener("mousedown", documentMouseDownClosure.bind(this));
   }
 
   return true;
 }
-
 

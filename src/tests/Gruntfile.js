@@ -6,7 +6,7 @@ module.exports = function(grunt) {
         watch: true
       },
       test: {
-        src: ['./whiteboard-tests/AppState/**/*.js', ], //'./whiteboard-tests/Toolbar/**/*.js'
+        src: ['./whiteboard-tests/Textbox/*.js'], //'./whiteboard-tests/Toolbar/**/*.js'
         dest: './tests/bundle.js',
         'options': {
           'debug': true,
@@ -22,8 +22,8 @@ module.exports = function(grunt) {
         livereload: true
       },
       browserify: {
-        files: ['./whiteboard-tests/AppState/**/*.js'], //'./whiteboard-tests/Toolbar/**/*.js'
-        tasks: ['browserify:dev']
+        files: ['./whiteboard-tests/Textbox/**/*.js'], //'./whiteboard-tests/Toolbar/**/*.js'
+        tasks: ['browserify:test']
       }
     }
   });

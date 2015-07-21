@@ -1,18 +1,7 @@
 'use strict';
 var Session = require('../../db/models/Session');
 
-var Shapes = {
-  socket: null, // Instanstiated on init
-  canvasSessionId: 0 // Instanstiated on init
-};
-
 var _this = Shapes;
-
-Shapes.init = function(socket, canvasSessionId) {
-  // Attach Socket to emit events
-  _this.socket = socket;
-  _this.canvasSessionId = canvasSessionId;
-};
 
 // Query or Retrieve methods
 Shapes.findOne = function(id, shapeId, callback) {
@@ -32,17 +21,28 @@ Shapes.findOne = function(id, shapeId, callback) {
       'canvasShapes': true
     },
     function(err, result) {
-      //console.log('err',err);
-      //console.log('res:',result);
+
       callback(err, result);
 
- //     callback(err, result.canvasShapes.length && result.canvasShapes[0]);
     }
   );
 };
 
 Shapes.findAll = function(id, callback) {
   Session.findById(id, function(err, session) {
+    if(err) {
+      callback(err, session);
+      return;
+    }
+    else if(!session) {
+      callback(new Error('Unable to findAll Shapes in session with ID: ' + id), session);
+      return;
+    }
+    else if(!session.canvasShapes){
+      callback(new Error('Unable to get canvasShapes in session with ID: ' + id), session);
+      return;
+    }
+
     callback(err, session.canvasShapes);
   });
 };
@@ -66,10 +66,22 @@ Shapes.findSome = function(criteria, callback) {
 Shapes.addOne = function(id, shape, callback) {
   Session.findById(id, function(err, session) {
     console.log('adding shape to collection');
+    if(err) {
+      callback(err, shape);
+      return;
+    }
+    else if(!session) {
+      callback(new Error('Unable to addOne Shape to session with ID: ' + id), shape);
+      return;
+    }
+    else if(!session.canvasShapes){
+      callback(new Error('Unable to get canvasShapes in session with ID: ' + id), shape);
+      return;
+    }
+
     session.canvasShapes.push(shape);
 
     session.save(function(err) {
-
       callback(err, shape);
     });
   })
@@ -78,6 +90,18 @@ Shapes.addOne = function(id, shape, callback) {
 Shapes.addAll = function(id, shapes, callback) {
   if(!shapes.length) callback('addAll: Canvas Objects need to be in array', null);
   Session.findById(id, function(err, session) {
+    if(err) {
+      callback(err, shape);
+      return;
+    }
+    else if(!session) {
+      callback(new Error('Unable to addAll Shapes to session with ID: ' + id), shapes);
+      return;
+    }
+    else if(!session.canvasShapes){
+      callback(new Error('Unable to get canvasShapes in session with ID: ' + id), shapes);
+      return;
+    }
 
     session.canvasShapes.addToSet.apply(session.canvasShapes, shapes);
 
@@ -112,9 +136,6 @@ Shapes.updateOne = function(id, shapeId, newShape, callback) {
       },
       function(err, result) {
         callback(err, result);
-
-        console.log('updating a shape');
-      //  callback(err, result && result.canvasShapes.length && result.canvasShapes[0]);
       }
     )
 }
@@ -130,8 +151,6 @@ Shapes.deleteOne = function(id, shapeId, callback) {
       $unset: { 'canvasShapes.$': '' }
     },
     function(err, result) {
-      if(err) callback(err, result);
-
       callback(err, result);
     }
   )
@@ -156,8 +175,6 @@ Shapes.deleteSome = function(id, properties, callback) {
       $unset: { 'canvasShapes.$': '' }
     },
     function(err, result) {
-      if(err) callback(err, result);
-
       callback(err, result);
     }
   )
@@ -173,8 +190,6 @@ Shapes.deleteAll = function(id, callback) {
       $unset: { 'canvasShapes': '' }
     },
     function(err, result) {
-      if(err) callback(err, result);
-
       callback(err, result);
     }
   )

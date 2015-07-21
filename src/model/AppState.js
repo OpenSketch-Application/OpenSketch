@@ -44,13 +44,13 @@ var Tools = {
   },
   text: {
     // Text Properties
-    fontSize: 12,
+    fontSize: 24,
     fontFamily: 'Arial',
     stroke: 0xff1010,
     align: 'left',
     strokeThickness: 1,
-    wordWrap: true,
-    wordWrapWidth: 500,
+    //wordWrap: true,
+    //wordWrapWidth: 100
 
     // Rectangle class properties
     // lineColor: 0x000000,
