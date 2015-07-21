@@ -13,7 +13,7 @@ module.exports = function(settings, el, AppState) {
   var Tools = AppState.Tools;
   var isDown = false;
   var drawBegan = false;
-  var text;
+  var textbox;
   var originalCoords;
 
   el.addEventListener('click', function(data) {
@@ -34,27 +34,27 @@ module.exports = function(settings, el, AppState) {
     //data.originalEvent.preventDefault();
     originalCoords = data.getLocalPosition(this);
 
-    if(text) text.unHighlight();
-    var _Text = new PixiTextInput('This is a textbox', Tools.text);
-    _Text.x = originalCoords.x;
-    _Text.y = originalCoords.y;
+    if(textbox) textbox.unHighlight();
+    // var _Text = new PixiTextInput('This is a textbox', Tools.text);
+    // _Text.x = originalCoords.x;
+    // _Text.y = originalCoords.y;
 
-    stage.addChild(_Text);
+    // stage.addChild(_Text);
+    textbox = new Text(Tools.text);
 
-    AppState.ToolBar.select.click();
+    var shapeProperties = {
+      x: originalCoords.x,
+      y: originalCoords.y,
+      width: textbox.textField.width,
+      height: textbox.textField.height
+    }
 
-    // text = new Text(Tools.text);
-    // text.text.x = originalCoords.x;
-    // text.text.y = originalCoords.y;
+    textbox.draw(shapeProperties);
 
-    // text.draw({
-    //   x: originalCoords.x,
-    //   y: originalCoords.y,
-    //   width: text.text.width,
-    //   height: text.text.height
-    // });
+    textbox = shapes.addNew(textbox);
 
-    // text = shapes.addNew(text);
+    console.dir(textbox);
+
     // text.highlight();
     // var input = new PIXI.DOM.Sprite(
     //   '<input type="text" placeholder="enter message" />',
@@ -64,7 +64,10 @@ module.exports = function(settings, el, AppState) {
     // text.setProperties(Tools.textangle);
     //console.log('Text', Tools.text);
     // Adds shape to the shapes object/container and stage
-    //socket.emit(EVENT.shapeEvent, 'add', text.getProperties());
+    socket.emit(EVENT.shapeEvent, 'add', textbox.getProperties());
+
+    socket.emit(EVENT.shapeEvent, 'draw', textbox.getProperties());
+
     //console.log(text);
     //console.log('text added', text.getProperties());
 
@@ -86,12 +89,13 @@ module.exports = function(settings, el, AppState) {
       topX = Math.min(originalCoords.x, localPos.x);
       topY = Math.min(localPos.y, originalCoords.y);
 
-      text.draw({
+      textbox.draw({
         x: topX,
         y: topY,
         width: width,
         height: height
       });
+
 
       //console.log(text);
 
@@ -114,16 +118,24 @@ module.exports = function(settings, el, AppState) {
   };
 
   var mouseup = function(data) {
+
     //data.originalEvent.preventDefault();
     // Flag that tells us that mouse button was pressed down before
     if(isDown) {
       console.log('Setting text listeners');
-      text.setListeners(AppState);
+
+      textbox.setListeners(AppState);
+
+      socket.emit(EVENT.shapeEvent, 'drawEnd', { _id: textbox._id });
+
+      socket.emit(EVENT.saveObject, textbox.getProperties());
+
+      debugger;
       // Check if Shape was actually drawn, ie. did user press mouse down and mouse move, which draws a Shape, or
       // just simply press mouse down, which is not considered drawing
       if(drawBegan) {
 
-        console.log('text._id', text);
+        console.log('text._id', textbox);
 
         //text.unHighlight();
 
@@ -139,12 +151,14 @@ module.exports = function(settings, el, AppState) {
       }
     }
     isDown = drawBegan = false;
+
+    //AppState.ToolBar.select.click();
   };
 
   function activate() {
     stage.mousedown = mousedown;
     //stage.mousemove = mousemove;
-    //stage.mouseup = mouseup;
+    stage.mouseup = mouseup;
     //stage.mouseout = mouseup;
   }
 

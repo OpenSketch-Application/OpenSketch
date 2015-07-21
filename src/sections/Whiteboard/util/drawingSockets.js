@@ -5,7 +5,7 @@ var Pencil = require('./shapes/Pencil');
 var Ellipse = require('./shapes/Ellipse');
 var Line = require('./shapes/Line');
 var Table = require('./shapes/Table');
-
+var Textbox = require('./shapes/Text');
 
 module.exports = function(AppState) {
 
@@ -96,7 +96,7 @@ module.exports = function(AppState) {
   // Calls the right constructor based on the Object's shapeType
   function addShapeBasedOnType(shapeData) {
     var shape;
-    
+
     switch(shapeData.shapeType) {
       case 'rectangle':
         //AppState.Canvas.stage.addChild(shapeData);
@@ -115,6 +115,9 @@ module.exports = function(AppState) {
         break;
       case 'table':
         shape = new Table(shapeData);
+        break;
+      case 'textbox':
+        shape = new Textbox(shapeData);
         break;
     }
 

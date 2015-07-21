@@ -51,8 +51,8 @@ var Tools = {
     align: 'left',
     strokeThickness: 1,
     wordWrap: true,
-    wordWrapWidth: 500,
-
+    wordWrapWidth: 600,
+    textContent: 'This is a textbox',
     // Rectangle class properties
     // lineColor: 0x000000,
     // lineWidth: 1,
@@ -93,7 +93,8 @@ var Shapes = {
     'pencil': 0,
     'line': 0,
     'rectangle': 0,
-    'ellipse': 0
+    'ellipse': 0,
+    'textbox': 0
   },
   _shapes: {},
   _order: [],
