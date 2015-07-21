@@ -58,7 +58,7 @@ module.exports = function(settings, el, AppState) {
           table = null;
         }
       } else {
-        
+
         if (curRows < minRows) curRows = minRows;
         if (curCols < minCols) curCols = minCols;
 
@@ -89,6 +89,7 @@ module.exports = function(settings, el, AppState) {
 
   var mouseup = function(data) {
     if(isDown) {
+      table.setMoveListeners(AppState);
       table.unHighlight();
       socket.emit(EVENT.shapeEvent, 'drawEnd', table.getProperties());
       socket.emit(EVENT.saveObject, table.getProperties());

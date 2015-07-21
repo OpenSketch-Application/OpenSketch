@@ -130,7 +130,6 @@ module.exports = function(settings, el, AppState) {
 
       socket.emit(EVENT.saveObject, textbox.getProperties());
 
-      debugger;
       // Check if Shape was actually drawn, ie. did user press mouse down and mouse move, which draws a Shape, or
       // just simply press mouse down, which is not considered drawing
       if(drawBegan) {
@@ -149,10 +148,10 @@ module.exports = function(settings, el, AppState) {
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
         //socket.emit(EVENT.shapeEvent, 'remove', text._id);
       }
+      AppState.ToolBar.select.click();
     }
-    isDown = drawBegan = false;
 
-    //AppState.ToolBar.select.click();
+    isDown = drawBegan = false;
   };
 
   function activate() {

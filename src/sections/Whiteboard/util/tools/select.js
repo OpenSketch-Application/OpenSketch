@@ -111,7 +111,7 @@ module.exports = function(AppState, el) {
     isDown = shapeModified = false;
   }
 
-  var deleteShape = function() {
+  var deleteShape = function(e) {
     if (e.type == "keypress") {
       console.log('keypress', e.type);
     }
