@@ -1,12 +1,13 @@
 var PIXI = require('pixi');
-
-module.exports = function(settings, el) {
+var find = require('dom-select');
+module.exports = function(AppState, el) {
   el.addEventListener('click', function(data) {
     console.log('Selected Color...');
 
     AppState.Tools.selected = 'color';
 
     selectPressed = true;
+    activate(AppState.Canvas.stage,AppState.Canvas.renderer);
   });
 };
 
@@ -18,34 +19,31 @@ function activate(stage, renderer) {
   var posOld;
   var stageIndex = 0;
   var lines = 0;
-
+  var color = find('#color-picker canvas');
+  var colorctx = color.getContext('2d');
+ var gradient; 
   stage.mousedown = function(data) {
-
-    //if(!isActive) return;
-    isDown = true;
-    lines = 0;
-    path = [];
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    stageIndex = stage.children.length - 1;
-    //graphics.moveTo(data.global.x, data.global.y);
+     gradient = colorctx.createLinearGradient(0,0,color.clientWidth,0);
+     gradient.addColorStop(0,    "rgb(255,   0,   0)");
+     gradient.addColorStop(0.15, "rgb(255,   0, 255)");
+     gradient.addColorStop(0.33, "rgb(0,     0, 255)");
+     gradient.addColorStop(0.49, "rgb(0,   255, 255)");
+     gradient.addColorStop(0.67, "rgb(0,   255,   0)");
+     gradient.addColorStop(0.84, "rgb(255, 255,   0)");
+     gradient.addColorStop(1,    "rgb(255,   0,   0)");
+     colorctx.fillStyle = gradient;
+     colorctx.fillRect(0, 0, colorctx.canvas.width, colorctx.canvas.height);
+     gradient = colorctx.createLinearGradient(0, 0, 0, color.clientHeight);
+     gradient.addColorStop(0,   "rgba(255, 255, 255, 1)");
+     gradient.addColorStop(0.5, "rgba(255, 255, 255, 0)");
+     gradient.addColorStop(0.5, "rgba(0,     0,   0, 0)");
+     gradient.addColorStop(1,   "rgba(0,     0,   0, 1)");
+     colorctx.fillStyle = gradient;
+     colorctx.fillRect(0, 0, colorctx.canvas.width, colorctx.canvas.height);
   };
 
   stage.mousemove = function(data) {
-    //if(!isActive) return;
-    if(!isDown) return;
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-    //path.push(data.global.y);
-    //var newPosition = this.data.getLocalPosition(this.parent);
-    graphics.moveTo(posOld[0], posOld[1]);
-    //console.log(data.global.x, data.global.y);
-    graphics.lineTo(data.global.x, data.global.y);
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    lines++;
-    stage.addChild(graphics);
 
-    //renderer.render(stage);
   };
 
   stage.mouseup = function() {

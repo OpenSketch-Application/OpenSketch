@@ -113,7 +113,7 @@ function toolbar(elements, AppState) {
         break;
       case 'color':
         this.color = el;
-        createColor(settings, el, AppState);
+        createColor(AppState,el);
         break;
       case 'templates':
         this.templates = el;
