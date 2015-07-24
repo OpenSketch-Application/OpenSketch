@@ -1,5 +1,6 @@
 var PIXI = require('pixi');
 var find = require('dom-select');
+var $ = require('jquery');
 module.exports = function(AppState, el) {
   el.addEventListener('click', function(data) {
     console.log('Selected Color...');
@@ -7,11 +8,63 @@ module.exports = function(AppState, el) {
     AppState.Tools.selected = 'color';
 
     selectPressed = true;
-    activate(AppState.Canvas.stage,AppState.Canvas.renderer);
+    activate(AppState.Canvas.stage,AppState.Canvas.renderer,AppState);
   });
 };
+function ColorPicker(AppState){
+  var _this  = {}
+  _this.UI = $('#color-picker');
+  _this.cvs = $('#color-picker canvas');
+  _this.ctx = find('#color-picker canvas').getContext('2d');
+  _this.selectingPrimary = true;
+  _this.Primary = AppState.Tools.Primary;
+  _this.Secondary = AppState.Tools.Secondary;
 
-function activate(stage, renderer) {
+  this.render = function(){
+    _this.UI.show();
+    _this.img = new Image();  
+    _this.img.src = 'images/color-picker.jpg'; 
+    
+    $(_this.img).load(function(){
+      _this.ctx.width = _this.cvs.width;
+      _this.ctx.drawImage(_this.img,0,0,270,175);
+    });
+    _this.cvs.click(function(e){
+      var x = e.offsetX;
+      var y = e.offsetY;
+      if(_this.selectingPrimary)
+       _this.Primary = getColor(x,y);
+      else
+       _this.Secondary = getColor(x,y);
+    });    
+     
+  }
+  this.getColor = function(){
+    _this.ctx.getImageData(x,y,1,1);
+    var select = 'rgb('+img.data[0]+', ' + img.data[1] + ', ' + img.data[2] +')';
+    var r,g,b;
+    r = parseInt(img.data[0]);
+    g = parseInt(img.data[1]);
+    b = parseInt(img.data[2]);
+    return rgbToHex(r,g,b);
+  }
+  this.ok = function(){
+    AppState.Tools.Primary = _this.Primary; 
+    AppState.Tools.Secondary = _this.Secondary;
+    _this.UI.hide();
+  }
+  
+}
+     
+function intToHex(integer){
+  var hex = integer.toString(16);
+  return hex.length == 2 ? hex : '0' + hex;
+};
+
+function rgbToHex(r,g,b){
+ return '0x'+intToHex(r) + intToHex(g) + intToHex(b);
+}
+function activate(stage, renderer,AppState) {
   var color = 0xCAFE00;
   var path = [];
   // var isActive = true;
@@ -19,27 +72,13 @@ function activate(stage, renderer) {
   var posOld;
   var stageIndex = 0;
   var lines = 0;
-  var color = find('#color-picker canvas');
-  var colorctx = color.getContext('2d');
- var gradient; 
+  
+  colorpicker = new ColorPicker(AppState);
+  colorpicker.render();
+  
+
   stage.mousedown = function(data) {
-     gradient = colorctx.createLinearGradient(0,0,color.clientWidth,0);
-     gradient.addColorStop(0,    "rgb(255,   0,   0)");
-     gradient.addColorStop(0.15, "rgb(255,   0, 255)");
-     gradient.addColorStop(0.33, "rgb(0,     0, 255)");
-     gradient.addColorStop(0.49, "rgb(0,   255, 255)");
-     gradient.addColorStop(0.67, "rgb(0,   255,   0)");
-     gradient.addColorStop(0.84, "rgb(255, 255,   0)");
-     gradient.addColorStop(1,    "rgb(255,   0,   0)");
-     colorctx.fillStyle = gradient;
-     colorctx.fillRect(0, 0, colorctx.canvas.width, colorctx.canvas.height);
-     gradient = colorctx.createLinearGradient(0, 0, 0, color.clientHeight);
-     gradient.addColorStop(0,   "rgba(255, 255, 255, 1)");
-     gradient.addColorStop(0.5, "rgba(255, 255, 255, 0)");
-     gradient.addColorStop(0.5, "rgba(0,     0,   0, 0)");
-     gradient.addColorStop(1,   "rgba(0,     0,   0, 1)");
-     colorctx.fillStyle = gradient;
-     colorctx.fillRect(0, 0, colorctx.canvas.width, colorctx.canvas.height);
+    colorpicker.ok(); 
   };
 
   stage.mousemove = function(data) {

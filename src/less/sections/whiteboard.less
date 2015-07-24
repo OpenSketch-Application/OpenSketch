@@ -33,6 +33,30 @@
         }
       }
     }
+    #color-picker {
+          display: none;
+          position: relative;
+          border-right: 2px solid #FFF;
+          float: left;
+          width: 222px;
+          height: 200px;
+          z-index: 400;
+          margin-top: 5px;
+          -webkit-transition: opacity .25s ease;
+          -moz-transition: opacity .25s ease;
+
+          color: #FFF;
+          transform: translate(-39%, -10%);
+          canvas {
+            border : 2px solid red;
+            height: 200px;
+            width: 200px;
+          }
+
+          
+
+         
+        }
     .toolbar {
       position: relative;
       margin: 0 0 0 50px;
@@ -90,7 +114,7 @@
           -webkit-transition: opacity .25s ease;
           -moz-transition: opacity .25s ease;
         }
-
+       
         ul.shapes {
           display: none;
           position: relative;
@@ -151,6 +175,9 @@
         }
 
         img:hover + ul.shapes, img.tool-selected + ul.shapes {
+          display: block;
+        }
+        img.tool-selected + #color-picker {
           display: block;
         }
 

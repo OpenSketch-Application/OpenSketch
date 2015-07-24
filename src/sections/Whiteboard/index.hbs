@@ -26,10 +26,7 @@
       </li>
       <li><img id="tool-template" src="images/template-icon.png" alt="template" /></li>
       <li><img id="tool-color" src="images/color-icon.png" alt="color" />
-        <div id="color-picker">
-          <canvas height="200" width="200"></canvas>
-        </div>
-      </li>
+              </li>
     </ul>
     <ul class="options">
       <li>Save</li>
@@ -37,8 +34,17 @@
       <li><a id="close-whiteboard" href="#0">Close</a></li>
     </ul>
     <textarea id="keyboardField"></textarea>
+  
+   
   </header>
   <div id="main">
+    <div id="color-picker">
+      <canvas></canvas>
+            <input type="text" id="color"></input>
+            <input type="radio" name="color" value="primary">
+            <input type="radio" name="color" value="primary">
+
+    </div>
     <div id="whiteboard-container"></div>
     <div id="tabs">
       <div class="cd-tabs">
