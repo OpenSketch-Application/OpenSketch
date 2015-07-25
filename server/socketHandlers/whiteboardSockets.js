@@ -25,7 +25,7 @@ whiteboardSockets.userListCB = function(socket,nsp){
 
            socket.emit(EVENT.UserList,session.users);
            }
-          
+
         });
 
     };
@@ -267,7 +267,11 @@ whiteboardSockets.clearShapesCB = function(socket) {
         sessionid = sessionid[sessionid.length - 1];
 
     socket.broadcast.emit(EVENT.clearShapes);
-    ShapeManager.deleteAll(sessionid);
+
+    ShapeManager.deleteAll(sessionid, function(err, result) {
+      if(err) console.log('Unable to clear session', sessionid);
+      else console.log('Session cleared Successfully', sessionid);
+    });
   };
 }
 
