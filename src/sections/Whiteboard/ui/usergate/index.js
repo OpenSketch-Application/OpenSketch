@@ -16,8 +16,16 @@ Section.prototype = {
 
   init: function(req, done) {
     this.createID = Cookies.get('created');
+
     console.log(this.createID);
     if(this.createID != window.location.href.replace(/.*\//, '')) {
+
+
+      // We will need to check if User is not already kicked out of this session
+      if(Cookies.get('username') != null) {
+        done();
+      }
+
       var content = find('#content');
       this.section = document.createElement('div');
       this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
@@ -47,11 +55,13 @@ Section.prototype = {
       var end = curSession.length -1;
       var curSessionId = curSession[end];
       curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
-       
+
 
       var socket = io.connect(SERVERNAME +curSession);
       var usernames = [];
+
       socket.emit(EVENT.UserList);
+
       socket.on(EVENT.UserList,function(users){
            userList.innerHTML = '';
            for( var i = 0; i < users.length;i++)
@@ -60,18 +70,18 @@ Section.prototype = {
              console.log(users[i]);
              li.appendChild(document.createTextNode(users[i].username));
              usernames[i] = users[i].username;
-             userList.appendChild(li); 
+             userList.appendChild(li);
            }
       });
 
       btnJoin.addEventListener('click', function(el){
         errorMsg.innerHTML = '';
-        
+
         var Name = input.value;
         for(var i = 0; i < usernames.length;i++){
           if(Name == usernames[i]){
-           errorMsg.innerHTML = 'The name '+Name+' is currently in use.';          
-           return;   
+           errorMsg.innerHTML = 'The name '+Name+' is currently in use.';
+           return;
           }
         }
         //return;

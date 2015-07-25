@@ -44,8 +44,8 @@ module.exports = function(settings, el, AppState) {
     var shapeProperties = {
       x: originalCoords.x,
       y: originalCoords.y,
-      width: textbox.textField.width,
-      height: textbox.textField.height
+      width: textbox.pixiText.width,
+      height: textbox.pixiText.height
     }
 
     textbox.draw(shapeProperties);
@@ -125,9 +125,9 @@ module.exports = function(settings, el, AppState) {
 
       textbox.setListeners(AppState);
 
-      socket.emit(EVENT.shapeEvent, 'drawEnd', { _id: textbox._id });
+      //socket.emit(EVENT.shapeEvent, 'drawEnd', { _id: textbox._id });
 
-      socket.emit(EVENT.saveObject, textbox.getProperties());
+      //socket.emit(EVENT.saveObject, textbox.getProperties());
 
       // Check if Shape was actually drawn, ie. did user press mouse down and mouse move, which draws a Shape, or
       // just simply press mouse down, which is not considered drawing

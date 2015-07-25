@@ -52,7 +52,7 @@ var Tools = {
     strokeThickness: 1,
     wordWrap: true,
     wordWrapWidth: 600,
-    textContent: 'This is a textbox',
+    textContent: 'This\n is \na textbox\n',
     // Rectangle class properties
     // lineColor: 0x000000,
     // lineWidth: 1,
@@ -94,7 +94,8 @@ var Shapes = {
     'line': 0,
     'rectangle': 0,
     'ellipse': 0,
-    'textbox': 0
+    'textbox': 0,
+    'table': 0
   },
   _shapes: {},
   _order: [],
@@ -106,20 +107,6 @@ Object.defineProperty(Shapes, 'originalUser', {
     return AppState.Users.currentUser._id || 'unknown';
   }
 })
-// Methods for User Layer
-// function insertAt(shape, index) {
-//   var oldIndex = 0;
-//   // Check if shape exists already
-//   if(this._shapes[shape._id]) {
-//     oldIndex = this._shapes.layerLevel;
-//   }
-// }
-
-// function removeAt() {}
-// function reorder(start, end) {
-//   var orderedArray = this._order;
-//   var i = start;
-// }
 
 // Use test case to ensure userId, canvasID and Object Type are set
 // layerLevel is optional parameter
@@ -217,6 +204,7 @@ var AppState = {
       return matchedUser;
     }
   },
+  ChatBox: undefined, // Will be attached in chatbox.js init method
   Settings: {}, // General settings, ie. styles or themes
   Messages: [],
   Socket: null // Will be added later, in toolbar js or AppState.init method

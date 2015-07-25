@@ -1,8 +1,9 @@
 var Session = require('../db/models/Session');
-
+var UserManager = require('../db/DbManagers/UserManager');
 var ShapeManager = require('../db/DbManagers/CanvasShapesManager');
 var EVENT = require('../../src/model/model').socketEvents;
 var whiteboardSockets = {};
+
 whiteboardSockets.deleteSessionCB = function(socket,nsp){
   return function(){
     var sessionid = socket.adapter.nsp.name.split('/');
@@ -25,7 +26,7 @@ whiteboardSockets.userListCB = function(socket,nsp){
 
            socket.emit(EVENT.UserList,session.users);
            }
-          
+
         });
 
     };
@@ -134,7 +135,6 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
                'msg': message.msg
               });
 
-
         console.log('msg received', message);
         //add chat to db //but maybe we don't need to keep chat messages stored?
 
@@ -196,8 +196,6 @@ whiteboardSockets.sendPencilCB = function(socket,nspWb){
 };
 
 whiteboardSockets.shapeObjectCB = function(socket, nspWb) {
-  console.log('send Rect socket connected');
-
   return function(eventType, data) {
     console.log('recieved socket shape event');
     console.log(eventType);
@@ -256,6 +254,22 @@ whiteboardSockets.populateCanvasCB = function(socket) {
     });
 
   };
+}
+
+whiteboardSockets.permissionChangedCB = function(socket) {
+  return function(userModel) {
+    var sessionid = socket.adapter.nsp.name.split('/');
+    sessionid = sessionid[sessionid.length - 1];
+
+    console.log('Saving User Permissions', userModel);
+
+    UserManager.updateOne(sessionid, userModel._id, userModel, function(err, result) {
+      if(err) console.log('Unable to update user\'s permissions', userModel);
+      else console.log('User permission updated', userModel.username);
+    })
+
+    socket.broadcast.emit(EVENT.permissionChanged, userModel);
+  }
 }
 
 module.exports = whiteboardSockets;

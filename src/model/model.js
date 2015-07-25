@@ -16,6 +16,9 @@ module.exports = {
     'userLeft': 'userLeft',
     'UserList':'UserList',
 
+    // User Permissions
+    'permissionChanged': 'permissionChanged',
+
     // Session Creation/Validation Events
     'getSocketID': 'getSocketID',
     'joinSession': 'joinSession',

@@ -4,47 +4,67 @@ var Cookies = require('cookies-js');
 
 module.exports = {
   init: function(AppState) {
-    var _this = this;
+    //var _this = this;
 
-    var sendMessage = function() {
-      var message = {
-        user: Cookies.get('username'),
-        msg: _this.inputBox.value
-      };
+    this.socket = AppState.Socket;
+    this.users = AppState.Users;
 
-      // Send messages to other participants
-      _this.socket.emit('chatMessage', message);
+    this.chatMessages = $('.chatMessageBox div.chatMessages')[0];
+    this.inputBox = $('.messageInputUI textarea')[0];
+    this.sendButton = $('.messageInputUI button')[0];
 
-      // Add message to current user's chatbox
-      _this.addMsg(message);
+    // Bind all necessary methods to this object
+    this.onSubmitClick = this.onSubmitClick.bind(this);
+    this.sendMessage = this.sendMessage.bind(this);
+    this.onKeyDownHandler = this.onKeyDownHandler.bind(this);
 
+    this.addUserInteraction();
+
+    this.socketOnEventHandlers();
+
+    AppState.ChatBox = this;
+  },
+
+  removeUserInteraction: function() {
+    this.sendButton.removeEventListener('click', this.onSubmitClick, false);
+
+    this.inputBox.removeEventListener('keydown', this.onKeyDownHandler, false);
+  },
+
+  addUserInteraction: function() {
+    this.sendButton.addEventListener('click', this.onSubmitClick, false);
+
+    this.inputBox.addEventListener('keydown', this.onKeyDownHandler, false);
+  },
+
+  onSubmitClick: function(e) {
+    e.preventDefault();
+
+    if(this.inputBox.value.trim() != "")
+      this.sendMessage();
+
+    this.inputBox.value = "";
+  },
+
+  sendMessage: function() {
+    var message = {
+      user: Cookies.get('username'),
+      msg: this.inputBox.value
     };
 
-    _this.socket = AppState.Socket;
-    _this.users = AppState.Users;
+    // Send messages to other participants
+    this.socket.emit('chatMessage', message);
 
-    _this.chatMessages = $('.chatMessageBox div.chatMessages')[0];
-    _this.inputBox = $('.messageInputUI textarea')[0];
-    _this.sendButton = $('.messageInputUI button')[0];
+    // Add message to current user's chatbox
+    this.addMsg(message);
+  },
 
-    _this.socketOnEventHandlers();
-
-    _this.sendButton.addEventListener('click', function(e) {
-      e.preventDefault();
-      if(_this.inputBox.value.trim() != "")
-        sendMessage();
-
-      _this.inputBox.value = "";
-
-    });
-
-    _this.inputBox.onkeydown = function(e) {
-      if(e.keyCode == 13) {
-        sendMessage();
-        this.value = "";
-        return false;
-      }
-    };
+  onKeyDownHandler: function(e) {
+    if(e.keyCode == 13) {
+      this.sendMessage();
+      this.inputBox.value = "";
+      return false;
+    }
   },
 
   // Basic add message to chatbox
@@ -60,9 +80,9 @@ module.exports = {
     console.log(newMsg);
     this.chatMessages.appendChild(newMsg[0]);
     this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
-
   },
-// announcement for user leaving and joining session
+
+  // announcement for user leaving and joining session
   addAnnouncement: function(msg){
     var ann = $('<div id="msgContainer"><div id="announcement">'+msg+'</div></div>');
     console.log(ann);
