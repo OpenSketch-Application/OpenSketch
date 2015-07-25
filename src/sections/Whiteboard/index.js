@@ -30,8 +30,6 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
-    console.log('start init');
-
     var socket = socketSetup(io, framework, AppState);
 
     var content = find('#content');
@@ -44,6 +42,7 @@ Section.prototype = {
 
     // Inits AppState with Pixi and adds Socket object to AppState objects
     AppState.init(PIXI, socket, find('#whiteboard-container'));
+
 
     this.toolbar = new Toolbar({
       whiteboard: '#whiteboard-container',
@@ -58,15 +57,35 @@ Section.prototype = {
         rectangle: '#tool-shapes-rectangle',
         text: '#tool-text',
         table: '#tool-table',
-        templates: {
-          el: '#tool-template',
-          flowchart: '',
-          uml: ''
-        },
         import: '#tool-import',
         color: '#tool-color'
       }
     }, AppState);
+
+    this.sessionOptions = find('.options');
+    this.sessionOptions.onclick = function(e) {
+      e.preventDefault();
+
+      switch(e.target.id) {
+        case 'opt-save':
+          
+          break;
+        case 'opt-clear':
+          socket.emit(EVENT.clearShapes);
+          APP_STATE.clearShapes();
+          break;
+        case 'opt-settings':
+
+          break;
+        case 'opt-close':
+          socket.emit(EVENT.deleteSession);
+          socket.disconnect();
+          framework.go('/home');
+          location.reload();
+          break;
+      }
+    };
+
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
@@ -76,17 +95,6 @@ Section.prototype = {
 
     Chatbox.init(AppState);
     UserManagement.init(AppState);
-
-    var close = find('#close-whiteboard');
-
-     close.addEventListener('click', function(e) {
-       e.preventDefault();
-       socket.emit(EVENT.deleteSession);
-       socket.disconnect();
-       framework.go('/home');
-       location.reload();
-
-     }, false)
 
     setTimeout(function(){
       if(AppState.Socket.nsp != '/home')
@@ -99,6 +107,8 @@ Section.prototype = {
   },
 
   resize: function(w, h) {
+    APP_STATE.Canvas.renderer.view.style.width = w * 0.75 + 'px';
+    APP_STATE.Canvas.renderer.view.style.height = h + 'px';
   },
 
   animateIn: function(req, done) {
@@ -114,7 +124,6 @@ Section.prototype = {
   },
 
   destroy: function(req, done) {
-    console.log("Destroy!");
 
     Cookies.expire('username');
     Cookies.expire('create');

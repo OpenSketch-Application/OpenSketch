@@ -21,10 +21,8 @@ module.exports = function(AppState) {
 
   // Handles populating a new participant's Canvas with Shapes
   socket.on(EVENT.populateCanvas, function(shapelist) {
-    console.log('POPULATE', shapelist);
     if(shapelist) {
       shapelist.forEach(function(shape) {
-        console.log('Adding shape', shape);
         var addedShape = addShapeBasedOnType(shape);
         addedShape.draw(shape);
         addedShape.unHighlight();
@@ -47,7 +45,6 @@ module.exports = function(AppState) {
   // lockShape
   // unlockShape
   function handleShapeEvent(eventType, shapeData) {
-    console.log('handle shape event', eventType, shapeData);
     switch(eventType) {
       case 'draw':
         shapes[shapeData._id].draw(shapeData);
@@ -62,13 +59,11 @@ module.exports = function(AppState) {
         break;
 
       case 'lockShape':
-        console.log('lock current shape');
 
         shapes[shapeData._id].lockShape();
         break;
 
       case 'unlockShape':
-        console.log('unlock shape');
         shapes[shapeData._id].unLockShape();
         break;
 
@@ -127,6 +122,8 @@ module.exports = function(AppState) {
 
     return shape;
   }
+
+
 
 
 };

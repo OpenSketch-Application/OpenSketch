@@ -258,4 +258,17 @@ whiteboardSockets.populateCanvasCB = function(socket) {
   };
 }
 
+whiteboardSockets.clearShapesCB = function(socket) {
+  return function() {
+    console.log('CLEARING SHAPES')
+    // var sessionid = socket.adapter.nsp.name.replace(/.*\//, '');
+
+    var sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
+
+    socket.broadcast.emit(EVENT.clearShapes);
+    ShapeManager.deleteAll(sessionid);
+  };
+}
+
 module.exports = whiteboardSockets;

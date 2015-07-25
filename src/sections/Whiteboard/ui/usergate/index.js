@@ -16,7 +16,7 @@ Section.prototype = {
 
   init: function(req, done) {
     this.createID = Cookies.get('created');
-    console.log(this.createID);
+
     if(this.createID != window.location.href.replace(/.*\//, '')) {
       var content = find('#content');
       this.section = document.createElement('div');
@@ -57,7 +57,6 @@ Section.prototype = {
            for( var i = 0; i < users.length;i++)
            {
              var li = document.createElement('li');
-             console.log(users[i]);
              li.appendChild(document.createTextNode(users[i].username));
              usernames[i] = users[i].username;
              userList.appendChild(li); 

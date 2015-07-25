@@ -39,7 +39,11 @@ module.exports = function(io, framework, AppState){
        framework.go('/home');
        location.reload();
   });
-  console.log(curSession);
+
+  socket.on(EVENT.clearShapes, function(){
+    APP_STATE.clearShapes();
+  });
+  
   return socket;
 
 }

@@ -30,7 +30,8 @@ module.exports = {
 
     'saveObject' : 'saveObject',
     'updateObject' : 'updateObject',
-    'deleteObject' : 'deleteObject'
+    'deleteObject' : 'deleteObject',
+    'clearShapes' : 'clearShapes'
 
     //'sendPencil' : 'sendPencil'
     // 'sendLine' : 'sendLine'

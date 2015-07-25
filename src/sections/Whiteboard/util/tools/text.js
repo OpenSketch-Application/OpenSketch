@@ -5,7 +5,6 @@ var EVENT = require('../../../../model/model').socketEvents;
 var PixiTextInput = require('../shapes/PixiTextInput');
 
 module.exports = function(settings, el, AppState) {
-  console.log('AppState', AppState);
   var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
   var shapes = AppState.Canvas.Shapes;

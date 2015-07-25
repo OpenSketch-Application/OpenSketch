@@ -25,12 +25,10 @@ function getWhiteboardSession(socket,whiteboardId){
 
       sessionSettings.users = [];
       socket.emit(EVENT.createSession,sessionSettings);
-      console.log(sessionSettings);
       return sessionSettings.id;
 }
 
 function verifyForm(){
-  console.log('in verify');
       var max  = find('div.control input[name=maxUsers]');
       var maxUsers = parseInt(max.value);
       var userName = find('div.control input.username');
