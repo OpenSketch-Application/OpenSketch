@@ -26,11 +26,13 @@ module.exports = function(AppState) {
       shapelist.forEach(function(shape) {
         console.log('Adding shape', shape);
         var addedShape = addShapeBasedOnType(shape);
-        addedShape.draw(shape);
-        addedShape.unHighlight();
-        addedShape.setMoveListeners(AppState);
-        if(shape.hasMoved){
-          addedShape.move({x:shape.moveX,y:shape.moveY});
+        if(shape != null){
+          addedShape.draw(shape);
+          addedShape.unHighlight();
+          addedShape.setMoveListeners(AppState);
+          if(shape.hasMoved){
+            addedShape.move({x:shape.moveX,y:shape.moveY});
+          }
         }
       });
     }
@@ -96,7 +98,9 @@ module.exports = function(AppState) {
   // Calls the right constructor based on the Object's shapeType
   function addShapeBasedOnType(shapeData) {
     var shape;
-
+    
+    if(shapeData != null && shapeData != undefined){
+      
     switch(shapeData.shapeType) {
       case 'rectangle':
         //AppState.Canvas.stage.addChild(shapeData);
@@ -120,7 +124,7 @@ module.exports = function(AppState) {
         shape = new Textbox(shapeData);
         break;
     }
-
+    }
     // Add Shape to the Shapes hashmap
     if(shape) return shapes.addNew(shape);
     else console.log('ERROR: Did not create a Shape of requested type', shapeData);

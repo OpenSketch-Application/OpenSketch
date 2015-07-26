@@ -9,24 +9,39 @@ module.exports = Section;
 var SERVERNAME = window.location.origin;
 var EVENT = model.socketEvents;
 var Cookies = require('cookies-js');
-function ValidateJSON(shapes){
+function ValidateJSON(content){
   var rv = true;
   try{
-    shapes = JSON.parse(shapes);
-    if(Object.prototype.toString.call(shapes) != Object.prototype.toString.call([]))
+    obj = JSON.parse(content);
+    if(Object.prototype.toString.call(obj.shapes) != Object.prototype.toString.call([]))
       rv = false;
 
+    if(Object.prototype.toString.call(obj.messages) != Object.prototype.toString.call([]))
+      obj.messages = []
+    
+    var shapes = obj.shapes;
+    var messages = obj.messages;
+    for(var i =0 ; i < messages.length; i++){
+      var skip = false;
+      var msg = messages[i];
+      if(msg.user == null || msg.user == undefined) skip = true; 
+      if(msg.msg == null || msg.msg == undefined) skip = true;
+      
+      if(skip == true)
+        messages[i] = null;
+    }
     for(var i =0 ; i < shapes.length;i++){
       var shp = shapes[i];
       var skip = false;
       if(shp._id  == null || shp._id == undefined)
          skip = true;
-      if(shp.x == null || shp.x == undefined) skip = true;
-      if(shp.y == null || shp.y == undefined) skip = true;
-
-      if(shp.shapeType  == null || shp.shapeType == undefined)
-        skip = true;
-
+      
+      if(shp.shapeType !='pencil'){
+        if(shp.x == null || shp.x == undefined) skip = true;
+        if(shp.y == null || shp.y == undefined) skip = true;
+      }
+      
+      
       switch (shp.shapeType){
         case null:
         case undefined:
@@ -57,10 +72,11 @@ function ValidateJSON(shapes){
         break;
       }
       if(skip == true){
-        shape[i] = null;
+        shapes[i] = null;
       }
     }
-    rv = shapes;
+    var wrapper = {shapes:shapes,messages:messages};
+    rv = wrapper;
   }catch(e){
     console.log('exception caught');
     rv = false
@@ -103,8 +119,8 @@ function verifyForm(filecontent){
         error.errors.push({msg:'Please Enter a Username',element: userName});
       }
 
-    var shapes = ValidateJSON(filecontent); 
-    if(shapes === false && filecontent != null)
+    var session = ValidateJSON(filecontent); 
+    if(session === false && filecontent != null)
       error.errors.push({msg:'Json File not valid',element: importfile}); 
 
     if(error.errors.length > 0){
@@ -112,7 +128,7 @@ function verifyForm(filecontent){
     }
     else{
       if(filecontent === null) shapes = []; 
-      return {isErr: false, data: shapes};
+      return {isErr: false, data: session};
     }
 }
 
@@ -192,7 +208,8 @@ Section.prototype = {
       }else{
         
         settings = getWhiteboardSession(socket,sid,err);
-        settings.shapes = obj.data;  
+        settings.shapes = obj.data.shapes;  
+        settings.messages = obj.data.messages;
         socket.emit(EVENT.createSession,settings);
         
         if(settings.id != undefined && settings.id !=null){

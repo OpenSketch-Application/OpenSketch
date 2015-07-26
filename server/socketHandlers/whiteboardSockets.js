@@ -21,7 +21,8 @@ whiteboardSockets.saveSessionCB = function(socket,nsp){
             throw new Error('Error retrieving Session');
           }
           else if(session && session._id){
-            callback(JSON.stringify(session.canvasShapes));
+            var wrapper = {shapes: session.canvasShapes, messages: session.messages};
+            callback(JSON.stringify(wrapper));
           }
           
         });

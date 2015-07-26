@@ -24,7 +24,7 @@ module.exports = function(io,DB) {
             maxUsers : canvasSession.maxUsers
           },
           canvasShapes: canvasSession.shapes,
-          messages: []
+          messages: canvasSession.messages
         });
 
         newSession.save(function(err, obj) {
