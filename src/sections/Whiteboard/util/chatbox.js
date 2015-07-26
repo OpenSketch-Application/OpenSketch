@@ -49,15 +49,12 @@ module.exports = {
 
   // Basic add message to chatbox
   addMsg: function(content) {
-    console.log(content.user + 'msg about to be added', content.msg);
     var newMsg = $('<div id = "msgContainer">' +'<span style="font-weight: bold; font: 1em Arial;">'+ content.user + ':</span>&nbsp;&nbsp;' +
                     content.msg + '</div>');
 
     var newMsg = $('<div id = "msgContainer">' +'<div id="name">'+ content.user + ':</div><div id="msg">' +
                     content.msg + '</div><div style="clear: both;"></div></div>');
 
-    console.log(this.chatMessages);
-    console.log(newMsg);
     this.chatMessages.appendChild(newMsg[0]);
     this.chatMessages.scrollTop = this.chatMessages.scrollHeight;
 
@@ -73,8 +70,6 @@ module.exports = {
   // Ensure we init Whiteboard after validating socket in whiteboard
   socketOnEventHandlers: function() {
     var _this = this;
-    console.log('attached socket', _this.socket);
-    console.log('Chat box socket handlers set');
 
     _this.socket.on(EVENT.chatMessage, function(data) {
       console.log('chat msg recieved', data);
@@ -82,7 +77,6 @@ module.exports = {
     });
 
     _this.socket.on(EVENT.updateChatList, function(data, shapes) {
-      console.log('AllShapes', shapes);
       for(var i = 0;i<data.length;i++){
         _this.addMsg(data[i]);
       }
@@ -93,7 +87,6 @@ module.exports = {
     // })
 
     _this.socket.on(EVENT.announcement, function(msg){
-      console.log('announcement received', msg);
       _this.addAnnouncement(msg);
     });
   }

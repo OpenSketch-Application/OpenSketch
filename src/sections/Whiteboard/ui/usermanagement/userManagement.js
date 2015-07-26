@@ -7,8 +7,6 @@ var userManagementTemplate = fs.readFileSync(__dirname + '/userManagement.hbs', 
 //fs.readFileSync(__dirname + '/index.hbs', 'utf8');
 module.exports = {
   init: function(AppState) {
-    console.log('Initing User Manager');
-    console.log(find('.cd-tabs-content li[data-content=Users]'));
     // Attach template to App
     //this.userManagerContainer = find('');
     //this.userManagerContainer.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
@@ -26,11 +24,9 @@ module.exports = {
     Mustache.render(userManagementTemplate, [user]);
   },
   onMouseClick: function(e) {
-    console.log('clicking ', this);
     var target = e.target;
     var clickedOnUser;
     var userId;
-    console.log(e);
 
     if(target.className.match('chatToggle')) {
       // Get the parent li, which has the User's Id
@@ -72,15 +68,12 @@ module.exports = {
   setSocketEvents: function(AppState) {
     var socket = AppState.Socket;
     socket.on(EVENT.updateUserList, function(msg, users, curUserIndex) {
-      console.log('in update user list', users, curUserIndex);
 
       AppState.Users.users = users;
 
       this.container.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
 
       if(curUserIndex !== undefined){
-        console.log('Current user set to: ' + users[curUserIndex]);
-
         AppState.Users.currentUser = users[curUserIndex];
       }
 
@@ -96,7 +89,6 @@ module.exports = {
 
     socket.on(EVENT.userLeft, function(removedUser) {
       console.log('USER LEFT registered', removedUser);
-
     })
   }
 

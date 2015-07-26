@@ -100,6 +100,7 @@ function getWhiteboardSession(socket,whiteboardId,shapes){
       sessionSettings.shapes = shapes;
       
       sessionSettings.users = [];
+
       return sessionSettings;
 }
 

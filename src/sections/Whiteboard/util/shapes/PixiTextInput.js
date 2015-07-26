@@ -45,7 +45,6 @@ function PixiTextInput(text, style) {
 	this.localHeight = this.textField.height;
 	this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+')) + this.textField.style.strokeThickness) * 1.25;
 
-	console.log(this.lineHeight);
 	//debugger;
 	// this.localHeight =
 	// 	this.textField.determineFontHeight('font: ' + this.textField.style.font + ';') +
@@ -95,7 +94,6 @@ PixiTextInput.prototype.constructor = PixiTextInput;
 PixiTextInput.prototype.getLineHeight = function() {
 	var fontProperties = this.textField.determineFontProperties(this.textField.style.font);
 	//console.log(this.textField.fontPropertiesCache);
-	console.log(fontProperties);
 	return fontProperties.ascent - fontProperties.descent;
 }
 /**

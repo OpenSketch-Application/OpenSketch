@@ -39,7 +39,16 @@ module.exports = function(io, framework, AppState){
        framework.go('/home');
        location.reload();
   });
-  console.log(curSession);
+
+  socket.on(EVENT.clearShapes, function(){
+    console.log('clearing shapes')
+    APP_STATE.clearShapes();
+  });
+
+  socket.on(EVENT.removeShape, function(shapeId) {
+    AppState.Canvas.Shapes.removeShapeByID(shapeId);
+  });
+
   return socket;
 
 }

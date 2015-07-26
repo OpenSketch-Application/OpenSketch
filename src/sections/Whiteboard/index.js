@@ -30,8 +30,6 @@ function Section() {}
 Section.prototype = {
 
   init: function(req, done) {
-    console.log('start init');
-
     var socket = socketSetup(io, framework, AppState);
 
     var content = find('#content');
@@ -44,6 +42,7 @@ Section.prototype = {
 
     // Inits AppState with Pixi and adds Socket object to AppState objects
     AppState.init(PIXI, socket, find('#whiteboard-container'));
+
 
     this.toolbar = new Toolbar({
       whiteboard: '#whiteboard-container',
@@ -58,15 +57,45 @@ Section.prototype = {
         rectangle: '#tool-shapes-rectangle',
         text: '#tool-text',
         table: '#tool-table',
-        templates: {
-          el: '#tool-template',
-          flowchart: '',
-          uml: ''
-        },
         import: '#tool-import',
         color: '#tool-color'
       }
     }, AppState);
+
+    var saveWB = find('#save-whiteboard');
+    var savePrompt = find('#save-whiteboard-prompt');
+    var save = find('#save-whiteboard-prompt button');
+    var input = find('#save-whiteboard-prompt input')
+
+    this.sessionOptions = find('.options');
+    this.sessionOptions.onclick = function(e) {
+      e.stopPropagation();
+
+      switch(e.target.id) {
+        case 'opt-save':
+          savePrompt.style.display = 'block';
+          break;
+        case 'opt-clear':
+          socket.emit(EVENT.clearShapes, null, function(err) {
+            if(err)
+              console.log(err);
+            else
+              APP_STATE.clearShapes();
+          });
+          break;
+        case 'opt-settings':
+
+          break;
+        case 'opt-close':
+          socket.emit(EVENT.deleteSession);
+          socket.disconnect();
+          framework.go('/home');
+          location.reload();
+          break;
+      }
+
+    };
+
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
@@ -77,21 +106,13 @@ Section.prototype = {
     Chatbox.init(AppState);
     UserManagement.init(AppState);
 
-    var close = find('#close-whiteboard');
-    var saveWB = find('#save-whiteboard');
-    var savePrompt = find('#save-whiteboard-prompt');
-    var save = find('#save-whiteboard-prompt button');
-    var input = find('#save-whiteboard-prompt input')
-    saveWB.addEventListener('click',function(e){
-      e.preventDefault();
-      savePrompt.style.display = 'block';
-    });
-    find('body').addEventListener('click',function(e){
+   find('body').addEventListener('click',function(e){
       console.log(e);
       if(e.target.id != 'save-whiteboard' && e.target.parentElement.id != 'save-whiteboard-prompt')
         savePrompt.style.display = 'none';
 
    });
+
     save.addEventListener('click',function(e){
       e.preventDefault();
       socket.emit(EVENT.saveSession,function(data){
@@ -105,14 +126,6 @@ Section.prototype = {
       
     },false);
 
-     close.addEventListener('click', function(e) {
-       e.preventDefault();
-       socket.emit(EVENT.deleteSession);
-       socket.disconnect();
-       framework.go('/home');
-       location.reload();
-
-     }, false)
 
     setTimeout(function(){
       if(AppState.Socket.nsp != '/home')
@@ -125,6 +138,8 @@ Section.prototype = {
   },
 
   resize: function(w, h) {
+    APP_STATE.Canvas.renderer.view.style.width =  (w < 964 ? 964 : w * 0.75) + 'px';
+    APP_STATE.Canvas.renderer.view.style.height = h + 'px';
   },
 
   animateIn: function(req, done) {
@@ -140,7 +155,6 @@ Section.prototype = {
   },
 
   destroy: function(req, done) {
-    console.log("Destroy!");
 
     Cookies.expire('username');
     Cookies.expire('create');

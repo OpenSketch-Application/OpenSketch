@@ -41,7 +41,7 @@ whiteboardSockets.userListCB = function(socket,nsp){
 
            socket.emit(EVENT.UserList,session.users);
            }
-          
+
         });
 
     };
@@ -271,6 +271,44 @@ whiteboardSockets.populateCanvasCB = function(socket) {
       else console.log('Updated shape', data);
     });
 
+  };
+}
+
+whiteboardSockets.clearShapesCB = function(socket) {
+  return function(data, onComplete) {
+    var sessionid = socket.adapter.nsp.name.replace(/.*\//, '');
+    var error;
+
+    ShapeManager.deleteAll(sessionid, function(err, result) {
+      if(err) {
+        error = err;
+        console.log(err, sessionid);
+      }
+      else {
+        socket.broadcast.emit(EVENT.clearShapes);
+      }
+    });
+
+    onComplete(error, 'Successfully cleared shapes');
+  };
+}
+
+whiteboardSockets.removeShapeCB = function(socket) {
+  return function(shapeId, onComplete) {
+    var sessionid = socket.adapter.nsp.name.replace(/.*\//, '');
+    var error;
+
+    ShapeManager.deleteOne(sessionid, shapeId, function(err, result) {
+      if(err) {
+        error = err;
+        console.log(err, sessionid);
+      }
+      else {
+        socket.broadcast.emit(EVENT.removeShape, shapeId);
+      }
+    });
+
+    onComplete(error, 'Successfully removed shapes');
   };
 }
 
