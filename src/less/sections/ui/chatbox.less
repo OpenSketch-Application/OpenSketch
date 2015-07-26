@@ -5,7 +5,7 @@
   position: relative;
   .chatMessages {
     width: 100%;
-    height: 55%;
+    height: 35%;
     padding: 10px;
     overflow-y: scroll;
     position: relative;
@@ -16,10 +16,13 @@
       display: block;
       width: 95%;
       margin: 0 auto;
-      padding: 5px;
+      padding: 2px;
       position: relative;
-      font-size: 1em;
-      border-bottom: 1px solid #e4e2e2;
+	  //word-wrap: break-word;
+      font-size: 0.8em;
+      //border-bottom: 1px solid #e4e2e2;
+	  //overflow: hidden;
+	  //float: left;
     }
     
     #announcement{
@@ -28,40 +31,48 @@
       bottom: 0;
       height: 100%;
       font-weight: bold;
-      font-size : 1.2em;
+      font-size : 1.0em;
       word-wrap: break-word;
       color: black;
       text-align: center;
-      padding: 5px;
+      padding: 2px;
       margin-left: 10%;
       margin-right: 10%;
       border-radius: 5px;
+	  font-family: "Helvetica", Arial, sans-serif-regular;
     }
 
     #name{
       float: left;
       font-weight: bold;
       position: relative;
-      width: 25%;
+      width: 15%;
+	 // width: auto;
       word-wrap: break-word;
       bottom: 0;
       height: 100%;
-      background-color:#4992B6;
-      color: #FFF;
+      //background-color:#4992B6;
+     //color: #FFF;
+	  //padding-left: 0px;
+	  //display: inline-block;
       padding: 5px;
-      text-align: center;
+      text-align: left;
+	   font-family: "Helvetica", Arial, sans-serif-regular;
     }
 
     #msg{
      float: right; 
-     font-weight: bold;
+     //font-weight: bold;
+	 font-family: "Helvetica", Arial, sans-serif-regular;
      word-wrap: break-word;
      height: 100%;
      position: relative;
-     width: 60%;
+     width: 70%;
+	 //width: auto;
      padding: 5px;
+	 
      color: black;
-     text-align: center;
+     text-align: left;
      border-radius: 5px;
     }
   }

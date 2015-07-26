@@ -16,8 +16,15 @@ Section.prototype = {
 
   init: function(req, done) {
     this.createID = Cookies.get('created');
-    console.log(this.createID);
-    if(this.createID != window.location.href.replace(/.*\//, '')) {
+	this.joinid = Cookies.get('joinid');
+    console.log("Hi" + this.createID);
+	//console.log(Cookies.get('username'));
+	//console.log("HoHey!");
+	 /*if(Cookies.get('username') !== ""){
+		console.log("Hi");
+	  }
+	  */
+    if(this.createID != window.location.href.replace(/.*\//, '') && this.joinid !== window.location.href.replace(/.*\//, '') ) {
       var content = find('#content');
       this.section = document.createElement('div');
       this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
@@ -41,12 +48,13 @@ Section.prototype = {
                              .targets({ shader: find('#shader'), promptbox: find('#promptbox')})
                              .parsers(require('f1-dom'))
                              .init('init');
-
+	 
       btnJoin.addEventListener('click', function(el){
 
         var Name = input.value;
         console.log(Name);
         Cookies.set('username', Name);
+		Cookies.set('joinid',  window.location.href.replace(/.*\//, ''))
         var curSession = window.location.href;
         curSession = curSession.split('/');
         var end = curSession.length -1;
