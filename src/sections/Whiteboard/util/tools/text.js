@@ -4,7 +4,7 @@ var Textbox = require('../shapes/Text');
 var EVENT = require('../../../../model/model').socketEvents;
 var PixiTextInput = require('../shapes/PixiTextInput');
 
-module.exports = function(settings, el, AppState) {
+module.exports = function(el, AppState) {
   console.log('AppState', AppState);
   var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
@@ -17,26 +17,30 @@ module.exports = function(settings, el, AppState) {
 
   el.addEventListener('click', function(data) {
     data.preventDefault();
+
+    // A flag that determines whether User should be able to interact with
+    // this tool, as well as the Canvas Stage, usually set by Head user, through UserManagement
+    if(!AppState.Settings.interactive) return false;
+
     console.log('Selected Text...');
     //if(settings.toolbar.toolSelected) return;
-    //// Return early if toolbar Select was picked
+    //Return early if toolbar Select was picked
 
     // Set the selected tool on AppState
     AppState.Tools.selected = 'text';
 
-    activate(settings, AppState);
+    // Activates the mouse listeners
+    activate();
 
+    return false;
   });
 
   var mousedown = function(data) {
+    data.originalEvent.preventDefault();
     isDown = true;
-    //data.originalEvent.preventDefault();
     originalCoords = data.getLocalPosition(this);
 
     if(textbox) textbox.unHighlight();
-    // var _Text = new PixiTextInput('This is a textbox', Tools.text);
-    // _Text.x = originalCoords.x;
-    // _Text.y = originalCoords.y;
 
     // stage.addChild(_Text);
     textbox = new Textbox(Tools.text);
@@ -54,22 +58,10 @@ module.exports = function(settings, el, AppState) {
 
     console.dir(textbox);
 
-    // text.highlight();
-    // var input = new PIXI.DOM.Sprite(
-    //   '<input type="text" placeholder="enter message" />',
-    //   { x: originalCoords.x, y: originalCoords.y }
-    // );
-
-    // text.setProperties(Tools.textangle);
-    //console.log('Text', Tools.text);
     // Adds shape to the shapes object/container and stage
     socket.emit(EVENT.shapeEvent, 'add', textbox.getProperties());
 
     socket.emit(EVENT.shapeEvent, 'draw', textbox.getProperties());
-
-    //console.log(text);
-    //console.log('text added', text.getProperties());
-
   };
 
   var mousemove = function(data) {
@@ -147,7 +139,9 @@ module.exports = function(settings, el, AppState) {
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
         //socket.emit(EVENT.shapeEvent, 'remove', text._id);
       }
-      AppState.ToolBar.select.click();
+
+      // Send click event on Select Tool
+      AppState.ToolBar.toolButtons.select.click();
     }
 
     isDown = drawBegan = false;

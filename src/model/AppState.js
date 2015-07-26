@@ -205,7 +205,9 @@ var AppState = {
     }
   },
   ChatBox: undefined, // Will be attached in chatbox.js init method
-  Settings: {}, // General settings, ie. styles or themes
+  Settings: {
+    interactive: true // A flag that is set or unset when User gains or looses permission
+  }, // General settings, ie. styles or themes
   Messages: [],
   Socket: null // Will be added later, in toolbar js or AppState.init method
 };

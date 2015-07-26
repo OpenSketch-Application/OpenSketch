@@ -1,6 +1,6 @@
 var PIXI = require('pixi');
 
-module.exports = function(AppState, el) {
+module.exports = function(el, AppState) {
   var stage = AppState.Canvas.stage;
   var renderer = AppState.Canvas.renderer;
   var isDown = false;
@@ -24,7 +24,13 @@ module.exports = function(AppState, el) {
     //console.log(stage);
   }
 
-  function activate() {
+  function activate(e) {
+    e.preventDefault();
+
+    // A flag that determines whether User should be able to interact with
+    // this tool, as well as the Canvas Stage, usually set by Head user, through UserManagement
+    if(!AppState.Settings.interactive) return false;
+
     AppState.Tools.selected = 'fill';
     var color = prompt('Enter a hex color without #:');
     // NOTE: we cannot do event delegation in PIXI as of yet,
@@ -35,6 +41,8 @@ module.exports = function(AppState, el) {
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;
+
+    return false;
   }
 
   el.addEventListener('click', activate);

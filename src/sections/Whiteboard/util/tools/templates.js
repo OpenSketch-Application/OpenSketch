@@ -1,11 +1,19 @@
 var PIXI = require('pixi');
 
-module.exports = function(settings, el) {
+module.exports = function(el, AppState) {
   el.addEventListener('click', function(data) {
+    data.preventDefault();
+
+    // A flag that determines whether User should be able to interact with
+    // this tool, as well as the Canvas Stage, usually set by Head user, through UserManagement
+    if(!AppState.Settings.interactive) return false;
+
     console.log('Selected Templates...');
 
     selectPressed = true;
-    activate(settings.stage, settings.renderer);
+    activate(AppState.Canvas.stage, AppState.Canvas.renderer);
+
+    return false;
   });
 };
 

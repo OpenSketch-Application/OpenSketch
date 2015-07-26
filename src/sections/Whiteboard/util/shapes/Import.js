@@ -5,6 +5,7 @@ var BaseShape = require('./BaseShape');
 module.exports = Importer;
 
 function Importer(shapeProperties, fileUrl) {
+  console.log('Calling new Importer');
   // Call BaseShape constructor to instantiate BaseShape's properties
   BaseShape.call(this, shapeProperties);
   this.imageSprite = new PIXI.Sprite.fromImage(fileUrl);

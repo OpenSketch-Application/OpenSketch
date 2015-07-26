@@ -31,6 +31,9 @@ function toolbar(elements, AppState) {
 
   this.container = find(elements.whiteboard);
 
+  // Used to store the ToolBox Tools that can be selected
+  this.toolButtons = {};
+
   // NEED TO GET RID OF THIS
   var settings = {
     container: this.container,
@@ -45,11 +48,63 @@ function toolbar(elements, AppState) {
   // Main drawing socket events
   setDrawingSockets(AppState);
 
-  // Enables drag N drop functionality for Canvas images
-  dragndrop(AppState);
+  for(var tool in elements.tools) {
+    el = find(typeof elements.tools[tool] === 'string' ?
+                     elements.tools[tool] : elements.tools[tool].el);
 
-  // Need to fix Shapes selection state
-  toolbox.addEventListener('click', function(e) {
+    this.toolButtons[tool] = el;
+
+    switch(tool) {
+      case 'select':
+        createSelect(AppState, el);
+        break;
+      case 'pencil':
+        createPencil(settings, el, AppState);
+        break;
+      case 'eraser':
+        this.eraser = createEraser(el, AppState);
+        break;
+      case 'fill':
+        createFill(el, AppState);
+        break;
+      case 'line':
+        createLine(el, AppState);
+        break;
+      case 'ellipse':
+        createEllipse(el, AppState);
+        break;
+      case 'rectangle':
+        createRectangle(el, AppState);
+        break;
+      case 'text':
+        createText(el, AppState);
+        break;
+      case 'table':
+        createTable(settings, el, AppState);
+        break;
+      case 'import':
+        createImport(el, AppState);
+        break;
+      case 'color':
+        createColor(el, AppState);
+        break;
+      case 'templates':
+        createTemplates(el, AppState);
+        break;
+      default:
+        break;
+    }
+  }
+
+  this.addUserInteraction = function() {
+    // Need to fix Shapes selection state
+    toolbox.addEventListener('click', this.addToolbarShapeHandlers, false);
+
+    // Enables drag N drop functionality for Canvas images
+    dragndrop(AppState);
+  }
+
+  this.addToolbarShapeHandlers = function(e) {
     //e.preventDefault();
     //e.stopPropagation();
 
@@ -61,8 +116,10 @@ function toolbar(elements, AppState) {
     }
 
     if(tools && tools.select.selectedObject) {
+      // Unhighlight the tool User has selected
       tools.select.selectedObject.unHighlight();
 
+      // Shape from being locked when User selects a tool
       socket.emit(EVENT.shapeEvent, 'unlockShape', {
         _id: tools.select.selectedObject._id
       });
@@ -73,67 +130,22 @@ function toolbar(elements, AppState) {
       button.className = "tool-selected";
       previouslySelected = button;
     }
-
-  }, false);
-
-  for(var tool in elements.tools) {
-    el = find(typeof elements.tools[tool] === 'string' ?
-                     elements.tools[tool] : elements.tools[tool].el);
-
-    AppState.ToolBar[tool] = el;
-
-    switch(tool) {
-      case 'select':
-        //this.selectedTool = 'tool-select';
-        createSelect(AppState, el);
-        break;
-      case 'pencil':
-        this.pencil = el;
-        createPencil(settings, el, AppState);
-        break;
-      case 'eraser':
-        this.eraser = el;
-        this.eraser = createEraser(settings, el, AppState);
-        break;
-      case 'fill':
-        this.fill = el;
-        createFill(AppState, el);
-        break;
-      case 'line':
-        this.line = el;
-        createLine(el, AppState);
-        break;
-      case 'ellipse':
-        this.ellipse = el;
-        createEllipse(el, AppState);
-        break;
-      case 'rectangle':
-        this.rectangle = el;
-        createRectangle(el, AppState);
-        break;
-      case 'text':
-        this.text = el;
-        createText(settings, el, AppState);
-        break;
-      case 'table':
-        this.table = el;
-        createTable(settings, el, AppState);
-        break;
-      case 'import':
-        this.import = el;
-        //settings, el, AppState
-        createImport(el, AppState);
-        break;
-      case 'color':
-        this.color = el;
-        createColor(settings, el, AppState);
-        break;
-      case 'templates':
-        this.templates = el;
-        createTemplates(settings, el, AppState);
-        break;
-      default:
-        break;
-    }
   }
-}
+
+  // Will prevent User from Interacting with Toolbar
+  // NOTE: remember to set AppState.Settings.interactive = false, to disable
+  // all interaction with Canvas
+  this.removeUserInteraction = function() {
+    var stage = AppState.Canvas.stage;
+
+    toolbox.removeEventListener('click', this.addToolbarShapeHandlers, false);
+
+    // stage.interactive = false;
+    // stage.mousedown = null;
+    // stage.mouseup = null;
+    // stage.mouseover = null;
+    // stage.mouseout = null;
+  }
+};
+
+

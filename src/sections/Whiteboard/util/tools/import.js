@@ -5,12 +5,16 @@ module.exports = function(el, AppState) {
   var fileSelect = document.getElementById('imgImport');
 
   el.addEventListener('click', function(data) {
-    // console.log('Selected Import...', fileSelect);
+    // A flag that determines whether User should be able to interact with
+    // this tool, as well as the Canvas Stage, usually set by Head user, through UserManagement
+    if(!AppState.Settings.interactive) return false;
 
     selectPressed = true;
     AppState.Tools.selected = 'import';
     // // Fire event on the hidden file input field
     fileSelect.click();
+
+    return false;
   });
 
   fileSelect.addEventListener('change', function(e) {

@@ -1,9 +1,7 @@
 var PIXI = require('pixi');
 
-module.exports = function(info, el) {
-  var userID = info.userID;
-  var stage = info.stage;
-  var renderer = info.renderer;
+module.exports = function(el, AppState) {
+  var stage = AppState.Canvas.stage;
   var isDown = false;
   var prevPos = { x: null, y: null };
   var settings = {
@@ -63,14 +61,20 @@ module.exports = function(info, el) {
     graphics = undefined;
   }
 
-  function activate() {
+  function activate(e) {
+    e.preventDefault();
+
+    // A flag that determines whether User should be able to interact with
+    // this tool, as well as the Canvas Stage, usually set by Head user, through UserManagement
+    if(!AppState.Settings.interactive) return false;
+
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;
     stage.mouseout = mouseout;
+
+    return false;
   }
 
   el.addEventListener('click', activate);
-
-  return settings;
 };

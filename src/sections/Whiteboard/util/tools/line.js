@@ -16,12 +16,20 @@ module.exports = function(el, AppState) {
   var shapes = AppState.Canvas.Shapes;
 
   el.addEventListener('click', function(data) {
+    data.preventDefault();
+
+    // A flag that determines whether User should be able to interact with
+    // this tool, as well as the Canvas Stage, usually set by Head user, through UserManagement
+    if(!AppState.Settings.interactive) return false;
+
     console.log('Selected Line Tool...');
-    //if(settings.toolbar.toolSelected) return; // Return early if toolbar Select was picked
+
     AppState.Tools.selected = 'line';
 
     //Line.set(settings.stage, settings.renderer);
     activate();
+
+    return false;
   });
 
   function mousedown(data) {

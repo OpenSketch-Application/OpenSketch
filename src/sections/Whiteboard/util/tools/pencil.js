@@ -72,12 +72,20 @@ module.exports = function(info, el, AppState) {
     isDown = false;
   }
 
-  function activate() {
+  function activate(e) {
+    e.preventDefault();
+
+    // A flag that determines whether User should be able to interact with
+    // this tool, as well as the Canvas Stage, usually set by Head user, through UserManagement
+    if(!AppState.Settings.interactive) return false;
+
     AppState.Tools.selected = 'pencil';
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;
     stage.mouseout = mouseout;
+
+    return false;
   }
 
   el.addEventListener('click', activate);

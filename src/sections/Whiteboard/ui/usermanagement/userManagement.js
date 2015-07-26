@@ -4,11 +4,12 @@ var Mustache = require('mustache');
 var find = require('dom-select');
 var fs = require('fs');
 var userManagementTemplate = fs.readFileSync(__dirname + '/userManagement.hbs', 'utf8');
-//fs.readFileSync(__dirname + '/index.hbs', 'utf8');
+
 module.exports = {
   init: function(AppState) {
     console.log('Initing User Manager');
     console.log(find('.cd-tabs-content li[data-content=Users]'));
+
     // Attach template to App
     //this.userManagerContainer = find('');
     //this.userManagerContainer.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
@@ -49,8 +50,8 @@ module.exports = {
     var clickedOnUser;
     var userId;
 
-    e.stopPropagation()
-
+    e.stopPropagation();
+    e.preventDefault();
     //console.log(e);
     console.log('clicked user permission', e);
     if(target.className.match('chatToggle')) {
@@ -76,8 +77,8 @@ module.exports = {
     else if(target.className.match('drawToggle')) {
       // Get the parent li, which has the User's Id
       // path is li div div.chatToggle
-
       userId = e.target.parentNode.parentNode.id;
+
       clickedOnUser = this.Users.getUserById(userId);
 
       if(clickedOnUser.permissions.canDraw) {
@@ -100,6 +101,27 @@ module.exports = {
       console.log('Remove this User', clickedOnUser);
     }
   },
+
+  addUserInteraction: function() {
+    // Remove previous listener
+    this.container.removeEventListener('click', this.onMouseClick, false);
+
+    // Add the mouse click listener that will handle enabling or disabling a
+    // User permission, normally only Head user can have this functionality
+    this.container.addEventListener('click', this.onMouseClick, false);
+
+    // Array.prototype.forEach.call(function(row) {
+    //   row.addEventListener('dragstart', handleDragStart, false);
+    //   row.addEventListener('dragenter', handleDragEnter, false);
+    //   row.addEventListener('dragover', handleDragOver, false);
+    //   row.addEventListener('dragleave', handleDragLeave, false);
+    // });
+  },
+
+  removeUserInteraction: function() {
+    this.container.removeEventListener('click', this.onMouseClick, false);
+  },
+
   setSocketEvents: function(AppState) {
     // Attach Socket to User Management Class
     var socket = this.socket = AppState.Socket;
@@ -121,11 +143,11 @@ module.exports = {
       // First check if User is head user
       // We can do this by seeing if the first User in Array matches this user's
       // id, else dont set any listeners on User Management
-      if(!this.mouseEventAttached && AppState.Users.currentUser.userRank === 0){
-        this.container.addEventListener('click', this.onMouseClick, false);
-        this.mouseEventAttached = true;
+      // Note: Head user will have Rank 0, which also corresponds to array index
+      if(!this.mouseEventAttached && AppState.Users.currentUser.userRank === 0) {
+        // Sets the events listeners that handle user interaction
+        this.addUserInteraction();
       }
-
 
     }.bind(this));
 
@@ -140,16 +162,32 @@ module.exports = {
         AppState.Users.users[user.userRank] = userModel;//.getUserById(userModel._id);
       else
         console.error('Unable to find User', userModel);
+
+      // Check if User is the new Head
+      if(userModel.userRank === 0) {
+        this.addUserInteraction();
+      }
+
       // Remove listeners on other components to prevent user from
       // interacting with parts of the application he has no permission
-      // for
 
       // Remove ChatBox listeners
-      if(AppState.ChatBox && userModel.permissions.canChat === false) {
+      if(userModel.permissions.canChat === false) {
         AppState.ChatBox.removeUserInteraction(); //
+      }
+      else {
+        AppState.ChatBox.addUserInteraction();
       }
 
       // Remove Canvas/Stage and Toolbar Listeners
+      if(userModel.permissions.canDraw === false) {
+        AppState.Settings.interactive = false;
+        AppState.ToolBar.removeUserInteraction();
+      }
+      else {
+        AppState.Settings.interactive = true;
+        AppState.ToolBar.addUserInteraction();
+      }
 
       this.updateUsers(AppState.Users);
 
@@ -161,4 +199,5 @@ module.exports = {
   destroy: function() {
     this.container.removeEventListener('click', this.onMouseClick.bind(this), false);
   }
+
 }

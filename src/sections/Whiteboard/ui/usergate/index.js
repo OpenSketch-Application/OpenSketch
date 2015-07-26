@@ -20,7 +20,6 @@ Section.prototype = {
     console.log(this.createID);
     if(this.createID != window.location.href.replace(/.*\//, '')) {
 
-
       // We will need to check if User is not already kicked out of this session
       if(Cookies.get('username') != null) {
         done();

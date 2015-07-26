@@ -26,11 +26,18 @@ module.exports = function(settings, el, AppState) {
 
   el.addEventListener('click', function(data) {
     data.preventDefault();
+
+    // A flag that determines whether User should be able to interact with
+    // this tool, as well as the Canvas Stage, usually set by Head user, through UserManagement
+    if(!AppState.Settings.interactive) return false;
+
     AppState.Tools.selected = 'table';
 
     console.log('Drawing table');
 
     activate(settings, AppState);
+
+    return false;
   });
 
   var mousedown = function(data) {

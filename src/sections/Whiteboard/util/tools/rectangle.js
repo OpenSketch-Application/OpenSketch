@@ -17,10 +17,16 @@ module.exports = function(el, AppState) {
   el.addEventListener('click', function(data) {
     data.preventDefault();
 
+    // A flag that determines whether User should be able to interact with
+    // this tool, as well as the Canvas Stage, usually set by Head user, through UserManagement
+    if(!AppState.Settings.interactive) return false;
+
     // Set the selected tool on AppState
     AppState.Tools.selected = 'rectangle';
 
     activate(AppState);
+
+    return false;
   });
 
   var mousedown = function(data) {

@@ -74,7 +74,11 @@ Section.prototype = {
                            .parsers(require('f1-dom'))
                            .init('init');
 
+
+    this.toolbar.addUserInteraction();
+    AppState.ToolBar = this.toolbar;
     Chatbox.init(AppState);
+
     UserManagement.init(AppState);
 
     var close = find('#close-whiteboard');
