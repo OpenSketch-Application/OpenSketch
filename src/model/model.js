@@ -23,6 +23,7 @@ module.exports = {
     'createSession': 'createSession',
     'badSession': 'badSession',
     'deleteSession': 'deleteSession',
+    'saveSession' :'saveSession',
 
     // Pixi/Canvas Draw Events
     'shapeEvent':'shapeEvent',

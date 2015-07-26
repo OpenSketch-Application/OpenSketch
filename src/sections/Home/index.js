@@ -1,4 +1,5 @@
 var fs = require('fs');
+
 var f1 = require('f1');
 var find = require('dom-select');
 var framework = require('../../framework/index');
@@ -8,8 +9,82 @@ module.exports = Section;
 var SERVERNAME = window.location.origin;
 var EVENT = model.socketEvents;
 var Cookies = require('cookies-js');
+function ValidateJSON(content){
+  var rv = true;
+  try{
+    obj = JSON.parse(content);
+    if(Object.prototype.toString.call(obj.shapes) != Object.prototype.toString.call([]))
+      rv = false;
 
-function getWhiteboardSession(socket,whiteboardId){
+    if(Object.prototype.toString.call(obj.messages) != Object.prototype.toString.call([]))
+      obj.messages = []
+    
+    var shapes = obj.shapes;
+    var messages = obj.messages;
+    for(var i =0 ; i < messages.length; i++){
+      var skip = false;
+      var msg = messages[i];
+      if(msg.user == null || msg.user == undefined) skip = true; 
+      if(msg.msg == null || msg.msg == undefined) skip = true;
+      
+      if(skip == true)
+        messages[i] = null;
+    }
+    for(var i =0 ; i < shapes.length;i++){
+      var shp = shapes[i];
+      var skip = false;
+      if(shp._id  == null || shp._id == undefined)
+         skip = true;
+      
+      if(shp.shapeType !='pencil'){
+        if(shp.x == null || shp.x == undefined) skip = true;
+        if(shp.y == null || shp.y == undefined) skip = true;
+      }
+      
+      
+      switch (shp.shapeType){
+        case null:
+        case undefined:
+          skip = true;
+        break;
+        case 'pencil':
+          if(shp.path == null || shp.path == undefined) skip = true;
+        break;
+        case 'line':
+          if(shp.x2 == null || shp.x2 == undefined) skip = true;
+          if(shp.y2 == null || shp.y2 == undefined) skip = true;
+        break;
+        case 'rectangle':
+        case 'ellipse':
+          if(shp.width == null || shp.width == undefined) skip = true;
+          if(shp.height == null || shp.height == undefined)skip = true;
+        break;
+        case 'table':
+          if(shp.cell == null || shp.cell == undefined)skip = true;
+          if(shp.rows == null || shp.rows == undefined)skip = true;
+          if(shp.cols == null || shp.cols == undefined)skip = true;
+        break;
+        case 'textbox':
+          if(shp.textContent == null || shp.textContent == undefined) skip = true;
+        break;
+        default:
+          skip = true;
+        break;
+      }
+      if(skip == true){
+        shapes[i] = null;
+      }
+    }
+    var wrapper = {shapes:shapes,messages:messages};
+    rv = wrapper;
+  }catch(e){
+    console.log('exception caught');
+    rv = false
+  }
+  return rv;
+}
+
+function getWhiteboardSession(socket,whiteboardId,shapes){
       var max  = find('div.control input[name=maxUsers]').value;
       var maxUsers = parseInt(max);
       if(isNaN(maxUsers) || maxUsers > 30 || maxUsers <=0) {
@@ -22,16 +97,19 @@ function getWhiteboardSession(socket,whiteboardId){
       sessionSettings.canDraw = find('div.control #roundedTwo').checked;
       sessionSettings.canChat = find('div.control #roundedOne').checked;
       sessionSettings.maxUsers = maxUsers;
-
+      sessionSettings.shapes = shapes;
+      
       sessionSettings.users = [];
-      socket.emit(EVENT.createSession,sessionSettings);
-      return sessionSettings.id;
+
+      return sessionSettings;
 }
 
-function verifyForm(){
+function verifyForm(filecontent){
+  console.log('in verify');
       var max  = find('div.control input[name=maxUsers]');
       var maxUsers = parseInt(max.value);
       var userName = find('div.control input.username');
+      var importfile = find('#file-input');
       var error = { };
       error.errors = [];
 
@@ -42,11 +120,16 @@ function verifyForm(){
         error.errors.push({msg:'Please Enter a Username',element: userName});
       }
 
+    var session = ValidateJSON(filecontent); 
+    if(session === false && filecontent != null)
+      error.errors.push({msg:'Json File not valid',element: importfile}); 
+
     if(error.errors.length > 0){
-      return error;
+      return {isErr: true, data: error};
     }
     else{
-      return null;
+      if(filecontent === null) shapes = []; 
+      return {isErr: false, data: session};
     }
 }
 
@@ -63,7 +146,9 @@ Section.prototype = {
 
     var content = find('#content');
     this.section = document.createElement('div');
+
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
+
     content.appendChild(this.section);
 
     var username = find('#inputName');
@@ -83,7 +168,25 @@ Section.prototype = {
     username.addEventListener('click', function(e) {
       this.className = "username";
     });
+    //-----FILE LISTENERS
+    var file = find('#file-input');
+    file.addEventListener('click', function(e) {
+      this.id = "file-input";
+    });
+    var filecontent = null;      
 
+    file.addEventListener('change',function(e){
+      var file = e.target.files[0];
+      var reader = new FileReader();
+      reader.onloadend = function(evt){
+         if(evt.target.readyState == FileReader.DONE){
+           filecontent = evt.target.result;
+         }
+      }
+      reader.readAsText(file,'utf-8'); 
+      
+      },false);
+    //-----
     find('#inputMax').addEventListener('click', function(e) {
       this.className = "";
     });
@@ -91,8 +194,10 @@ Section.prototype = {
     // whiteboard options Section for user to create a whiteboard
     find('div.control:last-child button').addEventListener('click', function(e) {
       e.preventDefault();
-      err = verifyForm();
-      if(err !=null || err!= undefined){
+      obj = verifyForm(filecontent);
+      if(obj.isErr === true){
+        var err = obj.data;
+
         var errLabel = find('label#errormsg');
         errLabel.innerHTML = '';
         for(var i = 0; i<err.errors.length;i++){
@@ -102,15 +207,18 @@ Section.prototype = {
           errLabel.innerHTML = errLabel.innerHTML + err.errors[i].msg + '<br/>';
         }
       }else{
-
-        WhiteboardId = getWhiteboardSession(socket,sid);
-        Cookies.set('created', WhiteboardId);
-
-        if(WhiteboardId != undefined && WhiteboardId !=null){
-          framework.go('/whiteboard/'+ WhiteboardId);
+        
+        settings = getWhiteboardSession(socket,sid,err);
+        settings.shapes = obj.data.shapes;  
+        settings.messages = obj.data.messages;
+        socket.emit(EVENT.createSession,settings);
+        
+        if(settings.id != undefined && settings.id !=null){
+             framework.go('/whiteboard/'+ settings.id);
         }else{
-          socket = io.connect(SERVERNAME+'/home');
+             socket = io.connect(SERVERNAME+'/home');
         }
+        Cookies.set('created', settings.id);
       }
     }.bind(this));
 

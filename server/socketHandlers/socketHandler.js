@@ -23,8 +23,8 @@ module.exports = function(io,DB) {
             canChat : canvasSession.canChat,
             maxUsers : canvasSession.maxUsers
           },
-          canvasShapes: [],
-          messages: []
+          canvasShapes: canvasSession.shapes,
+          messages: canvasSession.messages
         });
 
         newSession.save(function(err, obj) {
@@ -46,6 +46,7 @@ module.exports = function(io,DB) {
   function wbHandler(nspWb) {
     return function(socket) {
       socket.on(EVENT.deleteSession, wbLogic.deleteSessionCB(socket,nspWb));
+      socket.on(EVENT.saveSession, wbLogic.saveSessionCB(socket,nspWb));
       socket.on(EVENT.joinSession, wbLogic.joinSessionCB(socket, nspWb));
       socket.on(EVENT.UserList,wbLogic.userListCB(socket,nspWb));
       socket.on(EVENT.chatMessage, wbLogic.chatMessageCB(socket, nspWb));
