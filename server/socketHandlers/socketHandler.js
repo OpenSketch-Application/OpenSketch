@@ -2,56 +2,6 @@ var Session = require('../db/models/Session');
 var User = require('../db/DbManagers/UserManager');
 var wbLogic = require('./whiteboardSockets');
 var EVENT = require('../../src/model/model').socketEvents;
-function validate(shapes){
-  try{
-    shapes = JSON.parse(shapes);
-    if(Object.prototype.toString.call(shapes) != Object.prototype.toString.call([]))
-      return false;
-
-    for(var i =0 ; i < shapes.length;i++){
-      var shp = shapes[i];
-      if(shp._id  == null || shp._id == undefined)
-        return false;
-      if(shp.x == null || shp.x == undefined) return false;
-      if(shp.y == null || shp.y == undefined) return false;
-
-      if(shp.shapeType  == null || shp.shapeType == undefined)
-        return false;
-
-      switch (shp.shapeType){
-        case null:
-        case undefined:
-          return false;
-        break;
-        case 'pencil':
-          if(shp.path == null || shp.path == undefined) return false; 
-        break;
-        case 'line':
-          if(shp.x2 == null || shp.x2 == undefined) return false;
-          if(shp.y2 == null || shp.y2 == undefined) return false;
-        break;
-        case 'rectangle':
-        case 'ellipse':
-          if(shp.width == null || shp.width == undefined) return false;
-          if(shp.height == null || shp.height == undefined) return false;
-        break;
-        case 'table':
-          if(shp.cell == null || shp.cell == undefined) return false;
-          if(shp.rows == null || shp.rows == undefined) return false;
-          if(shp.cols == null || shp.cols == undefined) return false;
-        break;
-        case 'textbox':
-          if(shp.textContent == null || shp.textContent == undefined) return false;
-        break;
-        default:
-          return false;
-        break;
-      }
-    }
-  }catch(e){
-    return false;
-  }finally{return shapes;}
-}
 
 module.exports = function(io,DB) {
   var home = io.of('/home');
@@ -65,13 +15,6 @@ module.exports = function(io,DB) {
 
       socket.on(EVENT.createSession, function(canvasSession) {
         //push canvasSession to db
-
-        var isValid = validate(canvasSession.shapes);
-        if(!isValid) 
-          canvasSession.shapes = [];
-        else
-          canvasSession.shapes = isValid;
-
         var newSession = new Session({
           _id: canvasSession.id,
           users: [],
