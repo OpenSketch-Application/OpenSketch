@@ -78,6 +78,32 @@ Section.prototype = {
     UserManagement.init(AppState);
 
     var close = find('#close-whiteboard');
+    var saveWB = find('#save-whiteboard');
+    var savePrompt = find('#save-whiteboard-prompt');
+    var save = find('#save-whiteboard-prompt button');
+    var input = find('#save-whiteboard-prompt input')
+    saveWB.addEventListener('click',function(e){
+      e.preventDefault();
+      savePrompt.style.display = 'block';
+    });
+    find('body').addEventListener('click',function(e){
+      console.log(e);
+      if(e.target.id != 'save-whiteboard' && e.target.parentElement.id != 'save-whiteboard-prompt')
+        savePrompt.style.display = 'none';
+
+   });
+    save.addEventListener('click',function(e){
+      e.preventDefault();
+      socket.emit(EVENT.saveSession,function(data){
+        var a  = window.document.createElement('a');  
+        a.href = window.URL.createObjectURL(new Blob([data],{type: 'application/javascript'}));
+        var filename = find('#save-whiteboard-prompt input').value;
+        a.download = filename + '.js';
+        savePrompt.style.display = 'none';
+        a.click();
+      });
+      
+    },false);
 
      close.addEventListener('click', function(e) {
        e.preventDefault();
