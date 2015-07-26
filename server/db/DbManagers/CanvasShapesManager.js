@@ -144,11 +144,10 @@ Shapes.updateOne = function(id, shapeId, newShape, callback) {
 Shapes.deleteOne = function(id, shapeId, callback) {
   Session.update(
     {
-      '_id': id,
-      'canvasShapes._id': shapeId
+      '_id': id
     },
     {
-      $unset: { 'canvasShapes.$': '' }
+      $pull: { canvasShapes: { '_id' : shapeId } }
     },
     function(err, result) {
       callback(err, result);

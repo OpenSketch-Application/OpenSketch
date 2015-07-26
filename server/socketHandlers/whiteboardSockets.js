@@ -259,19 +259,40 @@ whiteboardSockets.populateCanvasCB = function(socket) {
 }
 
 whiteboardSockets.clearShapesCB = function(socket) {
-  return function() {
-    console.log('CLEARING SHAPES')
-    // var sessionid = socket.adapter.nsp.name.replace(/.*\//, '');
-
-    var sessionid = socket.adapter.nsp.name.split('/');
-        sessionid = sessionid[sessionid.length - 1];
-
-    socket.broadcast.emit(EVENT.clearShapes);
+  return function(data, onComplete) {
+    var sessionid = socket.adapter.nsp.name.replace(/.*\//, '');
+    var error;
 
     ShapeManager.deleteAll(sessionid, function(err, result) {
-      if(err) console.log('Unable to clear session', sessionid);
-      else console.log('Session cleared Successfully', sessionid);
+      if(err) {
+        error = err;
+        console.log(err, sessionid);
+      }
+      else {
+        socket.broadcast.emit(EVENT.clearShapes);
+      }
     });
+
+    onComplete(error, 'Successfully cleared shapes');
+  };
+}
+
+whiteboardSockets.removeShapeCB = function(socket) {
+  return function(shapeId, onComplete) {
+    var sessionid = socket.adapter.nsp.name.replace(/.*\//, '');
+    var error;
+
+    ShapeManager.deleteOne(sessionid, shapeId, function(err, result) {
+      if(err) {
+        error = err;
+        console.log(err, sessionid);
+      }
+      else {
+        socket.broadcast.emit(EVENT.removeShape, shapeId);
+      }
+    });
+
+    onComplete(error, 'Successfully removed shapes');
   };
 }
 
