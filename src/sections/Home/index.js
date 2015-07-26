@@ -1,4 +1,5 @@
 var fs = require('fs');
+
 var f1 = require('f1');
 var find = require('dom-select');
 var framework = require('../../framework/index');
@@ -9,7 +10,7 @@ var SERVERNAME = window.location.origin;
 var EVENT = model.socketEvents;
 var Cookies = require('cookies-js');
 
-function getWhiteboardSession(socket,whiteboardId){
+function getWhiteboardSession(socket,whiteboardId,filecontent){
       var max  = find('div.control input[name=maxUsers]').value;
       var maxUsers = parseInt(max);
       if(isNaN(maxUsers) || maxUsers > 30 || maxUsers <=0) {
@@ -22,7 +23,9 @@ function getWhiteboardSession(socket,whiteboardId){
       sessionSettings.canDraw = find('div.control #roundedTwo').checked;
       sessionSettings.canChat = find('div.control #roundedOne').checked;
       sessionSettings.maxUsers = maxUsers;
-
+      if(filecontent !=null)
+        sessionSettings.shapes = filecontent;
+      
       sessionSettings.users = [];
       socket.emit(EVENT.createSession,sessionSettings);
       console.log(sessionSettings);
@@ -65,7 +68,9 @@ Section.prototype = {
 
     var content = find('#content');
     this.section = document.createElement('div');
+
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
+
     content.appendChild(this.section);
 
     var username = find('#inputName');
@@ -85,6 +90,20 @@ Section.prototype = {
     username.addEventListener('click', function(e) {
       this.className = "username";
     });
+    var file = find('#file-input');
+    var filecontent = null;      
+
+    file.addEventListener('change',function(e){
+      var file = e.target.files[0];
+      var reader = new FileReader();
+      reader.onloadend = function(evt){
+         if(evt.target.readyState == FileReader.DONE){
+           filecontent = evt.target.result;
+         }
+      }
+      reader.readAsText(file,'utf-8'); 
+      
+      },false);
 
     find('#inputMax').addEventListener('click', function(e) {
       this.className = "";
@@ -105,7 +124,7 @@ Section.prototype = {
         }
       }else{
 
-        WhiteboardId = getWhiteboardSession(socket,sid);
+        WhiteboardId = getWhiteboardSession(socket,sid,filecontent);
         Cookies.set('created', WhiteboardId);
 
         if(WhiteboardId != undefined && WhiteboardId !=null){

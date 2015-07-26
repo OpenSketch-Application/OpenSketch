@@ -11,7 +11,22 @@ whiteboardSockets.deleteSessionCB = function(socket,nsp){
     socket.broadcast.emit(EVENT.deleteSession);
   };
 }
+whiteboardSockets.saveSessionCB = function(socket,nsp){
+  return function(callback){
+        var sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
 
+        Session.findById(sessionid, function(err, session){
+          if(err){
+            throw new Error('Error retrieving Session');
+          }
+          else if(session && session._id){
+            callback(JSON.stringify(session.canvasShapes));
+          }
+          
+        });
+  };
+}
 whiteboardSockets.userListCB = function(socket,nsp){
   return function(sessionId){
         var sessionid = socket.adapter.nsp.name.split('/');
