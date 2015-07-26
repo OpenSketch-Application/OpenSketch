@@ -71,8 +71,12 @@ Section.prototype = {
           
           break;
         case 'opt-clear':
-          socket.emit(EVENT.clearShapes);
-          APP_STATE.clearShapes();
+          socket.emit(EVENT.clearShapes, null, function(err) {
+            if(err)
+              console.log(err);
+            else
+              APP_STATE.clearShapes();
+          });
           break;
         case 'opt-settings':
 
@@ -107,7 +111,7 @@ Section.prototype = {
   },
 
   resize: function(w, h) {
-    APP_STATE.Canvas.renderer.view.style.width = w * 0.75 + 'px';
+    APP_STATE.Canvas.renderer.view.style.width =  (w < 964 ? 964 : w * 0.75) + 'px';
     APP_STATE.Canvas.renderer.view.style.height = h + 'px';
   },
 
