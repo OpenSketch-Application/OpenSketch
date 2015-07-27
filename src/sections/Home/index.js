@@ -16,7 +16,9 @@ function getWhiteboardSession(socket,whiteboardId){
         maxUsers = 30;
       }
       var name = find('.username').value;
+
       Cookies.set('username',name);
+
       var sessionSettings = {};
       sessionSettings.id = whiteboardId;
       sessionSettings.canDraw = find('div.control #roundedTwo').checked;
@@ -24,7 +26,9 @@ function getWhiteboardSession(socket,whiteboardId){
       sessionSettings.maxUsers = maxUsers;
 
       sessionSettings.users = [];
+
       socket.emit(EVENT.createSession,sessionSettings);
+
       console.log(sessionSettings);
       return sessionSettings.id;
 }
@@ -103,10 +107,14 @@ Section.prototype = {
           el.className = el.className + ' error';
           errLabel.innerHTML = errLabel.innerHTML + err.errors[i].msg + '<br/>';
         }
-      }else{
+      } else {
 
         WhiteboardId = getWhiteboardSession(socket,sid);
+
+        //Cookies.set('created', WhiteboardId, { domain: SERVERNAME + '/whiteboard/'+ WhiteboardId, secure: false });
         Cookies.set('created', WhiteboardId);
+        Cookies.set('UserId', WhiteboardId);
+
 
         if(WhiteboardId != undefined && WhiteboardId !=null){
           framework.go('/whiteboard/'+ WhiteboardId);

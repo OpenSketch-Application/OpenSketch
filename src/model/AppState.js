@@ -187,7 +187,7 @@ var AppState = {
     Shapes: Shapes
   },
   Tools: Object.preventExtensions(Tools),
-  ToolBar: {},
+  ToolBar: {}, // Will be attached in whiteboard/index.js init method
   Users: {
     currentUser: {},
     users: [], // index 0 is always for Head

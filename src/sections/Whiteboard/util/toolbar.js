@@ -28,6 +28,7 @@ function toolbar(elements, AppState) {
 
   var tools = AppState.Tools;
   var socket = AppState.Socket;
+  var stage = AppState.Canvas.stage;
 
   this.container = find(elements.whiteboard);
 
@@ -97,16 +98,20 @@ function toolbar(elements, AppState) {
   }
 
   this.addUserInteraction = function() {
-    // Need to fix Shapes selection state
+    AppState.Settings.interactive = true;
+
+    stage.interactive = true;
+
     toolbox.addEventListener('click', this.addToolbarShapeHandlers, false);
 
-    // Enables drag N drop functionality for Canvas images
-    dragndrop(AppState);
+    // // Enables drag N drop functionality for Canvas images
+    // dragndrop(AppState);
   }
 
   this.addToolbarShapeHandlers = function(e) {
     //e.preventDefault();
     //e.stopPropagation();
+    stage.interactive = true;
 
     _this.selectedTool = e.target.id;
     var button = e.target;
@@ -133,18 +138,25 @@ function toolbar(elements, AppState) {
   }
 
   // Will prevent User from Interacting with Toolbar
-  // NOTE: remember to set AppState.Settings.interactive = false, to disable
-  // all interaction with Canvas
   this.removeUserInteraction = function() {
-    var stage = AppState.Canvas.stage;
+
+    // Disables all interaction with Canvas
+    AppState.Settings.interactive = false;
 
     toolbox.removeEventListener('click', this.addToolbarShapeHandlers, false);
 
-    // stage.interactive = false;
-    // stage.mousedown = null;
-    // stage.mouseup = null;
-    // stage.mouseover = null;
-    // stage.mouseout = null;
+    if(previouslySelected) {
+      previouslySelected.className = "";
+    }
+
+    stage.interactive = false;
+
+    tools.selected = '';
+
+    stage.mousedown = function(data){ data.originalEvent.preventDefault() };
+    stage.mouseup = function(data){ data.originalEvent.preventDefault() };
+    stage.mouseover = function(data){ data.originalEvent.preventDefault() };
+    stage.mouseout = function(data){ data.originalEvent.preventDefault() };
   }
 };
 

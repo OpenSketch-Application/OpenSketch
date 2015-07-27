@@ -16,15 +16,63 @@ Section.prototype = {
 
   init: function(req, done) {
     this.createID = Cookies.get('created');
+    var userId = Cookies.get('UserId');
+
+    var curSession = window.location.href;
+    curSession = curSession.split('/');
+    var end = curSession.length -1;
+    var curSessionId = curSession[end];
+    curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
+
+    var socket = io.connect(SERVERNAME +curSession);
+    // Wait four seconds before deciding to navigate User back to Home Page
+    var timerCallback = setTimeout(function() {
+      console.error('Unable to connect to session ', curSession, ' in 5 seconds');
+      socket.disconnect();
+      framework.go('/home');
+      done();
+      location.reload();
+    }, 5000)
 
     console.log(this.createID);
-    if(this.createID != window.location.href.replace(/.*\//, '')) {
 
-      // We will need to check if User is not already kicked out of this session
-      if(Cookies.get('username') != null) {
-        done();
+    socket.on('connect', function() {
+      // Clear the previous timer
+      if(timerCallback) clearTimeout(timerCallback);
+
+      socket.emit(EVENT.UserList);
+      // }
+    })
+
+    socket.on(EVENT.UserList, function(users) {
+      if(users.length === 0) {
+        socket.emit(EVENT.joinSession, Cookies.get('username'), Cookies.get('UserId'));
+      }
+      else {
+        var matchedUser;
+
+        users.some(function(user) {
+          if(userId === user._id) {
+            matchedUser = user;
+            return true;
+          }
+          return false;
+        });
+
+        // If we found a match, show user the whiteboard, since he has already joined the session
+        if(matchedUser && matchedUser._id === userId) {
+          socket.emit(EVENT.joinSession, matchedUser.username, matchedUser._id);
+        }
+        //
+        else {
+          showUserGate(req, done, users);
+        }
       }
 
+      done();
+    })
+
+    var showUserGate = function(req, done, users) {
       var content = find('#content');
       this.section = document.createElement('div');
       this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
@@ -49,29 +97,20 @@ Section.prototype = {
                              .targets({ shader: find('#shader'), promptbox: find('#promptbox')})
                              .parsers(require('f1-dom'))
                              .init('init');
-      var curSession = window.location.href;
-      curSession = curSession.split('/');
-      var end = curSession.length -1;
-      var curSessionId = curSession[end];
-      curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
 
-
-      var socket = io.connect(SERVERNAME +curSession);
       var usernames = [];
 
-      socket.emit(EVENT.UserList);
-
-      socket.on(EVENT.UserList,function(users){
-           userList.innerHTML = '';
-           for( var i = 0; i < users.length;i++)
-           {
-             var li = document.createElement('li');
-             console.log(users[i]);
-             li.appendChild(document.createTextNode(users[i].username));
-             usernames[i] = users[i].username;
-             userList.appendChild(li);
-           }
-      });
+      //socket.on(EVENT.UserList,function(users){
+      userList.innerHTML = '';
+      for( var i = 0; i < users.length;i++)
+      {
+       var li = document.createElement('li');
+       console.log(users[i]);
+       li.appendChild(document.createTextNode(users[i].username));
+       usernames[i] = users[i].username;
+       userList.appendChild(li);
+      }
+      //});
 
       btnJoin.addEventListener('click', function(el){
         errorMsg.innerHTML = '';
@@ -85,12 +124,19 @@ Section.prototype = {
         }
         //return;
         Cookies.set('username', Name);
-        socket.emit(EVENT.joinSession, Name, curSessionId);
-        this.animateOut();
-      }.bind(this));
-    }
 
-    done();
+        socket.emit(EVENT.joinSession, Name);
+
+        this.animateOut();
+        done();
+      }.bind(this));
+    }.bind(this);
+    // else {
+    //   // The cookie info is passed automatically through sockets
+    //   socket.emit(EVENT.joinSession, Cookies.get('username'), Cookies.get('UserId'));
+    // }
+
+
   },
 
   resize: function(w, h) {

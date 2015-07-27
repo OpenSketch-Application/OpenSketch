@@ -37,7 +37,7 @@ module.exports = {
     //this.container.removeEventListener('click', this.onMouseClick);
 
     //this.container.addEventListener('click', this.onMouseClick.bind(this), false);
-
+    console.log('mustache render', Mustache.render(userManagementTemplate, users));
     // users should be in an Array
     this.container.innerHTML = Mustache.render(userManagementTemplate, users);
 
@@ -52,14 +52,17 @@ module.exports = {
 
     e.stopPropagation();
     e.preventDefault();
-    //console.log(e);
+
     console.log('clicked user permission', e);
+
     if(target.className.match('chatToggle')) {
 
       // Get the parent li, which has the User's Id
       // path is li div div.chatToggle
       userId = e.target.parentNode.parentNode.id;
       clickedOnUser = this.Users.getUserById(userId);
+
+      if(clickedOnUser.userRank === 0) return false;
 
       if(clickedOnUser.permissions.canChat) {
         clickedOnUser.permissions.canChat = false;
@@ -81,6 +84,8 @@ module.exports = {
 
       clickedOnUser = this.Users.getUserById(userId);
 
+      if(clickedOnUser.userRank === 0) return false;
+
       if(clickedOnUser.permissions.canDraw) {
         clickedOnUser.permissions.canDraw = false;
 
@@ -88,7 +93,9 @@ module.exports = {
         target.className = 'drawToggle';
       }
       else {
+
         clickedOnUser.permissions.canDraw = true;
+
         target.className = 'drawToggle canDraw';
       }
 
@@ -98,8 +105,17 @@ module.exports = {
       userId = e.target.parentNode.parentNode.id;
       clickedOnUser = this.Users.getUserById(userId);
 
+      // Might want to do special logic here since we might want Head User to just remove
+      // himself from the session
+      if(clickedOnUser.userRank === 0) return false;
+
+      debugger;
       console.log('Remove this User', clickedOnUser);
+
+      this.emitRemoveUser(clickedOnUser);
     }
+
+    return false;
   },
 
   addUserInteraction: function() {
@@ -125,7 +141,8 @@ module.exports = {
   setSocketEvents: function(AppState) {
     // Attach Socket to User Management Class
     var socket = this.socket = AppState.Socket;
-
+    var stage = AppState.Canvas.stage;
+    var select = AppState.Tools.select;
 
     socket.on(EVENT.updateUserList, function(msg, users, curUserIndex) {
       console.log('in update user list', users, curUserIndex);
@@ -134,10 +151,14 @@ module.exports = {
 
       this.container.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
 
+      console.log('CURRENT USER INDEX ' + curUserIndex);
+
       if(curUserIndex !== undefined){
         console.log('Current user set to: ' + users[curUserIndex]);
 
         AppState.Users.currentUser = users[curUserIndex];
+        Cookies.set('UserId', AppState.Users.currentUser._id);
+        Cookies.set('username', AppState.Users.currentUser.username);
       }
 
       // First check if User is head user
@@ -152,12 +173,14 @@ module.exports = {
     }.bind(this));
 
     socket.on(EVENT.userLeft, function(removedUser) {
-      console.log('USER LEFT registered', removedUser);
+      console.log('USER LEFT registered session', removedUser);
+
     })
 
     socket.on(EVENT.permissionChanged, function(userModel) {
       console.log('Premission changed', userModel);
       var user = AppState.Users.getUserById(userModel._id);
+
       if(user)
         AppState.Users.users[user.userRank] = userModel;//.getUserById(userModel._id);
       else
@@ -173,7 +196,7 @@ module.exports = {
 
       // Remove ChatBox listeners
       if(userModel.permissions.canChat === false) {
-        AppState.ChatBox.removeUserInteraction(); //
+        AppState.ChatBox.removeUserInteraction();
       }
       else {
         AppState.ChatBox.addUserInteraction();
@@ -181,23 +204,44 @@ module.exports = {
 
       // Remove Canvas/Stage and Toolbar Listeners
       if(userModel.permissions.canDraw === false) {
-        AppState.Settings.interactive = false;
+
         AppState.ToolBar.removeUserInteraction();
+
+        // Disable and unHighlight/unLock any selected Shape
+        if(select.selectedObject) {
+          select.selectedObject.unHighlight();
+          select.selectedObject.selected = false;
+
+          // UnLock at this point, since user is just clicking the Canvas and
+          // not the previously selected Shape
+          socket.emit(EVENT.shapeEvent, 'unlockShape', { _id: select.selectedObject._id });
+          select.selectedObject = null;
+        }
       }
       else {
-        AppState.Settings.interactive = true;
+
         AppState.ToolBar.addUserInteraction();
       }
 
       this.updateUsers(AppState.Users);
 
     }.bind(this));
+
+    socket.on(EVENT.removeUser, function(removeUserData) {
+      var currentUserId = Cookies.get('UserId');
+      debugger;
+      if(removeUserData._id === currentUserId) {
+        Cookies.set(removeUserData.sessionId, removeUserData._id);
+      }
+    })
   },
   emitSocketUserPermissionsChanged: function(userModel) {
     this.socket.emit(EVENT.permissionChanged, userModel);
   },
+  emitRemoveUser: function(userModel) {
+    this.socket.emit(EVENT.removeUser, userModel);
+  },
   destroy: function() {
     this.container.removeEventListener('click', this.onMouseClick.bind(this), false);
   }
-
 }

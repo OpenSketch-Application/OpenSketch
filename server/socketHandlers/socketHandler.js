@@ -44,10 +44,12 @@ module.exports = function(io,DB) {
     };
   }
   function wbHandler(nspWb) {
+
     return function(socket) {
+
       socket.on(EVENT.deleteSession, wbLogic.deleteSessionCB(socket,nspWb));
       socket.on(EVENT.joinSession, wbLogic.joinSessionCB(socket, nspWb));
-      socket.on(EVENT.UserList,wbLogic.userListCB(socket,nspWb));
+      socket.on(EVENT.UserList, wbLogic.userListCB(socket,nspWb));
       socket.on(EVENT.chatMessage, wbLogic.chatMessageCB(socket, nspWb));
       socket.on('disconnect', wbLogic.disconnectCB(socket, nspWb));
       socket.on(EVENT.sendPencil, wbLogic.sendPencilCB(socket, nspWb));
@@ -60,7 +62,7 @@ module.exports = function(io,DB) {
 
       // User Permissions
       socket.on(EVENT.permissionChanged, wbLogic.permissionChangedCB(socket));
-
+      socket.on(EVENT.removeUser, wbLogic.removeUser(socket));
     };
   }
 
@@ -69,14 +71,21 @@ module.exports = function(io,DB) {
 
     console.log('connection made', socket.id);
     socket.on(EVENT.validateSession, function(sessionid) {
-      console.log('in validate');
+      console.log('in validate, validating sessionId', sessionid);
+
+      var cookieString = socket.request.headers.cookie;
+      var userName = cookieString.match(/username=.*?(?=;)/gi);
+      var userId = cookieString.match(/UserId=.*/gi);
+
+      userName = userName && userName[0].split('=')[1];
+      userId = userId && userId[0].split('=')[1];
 
       console.log(socket.request.headers.cookie);
-
-      //var userId = socket.request.headers.cookie.match(/userId:.*;/gi);
+      console.log('user info', userName, userId);
 
       Session.findById(sessionid, function(err, session) {
         var userFound = false;
+        console.log('found session', session);
         // FOR TESTING AND DEVELOPMENT
         if(sessionid === 'session41') return;
 
@@ -85,8 +94,15 @@ module.exports = function(io,DB) {
 
           //console.log('full');
         }
+        else if(userId) {
+          var retreivedUser = session.users.id(userId);
+          if(retreivedUser && retreivedUser.username === userName) {
+            console.log('Matched UserName and UserId!', retreivedUser);
 
+          }
+        }
 
+//'io=qF8EhX7TOCH9_DftAAAB; username=gordenRamsay; created=k857e8TSbSnH3-pKAAAE; UserId=k857e8TSbSnH3-pKAAAE'
         // session.users.forEach(function(user) {
         //   if(user._id === userId) {
         //     userFound = true;

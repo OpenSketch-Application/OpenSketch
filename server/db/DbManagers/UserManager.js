@@ -126,10 +126,9 @@ User.deleteOne = function(id, userId, callback) {
   Db.update(
     {
       '_id': id,
-      'users._id': userId
     },
     {
-      $unset: { 'users.$': '' }
+      $pull: { 'users': { '_id': userId } }
     },
     function(err, result) {
       if(err) callback(err, result);

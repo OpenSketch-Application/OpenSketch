@@ -14,18 +14,11 @@ module.exports = function(files, AppState, event) {
 
     importedFile = new Import(Tools.importer, reader.result);
 
-    // if(event) {
-    //   importedFile.graphics.x = importedFile.x = event.x;
-    //   importedFile.graphics.y = importedFile.y = event.y;
-    // }
-    // else {
-      // Set the image to occupy the center of the Canvas
     importedFile.graphics.x = Math.abs(AppState.Canvas.renderer.width/2 - importedFile.imageSprite.width/2);
     importedFile.graphics.y = Math.abs(AppState.Canvas.renderer.height/2 - importedFile.imageSprite.height/2);
-    //}
 
     console.log('Adding Shape', importedFile);
-    //debugger;
+
     importedFile = shapes.addNew(importedFile);
 
     importedFile.setMoveListeners(AppState);

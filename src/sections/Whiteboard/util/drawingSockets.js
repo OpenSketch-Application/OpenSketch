@@ -25,12 +25,14 @@ module.exports = function(AppState) {
     if(shapelist) {
       shapelist.forEach(function(shape) {
         console.log('Adding shape', shape);
-        var addedShape = addShapeBasedOnType(shape);
-        addedShape.draw(shape);
-        addedShape.unHighlight();
-        addedShape.setMoveListeners(AppState);
-        if(shape.hasMoved){
-          addedShape.move({x:shape.moveX,y:shape.moveY});
+        if(!shapes[shape._id]) {
+          var addedShape = addShapeBasedOnType(shape);
+          addedShape.draw(shape);
+          addedShape.unHighlight();
+          addedShape.setMoveListeners(AppState);
+          if(shape.hasMoved){
+            addedShape.move({x:shape.moveX,y:shape.moveY});
+          }
         }
       });
     }

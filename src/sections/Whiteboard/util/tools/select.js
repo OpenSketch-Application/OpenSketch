@@ -101,17 +101,16 @@ module.exports = function(AppState, el) {
         // and it should also unlock the Shape
         socket.emit(EVENT.updateObject, saveObject);
       }
-
       // Due to our inability to do proper delegation yet, we had to wait to BaseShape class's
       // mouseDown event to attach the shape that experienced a mouseDown to attach the shape
       // to AppState.select.selectedObject
-      //else {
-      // Emit socket lockShape Event, since we know a Shape had been selected by now
-      socket.emit(EVENT.lockShape, 'lockShape', {
-        _id: select.selectedObject._id,
-        currentUserId: Users.currentUserId
-      });
-      //}
+      else {
+        // Emit socket lockShape Event, since we know a Shape had been selected by now
+        socket.emit(EVENT.lockShape, 'lockShape', {
+          _id: select.selectedObject._id,
+          currentUserId: Users.currentUserId
+        });
+      }
     }
 
     // Reset back to default
@@ -119,6 +118,7 @@ module.exports = function(AppState, el) {
   }
 
   var deleteShape = function(e) {
+    e.preventDefault();
     if (e.type == "keypress") {
       console.log('keypress', e.type);
     }

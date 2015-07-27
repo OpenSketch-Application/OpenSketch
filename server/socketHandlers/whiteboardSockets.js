@@ -33,14 +33,13 @@ whiteboardSockets.userListCB = function(socket,nsp){
 };
 //JOIN
 whiteboardSockets.joinSessionCB = function(socket,nsp) {
-  return function(uName,sessionid) {
+  return function(uName, uID) {
+        var sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
         //validate name
         console.log('joinsession');
-        // FOR TESTING AND DEVELOPMENT
-        if(sessionid === 'session41') {
-          console.log('Development session Enabled');
-          return;
-        }
+
+        //console.log(socket.request.headers.cookie);
 
         Session.findById(sessionid, function(err, session){
           if(err){
@@ -48,9 +47,25 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
             //throw new Error('Error retrieving Session');
           }
           else if(session && session._id) {
+            var currentUser = session.users.id(uID);
+            console.log('CHECKING USER ', currentUser, socket.id);
+            if(!uName) {
+              console.log('ERROR: must have username');
+              socket.emit(EVENT.badSession);
+            }
+            else if(currentUser && currentUser.username === uName) {
+              socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
+
+              socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
+
+              socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
+
+              socket.emit(EVENT.populateCanvas, session.canvasShapes);
+
+            }
             //push user to db
-            if(session.users.length < session.sessionProperties.maxUsers){
-              session.users.push({
+            else if(session.users.length < session.sessionProperties.maxUsers){
+              var newUser = {
                 username: uName,
                 userRank: session.users.length,
                 permissions: {
@@ -58,44 +73,38 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                   canChat: session.sessionProperties.canChat
                 },
                 _id: socket.id
-              });
+              };
+
+              session.users.push(newUser);
 
               session.save(function(err){
-                 if(err) console.log(err);
-                 else {
-                   console.log(session);
-                   console.log(session.users[0]);
-                   console.log(session.users[0].permissions);
-                   socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
-                   socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
+                if(err) {
+                  console.log(err);
+                }
+                else {
+                  console.log(session);
+                  console.log(session.users[0].permissions);
+                  socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
+                  socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
 
-                   socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, session.users.length - 1);
+                  socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, session.users.length - 1);
 
-                   socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
+                  socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
 
-                   socket.emit(EVENT.populateCanvas, session.canvasShapes);
+                  socket.emit(EVENT.populateCanvas, session.canvasShapes);
 
-                   socket.broadcast.emit(EVENT.UserList,session.users);
-
-                   // Should just emit as one object,
-                   // addNewParticipant
-                   // var sessionData = {
-                   //  currentUser: userId,
-                   //  users: [],
-                   //  messages: [],
-                   //  shapes: [],
-                   //  defaults: {}
-                   // };
-                   /**
-
-
-                    */
-                 }
+                  socket.broadcast.emit(EVENT.UserList,session.users);
+                }
               });
             }
+            else {
+              // Need to emit socket event that too many users are present in session
+              console.log('Too many users in this session ', session);
+            }
+
           }
           else {
-    //        console.warn('Null Sesson returned, Date: ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+           console.warn('Null Sesson returned, Date: ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
           }
         });
   };
@@ -164,11 +173,13 @@ whiteboardSockets.disconnectCB = function(socket, nspWb){
          socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has left the session');
 
          socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
-         socket.broadcast.emit(EVENT.userLeft, removedUser.id);
 
          socket.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
-         socket.emit(EVENT.userLeft, removedUser);
-         socket.broadcast.emit(EVENT.UserList,session.users);
+
+         // socket.emit(EVENT.userLeft, removedUser);
+         // socket.broadcast.emit(EVENT.userLeft, removedUser.id);
+
+         //socket.broadcast.emit(EVENT.UserList,session.users);
 
        }
        session.save(function(err){
@@ -269,6 +280,37 @@ whiteboardSockets.permissionChangedCB = function(socket) {
     })
 
     socket.broadcast.emit(EVENT.permissionChanged, userModel);
+  }
+}
+
+whiteboardSockets.removeUser = function(socket) {
+  return function(userModel) {
+    var sessionid = socket.adapter.nsp.name.split('/');
+    sessionid = sessionid[sessionid.length - 1];
+
+    console.log('Removing User', userModel);
+
+    console.log('socket namespaces', socket.io.nsps);
+
+    UserManager.deleteOne(sessionid, userModel._id, function(err, result) {
+      if(err) console.log('Unable to remove user', userModel);
+      else  {
+        console.log('User removed from session', userModel.username);
+
+      }
+    })
+
+    socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has been kicked out of the session');
+
+    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+
+    socket.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+
+    socket.emit(EVENT.removeUser, {
+      _id: userModel._id,
+      sessionId: sessionid
+    });
+    //socket.broadcast.emit(EVENT.removeUser, userModel);
   }
 }
 

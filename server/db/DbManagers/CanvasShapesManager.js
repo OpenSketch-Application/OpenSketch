@@ -142,37 +142,12 @@ Shapes.updateOne = function(id, shapeId, newShape, callback) {
 
 // .deleteOne()
 Shapes.deleteOne = function(id, shapeId, callback) {
-  Db.update(
+  Session.update(
     {
-      '_id': id,
-      'canvasShapes._id': shapeId
+      '_id': id
     },
     {
-      $unset: { 'canvasShapes.$': '' }
-    },
-    function(err, result) {
-      callback(err, result);
-    }
-  )
-}
-
-
-/**
- * [deleteSome description]
- * @param  {[String]}   id         the _id of Session
- * @param  {[Shape]}   properties  the
- * @param  {Function} callback   [description]
- * @callback (err, result)            [description]
- * @result { ok: Boolean, nModified: Number, n: Number }
- */
-Shapes.deleteSome = function(id, properties, callback) {
-  Db.update(
-    {
-      '_id': id,
-      'canvasShapes':  { $elemMatch : properties }
-    },
-    {
-      $unset: { 'canvasShapes.$': '' }
+      $pull: { canvasShapes: { '_id' : shapeId } }
     },
     function(err, result) {
       callback(err, result);
@@ -182,7 +157,7 @@ Shapes.deleteSome = function(id, properties, callback) {
 
 // .deleteAll()
 Shapes.deleteAll = function(id, callback) {
-  Db.update(
+  Session.update(
     {
       '_id': id
     },

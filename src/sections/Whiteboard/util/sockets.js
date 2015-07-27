@@ -11,22 +11,33 @@ module.exports = function(io, framework, AppState){
   curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
 
   var socket = io.connect(SERVERNAME);
+
   socket.on(EVENT.badSession,function(){
     socket.nsp = '/home';
   });
 
-  socket.emit(EVENT.validateSession,curSessionId);
+  socket.emit(EVENT.validateSession, curSessionId);
 
   socket = io.connect(SERVERNAME + curSession);
 
-  if(Cookies.get('username') != null && Cookies.get('created')!=null){
-    socket.emit(EVENT.joinSession,Cookies.get('username'),curSessionId);
-  };
+  // socket.on('connect', function(info) {
+
+  //   console.log('SOCKET CONNECTED', info);
+  //   console.dir(info);
+
+  // });
+
+  // if(Cookies.get('UserId') === curSessionId) {
+  //   socket.emit(EVENT.joinSession);
+  // }
+
+  //socket.emit(EVENT.joinSession);
+  //};
 
   socket.on(EVENT.announcement,function(msg){
     //update user list clientside
     //update chat tab with msg
-    var Chattab =  find('.chatMessageBox .chatMessages');
+    var Chattab = find('.chatMessageBox .chatMessages');
 
     var li = document.createElement('li');
     li.innerHTML = msg;
