@@ -27,9 +27,12 @@ function Text(shapeProperties) {
 
   this.totalNewLines = this.getTotalNewLine(shapeProperties.textContent);
 
-  this._caretIndex = 0;
+  this._caretXIndex = 0;
   this._caretYIndex = 0;
+  this._actualXIndex = 0;
   this.prevNewLineIndex = 0;
+  this.textArray = this.getTextArray(this.text);
+
   if(shapeProperties.wordWrap) {
     //console.log('internal text', this.pixiText.text);
     //console.log(PIXI.Text.prototype.wordWrap.call(this.pixiText, this.pixiText.text));
@@ -63,8 +66,12 @@ Text.prototype.getTotalNewLine = function(text) {
   var newLines = text.match(/\r|\n/gi);
 
   return newLines && newLines.length;
-
 }
+
+Text.prototype.getTextArray = function(text) {
+  return text.split(/\n|\r/g);
+}
+
 Text.prototype.showCaret = function() {
   this.caret.clear();
   this.caret.beginFill(0x000000);
@@ -72,135 +79,160 @@ Text.prototype.showCaret = function() {
   this.caret.endFill();
 }
 
-Text.prototype.calculateCaretPosition = function(keyDirection) {
-  // if(this._caretIndex < this.scrollIndex) {
-  //   this.caret.position.x = this.x;
-  //   return;
-  // }
-
-  var textField = this.pixiText.text;
-  var currentIndex = this._caretIndex - 1;
-
-  this.totalNewLines = this.getTotalNewLine(this.text);
-
-  this.startIndex = this.text.lastIndexOf('\n', currentIndex);
-  if(this.startIndex === -1) this.startIndex = 0;
-
-  var sub;
-
-  if(keyDirection === 'LEFT') {
-    //currentIndex = currentIndex + 1;
-    if(isNewLine(this.text.charAt(currentIndex))) {
-      console.log('got newLine', this.text.charAt(currentIndex), 'index', currentIndex);
-
-      // Decrement y-index of caret
-      this._caretYIndex--;
-
-      if(this._caretYIndex < 0) this._caretYIndex = 0;
-      //this.startIndex--;
-    }
-
-    console.log('prevNewLine', this.text.lastIndexOf('\n', currentIndex), 'nextNewLine', this.text.indexOf('\n', currentIndex));
-
-  }
-  else if(keyDirection === 'RIGHT') {
-    //currentIndex = currentIndex - 1;
-    if(isNewLine(this.text.charAt(currentIndex))) {
-      console.log('got newLine, moving right', this.text.charAt(currentIndex), 'index', this._caretIndex);
-
-      // Increment Caret y position
-      if(this._caretYIndex < this.totalNewLines)
-        this._caretYIndex++;
-    }
-    console.log('prevNewLine', this.text.lastIndexOf('\n', currentIndex), 'nextNewLine', this.text.indexOf('\n', currentIndex));
-  }
-
-  if(this._caretYIndex > 0) this.startIndex--;
-
-  console.log('currentIndex', this._caretIndex, ': caretCheckIndex', currentIndex);
-
-  console.log('startIndex', this.startIndex, 'currentndex', currentIndex, 'currentChar', this.text.charAt(this._caretIndex));
-
-  sub = textField.substring(this.startIndex, this._caretIndex);
-  sub.replace(/\n|\r/g, '');
-
-  //.substring(this.scrollIndex);
-  var coords = this.pixiText.context.measureText(sub);
-  //console.log('curIndex', )
-  //console.log('sub To Measure', sub, coords);
-  console.log('subText:', sub);
-  this.caret.position.x = coords.width; //this.pixiText.context.measureText(sub).width;
-  this.caret.position.y = (this._caretYIndex * this.lineHeight * 1.85);
-
-  function isNewLine(character) {
-    return character === '\n' || character === '\r';
-  }
-  //console.log(this.caret.position.y);
-}
-
-Text.prototype.hideCursor = function() {
+Text.prototype.hideCaret = function() {
   this.caret.clear();
 }
 
+Text.prototype.calculateCaretPosition = function() {
+  //this._caretXIndex = 0;
+  if(this._caretYIndex < 0) {
+    this._caretYIndex = 0;
+  }
+  else if (this._caretYIndex > this.textArray.length - 1) {
+    this._caretYIndex = this.textArray.length - 1;
+  }
+  // debugger;
+  // Check for RIGHT key
+  // Check if caretX if within bounds
+  // First check right most bounds
+  if(this._caretXIndex > this.textArray[this._caretYIndex].length) {
+    // Check if newline exists below it
+    if((this._caretYIndex + 1) < this.textArray.length) {
+      this._caretXIndex = 0;
+      this._caretYIndex++;
+    }
+    else {
+      // Else set it back to last character of line
+      this._caretXIndex = this.textArray[this._caretYIndex].length;
+    }
+  }
+  // Checking left most index
+  else if(this._caretXIndex < 0) {
+    // Check if line exists above
+    if(this._caretYIndex - 1 >= 0) {
+      this._caretYIndex--;
+      this._caretXIndex = this.textArray[this._caretYIndex].length;
+    }
+    else {
+      this._caretYIndex = 0;
+      //this._caretXIndex = 0;
+    }
+  }
+
+  var sub = this.textArray[this._caretYIndex].substring(0, this._caretXIndex);
+  var coords = this.pixiText.context.measureText(sub);
+
+  this.caret.position.x = coords.width;
+  this.caret.position.y = (this._caretYIndex * this.lineHeight * 1.55);
+}
+
+Text.prototype.getActualXIndex = function() {
+  var stringLength = 0;
+  for (var i = 0, len = this.textArray.length; i < len; i++) {
+
+    if(this._caretYIndex === i) {
+      return stringLength += this._caretXIndex;
+    }
+    else {
+      stringLength += this.textArray[i].length;
+    }
+  };
+  return stringLength;
+}
+
 Text.prototype.onKeyEvent = function(e) {
-  //console.log('key: ', String.fromCharCode(e.charCode));
 
   if(e.type === 'keypress') {
-    this.text =
-      this.text.substring(0, this._caretIndex) +
-      String.fromCharCode(e.charCode) +
-      this.text.substring(this._caretIndex);
-    this._caretIndex++;
+    if(e.keyCode !== 13) {
+      var text = this.textArray[this._caretYIndex];
+      this.textArray[this._caretYIndex] = text.substring(0, this._caretXIndex) +
+      String.fromCharCode(e.charCode) + text.substring(this._caretXIndex);
+
+      this.text = this.textArray.join('\n').toString();
+
+      this._caretXIndex++;
+
+      this.calculateCaretPosition();
+    }
   }
 
   if(e.type === "keydown") {
     console.log('keyCode', e.keyCode);
     switch(e.keyCode) {
-      case 8: // Backspace
-        // Check if this character is a newline
-        if(this._caretIndex > 0) {
-          this.text = this.text.substring(0, this._caretIndex - 1) +
-            this.text.substring(this._caretIndex);
-          this._caretIndex--;
-          this.calculateCaretPosition();
+      case 8: // Backspace/DEL Mac
+        // Basically at the zero index of a line, we check if there is another line
+        // above, then concat current line with the line above, mimicking deleting a newline
+        if(this._caretXIndex === 0 && this._caretYIndex > 0) {
+          this._caretXIndex = this.textArray[this._caretYIndex - 1].length;
+          this.textArray[this._caretYIndex - 1] += this.textArray[this._caretYIndex];
+          this.textArray.splice(this._caretYIndex, 1);
+          this._caretYIndex--;
+
+          this.text = this.textArray.join('\n').toString();
         }
-        e.preventDefault();
-        break;
-      case 13: // ENTER
+        else {
+          var text = this.textArray[this._caretYIndex];
+          this.textArray[this._caretYIndex] = text.substring(0, this._caretXIndex - 1) +
+                                              text.substring(this._caretXIndex);
 
-        this.totalNewLines++;
+          this.text = this.textArray.join('\n').toString();
 
-        break;
-      case 46: // Del
-        // Check if this character is a newline
-        this.text =
-          this.text.substring(0, this._caretIndex) +
-          this.text.substring(this._caretIndex + 1);
+          this._caretXIndex--;
+        }
 
         this.calculateCaretPosition();
         e.preventDefault();
         break;
-      case 39: // RIGHT Arrow
-        this._caretIndex++;
-        if(this._caretIndex > this.text.length)
-          this._caretIndex = this.text.length;
+      case 13: // ENTER
+        var nextLine = this.textArray[this._caretYIndex].slice(this._caretXIndex, this.textArray[this._caretYIndex].length);
+        this.textArray[this._caretYIndex] = this.textArray[this._caretYIndex].substring(0, this._caretXIndex);
+        this.textArray.splice(++this._caretYIndex, 0, nextLine);
 
-        this.calculateCaretPosition('RIGHT');
+        this.text = this.textArray.join('\n').toString();
+        this._caretXIndex = 0;
+        this.calculateCaretPosition();
+
+        e.preventDefault();
+        break;
+      case 46: // Del/Windows
+        // Check if this character is a newline
+        // this.text =
+        //   this.text.substring(0, this.getActualXIndex()) +
+        //   this.text.substring(this.getActualXIndex() + 1);
+
+        //this.textArray = this.getTextArray(this.text);
+
+        this.calculateCaretPosition();
         e.preventDefault();
         break;
       case 37: //LEFT Arrow
-        this._caretIndex--;
-        if(this._caretIndex < 0)
-          this._caretIndex = 0;
-
-        this.calculateCaretPosition('LEFT');
+        this._caretXIndex--;
+        this.calculateCaretPosition();
+        e.preventDefault();
+        break;
+      case 38: // UP
+        this._caretYIndex--;
+        this.calculateCaretPosition();
+        e.preventDefault();
+        break;
+      case 39: // RIGHT Arrow
+        this._caretXIndex++;
+        this.calculateCaretPosition();
+        e.preventDefault();
+        break;
+      case 40: //DOWN
+        this._caretYIndex++;
+        this.calculateCaretPosition();
         e.preventDefault();
         break;
       default:
         this.calculateCaretPosition();
         break;
     }
+
   }
+
+  this.highlight();
 }
 
 Text.prototype.onSelect = function(e) {
@@ -337,11 +369,9 @@ Text.prototype.draw = function(shapeProperties) {
 
     if(shapeProperties.width) {
       this.width = shapeProperties.width;// <= this.wordWrapWidth ? this.wordWrapWidth : shapeProperties.width;
-      //this.pixiText.wordWrapWidth = this.width;
     }
     if(shapeProperties.height) {
       this.height = shapeProperties.height;// <= this.pixiText.height ? this.pixiText.height : shapeProperties.height;
-      //this.pixiText.fontSize = this.height;
     }
 
     this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
@@ -358,32 +388,15 @@ Text.prototype.draw = function(shapeProperties) {
                                                         : this.fillColor;
   }
 
-
-  // console.log(this.graphics);
-  // debugger;
-  //this.graphics.stage.addChild(this.pixiText);
-
   var scale = {
     x: 1,
     y: 1
   };
-  //text = shapes.addNew(text);
-  // scale.x = (shapeProperties.x - this.graphics.x)/this.graphics.x + 1;
-  // scale.y = (shapeProperties.y - this.graphics.y)/this.graphics.y + 1;
 
-  //this.graphics.scale = scale;
+  this.graphics.scale = scale;
 
   // Since we cleared all the draw properties for redrawing, we need to set the styles again
-
-
   this.graphics.beginFill(this.fillColor);
-
-  // this.pixiText.x = this.x;
-  // this.pixiText.y = this.y;
-  //this.pixiText.height = this.height * 0.85;
-  //this.pixiText.width = this.width * 0.85;
-  //this.pixiText.height = this.height;
-  //this.pixiText.wordWrapWidth = this.width;
 
   // Redraw the shape
   this.graphics.drawRect(
