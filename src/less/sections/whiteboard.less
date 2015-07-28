@@ -114,7 +114,7 @@
           }
         }
       }
-      
+
       li:hover ul.shapes {
         display: block; /* Display the dropdown */
       }
@@ -139,7 +139,7 @@
       }
     }
 
-    
+
 
     .options {
       display: inline-block;
@@ -163,15 +163,30 @@
         font-weight: bold;
         background-color: #3F3075;
       }
-      
+
     }
   }
+
   #save-whiteboard-prompt{
-        display: none;
-        position: absolute;
-        top: 60px; 
-        z-index: 1000;
+    display: none;
+    position: absolute;
+    top: 80px;
+    z-index: 1000;
+    line-height: 1;
+    &.saveDialogOpen {
+      display: block;
+      position: absolute;
+      top: 60px;
+      z-index: 1000;
+      padding: 10px;
+      background-color: #132531;
+
+      input {
+        margin-left: 5px;
+      }
+    }
   }
+
   #main {
     #whiteboard-container {
       position: relative;
