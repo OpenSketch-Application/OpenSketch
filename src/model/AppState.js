@@ -52,7 +52,7 @@ var Tools = {
     strokeThickness: 1,
     // wordWrap: true,
     // wordWrapWidth: 600,
-    textContent: 'This\n is \na textbox\n',
+    textContent: 'Textbox\n',
     // Rectangle class properties
     lineColor: 0x000000,
     lineWidth: 1,
@@ -159,7 +159,6 @@ Shapes.prototype = {
   }
 };
 
-
 Object.defineProperty(Shapes.prototype, 'originalUser', {
   get: function() {
     return AppState.Users.currentUser._id || 'unknown';
@@ -209,7 +208,8 @@ var AppState = {
   clearShapes: function() {
     this.Canvas.stage.removeChildren();
     this.Canvas.Shapes = new Shapes();
-  }
+  },
+  GlobalEvents: {}
 };
 
 // Defines a more specific setter and getter for Canvas stage

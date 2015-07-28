@@ -109,8 +109,8 @@ module.exports = function(el, AppState) {
 
       socket.emit(EVENT.shapeEvent, 'add', textbox.getProperties());
       //console.log('textbox props', textbox.getProperties());
-      socket.emit(EVENT.shapeEvent, 'draw', textbox.getProperties());
-      socket.emit(EVENT.shapeEvent, 'drawEnd', { _id: textbox._id });
+      //socket.emit(EVENT.shapeEvent, 'draw', textbox.getProperties());
+      //socket.emit(EVENT.shapeEvent, 'drawEnd', { _id: textbox._id });
 
       socket.emit(EVENT.saveObject, textbox.getProperties());
 

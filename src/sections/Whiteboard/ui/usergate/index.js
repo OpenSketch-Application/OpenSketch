@@ -146,11 +146,6 @@ Section.prototype = {
       }.bind(this));
 
     }.bind(this);
-    // else {
-    //   // The cookie info is passed automatically through sockets
-    //   socket.emit(EVENT.joinSession, Cookies.get('username'), Cookies.get('UserId'));
-    // }
-
 
   },
 

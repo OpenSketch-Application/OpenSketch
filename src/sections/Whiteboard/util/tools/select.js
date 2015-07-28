@@ -159,6 +159,7 @@ module.exports = function(AppState, el) {
     document.addEventListener('keydown', keydown);
   };
 
+  AppState.GlobalEvents['keydown'] = keydown;
   // Return true for now, might decide to implement more complexity for
   // complex shapes
   function activate() {

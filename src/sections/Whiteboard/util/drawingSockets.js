@@ -25,7 +25,7 @@ module.exports = function(AppState) {
       shapelist.forEach(function(shape) {
 
         console.log('Adding shape', shape);
-        if(!shape && !shapes[shape._id]){
+        if(shape && !shapes[shape._id]){
           var addedShape = addShapeBasedOnType(shape);
           addedShape.draw(shape);
           addedShape.unHighlight();
@@ -55,30 +55,39 @@ module.exports = function(AppState) {
         console.log('handle shape event', eventType, shapeData);
         switch(eventType) {
           case 'draw':
-            shapes[shapeData._id].draw(shapeData);
-            shapes[shapeData._id].highlight();
+            if(shapes[shapeData._id]) {
+              shapes[shapeData._id].draw(shapeData);
+              shapes[shapeData._id].highlight();
+            }
             break;
 
           // Any interaction that involves a mouseup or mousedown
           case 'drawEnd':
-            // shapeData is just an _id property
-            shapes[shapeData._id].setMoveListeners(AppState);
-            shapes[shapeData._id].unHighlight();
+            if(shapes[shapeData._id]) {
+              // shapeData is just an _id property
+              shapes[shapeData._id].setMoveListeners(AppState);
+              shapes[shapeData._id].unHighlight();
+            }
             break;
 
           case 'lockShape':
             console.log('lock current shape');
-
-            shapes[shapeData._id].lockShape();
+            if(shapes[shapeData._id]) {
+              shapes[shapeData._id].lockShape();
+            }
             break;
 
           case 'unlockShape':
             console.log('unlock shape');
-            shapes[shapeData._id].unLockShape();
+            if(shapes[shapeData._id]) {
+              shapes[shapeData._id].unLockShape();
+            }
             break;
 
           case 'move':
-            shapes[shapeData._id].move(shapeData);
+            if(shapes[shapeData._id]) {
+              shapes[shapeData._id].move(shapeData);
+            }
             break;
 
           // CRUD events for Shapes
@@ -88,8 +97,11 @@ module.exports = function(AppState) {
             break;
 
           case 'modify':
-            // redraw the shape with new properties
-            shapes[shapeData._id].draw(shapeData);
+            if(shapes[shapeData._id]) {
+              // redraw the shape with new properties
+              shapes[shapeData._id].draw(shapeData);
+              shapes[shapeData._id].highlight();
+            }
             break;
 
           case 'remove':
@@ -97,7 +109,8 @@ module.exports = function(AppState) {
             break;
         }
       } catch(err) {
-        console.error('Recieved err', err);
+        console.error('Recieved err for', err);
+        console.warn('Shape that errored:\n', shapeData);
       }
     // if(shapeData && shapes[shapeData._id]) {
     // }
@@ -136,6 +149,8 @@ module.exports = function(AppState) {
           shape = new Textbox(shapeData);
 
           shape.draw(shapeData);
+
+          shape.setMoveListeners(AppState);
 
           break;
       }

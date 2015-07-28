@@ -240,6 +240,9 @@ Text.prototype.onSelect = function(e) {
 
 Text.prototype.unSelect = function(e) {
   this.removeListeners(e);
+
+  // Restore the original Global Delete Keyboard event
+  document.addEventListener('keydown', this.globalKeyDown);
 }
 
 Text.prototype.removeListeners = function(e) {
@@ -444,29 +447,44 @@ Text.prototype.setMoveListeners = function(AppState) {
   var baseMouseDown = this.graphics.mousedown;//.bind(this, AppState);
   var baseMouseUp = this.graphics.mouseup;//.bind(this, AppState);
   this.socket = AppState.Socket;
-  //keyboardManager.textInput(this.textField.setText.bind(this.textField));
-  //var Select = Tools.select;
+  var previousClickTime;
+  this.globalKeyDown = AppState.GlobalEvents['keydown'];
+  var dblClickTimer;
+
   this.graphics.mousedown = function(e) {
     baseMouseDown.call(this, e);
 
     if(Tools.selected === 'select') {
 
-      // Activate Keyboard listeners
-      this.onSelect(e);
-
-      this.isFocusClick = true;
-
       var _this = this;
 
-      this.showCaret();
+      if(previousClickTime) {
+        // Clear the global delete keyboard event
+        document.removeEventListener('keydown', this.globalKeyDown);
 
-      //this.textField.context.canvas.focus();
+        this.isFocusClick = true;
+
+        // Activate Keyboard listeners
+        this.onSelect(e);
+
+        this.showCaret();
+      }
+      else {
+        previousClickTime = Date.now();
+      }
+
+      dblClickTimer = setTimeout(function() {
+        previousClickTime = undefined;
+      }, 1200);
 
       setTimeout(function() {
         _this.isFocusClick = false;
       }, 0);
 
-      if(!_this.isFocusClick) this.hideCaret();
+      if(!this.isFocusClick) {
+        this.unSelect();
+      }
+
       //keyboardManager.textInput(this.textField.setText.bind(this.textField));
 
       //this.textField.setText('hello');

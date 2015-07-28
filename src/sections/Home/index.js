@@ -115,7 +115,7 @@ function verifyForm(filecontent){
       var importfile = find('#file-input');
       var error = { };
       error.errors = [];
-
+      debugger;
       if(isNaN(maxUsers) || maxUsers > 30 || maxUsers <=0) {
         error.errors.push({msg:'Max users: 1 - 30',element: max});
       }
@@ -134,6 +134,7 @@ function verifyForm(filecontent){
       if(filecontent === null) shapes = [];
       return {isErr: false, data: session};
     }
+
 }
 
 function Section() {}
@@ -218,7 +219,7 @@ Section.prototype = {
         settings.messages = obj.data.messages;
         socket.emit(EVENT.createSession,settings);
 
-        if(!settings.id){
+        if(settings.id){
 
           Cookies.set('created', settings.id);
           Cookies.set('UserId', settings.id);
