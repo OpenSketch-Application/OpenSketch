@@ -23,6 +23,7 @@ module.exports = function(AppState, el) {
   var socket = AppState.Socket;
   var shapeModified = false;
   var isDown = false;
+  var isMouseOut = false;
   var modifiedShape = {
     x: 0,
     y: 0,
@@ -52,8 +53,8 @@ module.exports = function(AppState, el) {
   };
 
   var mousemove = function(data) {
+    isMouseOut = false;
     //data.originalEvent.preventDefault();
-
     // Set selected
     if(isDown && select.selectedObject !== null) {
       var selectedObject = select.selectedObject;
@@ -83,10 +84,10 @@ module.exports = function(AppState, el) {
 
       // Emit socket interactionEnd Event, since drawing has ended on mouse up
       //socket.emit(EVENT.shapeEvent, 'interactionEnd', shapeId);
-       saveObject = select.selectedObject.getProperties();
-       saveObject.moveX = modifiedShape.x;
-       saveObject.moveY = modifiedShape.y;
-       saveObject.hasMoved = true;
+      saveObject = select.selectedObject.getProperties();
+      saveObject.moveX = modifiedShape.x;
+      saveObject.moveY = modifiedShape.y;
+      saveObject.hasMoved = true;
       // saveObject._id = modifiedShape._id;
       // saveObject.x = select.selectedObject.x;
       // saveObject.y = select.selectedObject.y;
@@ -117,12 +118,46 @@ module.exports = function(AppState, el) {
     isDown = shapeModified = false;
   }
 
-  var deleteShape = function(e) {
-    e.preventDefault();
-    if (e.type == "keypress") {
-      console.log('keypress', e.type);
-    }
+  // var deleteShape = function(e) {
+  //   e.preventDefault();
+  //   if (e.type == "keypress") {
+  //     console.log('keypress', e.type);
+  //   }
+  // }
+
+  var mouseout = function() {
+    console.log('mouseout')
+
+    isMouseOut = true;
   }
+
+  var keydown = function(e) {
+    if(AppState.Tools.selected === 'select') {
+      var keycode;
+      if (window.event) keycode = window.event.keyCode;
+      else if (e) keycode = e.which;
+      else return true;
+
+      if ((keycode >= 48 && keycode <= 57) || keycode == 45 || keycode == 46 || keycode == 8){
+        socket.emit(EVENT.removeShape, select.selectedObject._id, function(err) {
+          if(err) {
+            console.log(err);
+          } else {
+            AppState.Canvas.Shapes.removeShapeByID(select.selectedObject._id);
+          }
+        });
+      }
+    }
+  };
+
+  document.addEventListener('keydown', keydown);
+  document.querySelector('#chatarea').onfocus = function(e) {
+    document.removeEventListener('keydown', keydown);
+  };
+
+  document.querySelector('#chatarea').onblur = function(e) {
+    document.addEventListener('keydown', keydown);
+  };
 
   // Return true for now, might decide to implement more complexity for
   // complex shapes
@@ -130,11 +165,9 @@ module.exports = function(AppState, el) {
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;
-    stage.mouseout = mouseup; // should also contain same methods as mouseup
-    document.addEventListener('keypress', deleteShape);
+    stage.mouseout = mouseout;
   }
 
   return true;
 }
-
 

@@ -87,7 +87,6 @@ var setMoveListeners = function(AppState) {
   // Since we don't have event bubbling, we need to have a close relationship between
   // Select tool's mouse events and the selected Shape's events
   this.graphics.mousedown = function(data) {
-    console.log('Mouse Down called');
     // Do early return if shape is locked, due to another User manipulating this Shape
     if(this.locked) return;
 

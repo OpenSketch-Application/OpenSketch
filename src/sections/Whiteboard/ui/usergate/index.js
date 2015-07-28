@@ -17,13 +17,14 @@ Section.prototype = {
   init: function(req, done) {
     this.createID = Cookies.get('created');
     var userId = Cookies.get('UserId');
-
-
     var curSession = window.location.href;
+
     curSession = curSession.split('/');
     var end = curSession.length -1;
     var curSessionId = curSession[end];
+
     curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
+
     var bannedSession = Cookies.get(curSessionId);
     var socket = io.connect(SERVERNAME +curSession);
     // Wait four seconds before deciding to navigate User back to Home Page

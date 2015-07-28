@@ -8,9 +8,6 @@ var userManagementTemplate = fs.readFileSync(__dirname + '/userManagement.hbs', 
 
 module.exports = {
   init: function(AppState) {
-    console.log('Initing User Manager');
-    console.log(find('.cd-tabs-content li[data-content=Users]'));
-
     // Attach template to App
     //this.userManagerContainer = find('');
     //this.userManagerContainer.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
@@ -46,15 +43,12 @@ module.exports = {
 
   },
   onMouseClick: function(e) {
-    console.log('clicking ', this);
     var target = e.target;
     var clickedOnUser;
     var userId;
 
     e.stopPropagation();
     e.preventDefault();
-
-    console.log('clicked user permission', e);
 
     if(target.className.match('chatToggle')) {
 
@@ -146,7 +140,6 @@ module.exports = {
     var select = AppState.Tools.select;
 
     socket.on(EVENT.updateUserList, function(msg, users, curUserIndex) {
-      console.log('in update user list', users, curUserIndex);
 
       AppState.Users.users = users;
 
@@ -155,8 +148,6 @@ module.exports = {
       console.log('CURRENT USER INDEX ' + curUserIndex);
 
       if(curUserIndex !== undefined){
-        console.log('Current user set to: ' + users[curUserIndex]);
-
         AppState.Users.currentUser = users[curUserIndex];
         if(users[curUserIndex] && AppState.Users.currentUser._id) Cookies.set('UserId', AppState.Users.currentUser._id);
         if(users[curUserIndex] && AppState.Users.currentUser.username) Cookies.set('username', AppState.Users.currentUser.username);
@@ -174,10 +165,7 @@ module.exports = {
 
     }.bind(this));
 
-    socket.on(EVENT.userLeft, function(removedUser) {
-      console.log('USER LEFT registered session', removedUser);
-
-    })
+    socket.on(EVENT.userLeft, function(removedUser) {})
 
     socket.on(EVENT.permissionChanged, function(userModel) {
       console.log('Premission changed', userModel);
@@ -229,14 +217,6 @@ module.exports = {
       this.updateUsers(AppState.Users);
 
     }.bind(this));
-
-    // socket.on(EVENT.removeUser, function(removeUserData) {
-    //   var currentUserId = Cookies.get('UserId');
-    //   debugger;
-    //   if(removeUserData._id === currentUserId) {
-    //     Cookies.set(removeUserData.sessionId, removeUserData._id);
-    //   }
-    // })
 
     socket.on(EVENT.disconnectUser, function(removeUserData) {
       var currentUserId = Cookies.get('UserId');

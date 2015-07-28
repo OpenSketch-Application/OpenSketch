@@ -31,6 +31,7 @@ module.exports = {
     'createSession': 'createSession',
     'badSession': 'badSession',
     'deleteSession': 'deleteSession',
+    'saveSession' :'saveSession',
 
     // Pixi/Canvas Draw Events
     'shapeEvent':'shapeEvent',
@@ -38,7 +39,9 @@ module.exports = {
 
     'saveObject' : 'saveObject',
     'updateObject' : 'updateObject',
-    'deleteObject' : 'deleteObject'
+    'deleteObject' : 'deleteObject',
+    'clearShapes' : 'clearShapes',
+    'removeShape' : 'removeShape'
 
     //'sendPencil' : 'sendPencil'
     // 'sendLine' : 'sendLine'

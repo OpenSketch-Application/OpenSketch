@@ -21,13 +21,12 @@ module.exports = function(AppState) {
 
   // Handles populating a new participant's Canvas with Shapes
   socket.on(EVENT.populateCanvas, function(shapelist) {
-    console.log('POPULATE', shapelist);
     if(shapelist) {
       shapelist.forEach(function(shape) {
-        console.log('Adding shape', shape);
-        if(!shapes[shape._id]) {
-          var addedShape = addShapeBasedOnType(shape);
 
+        console.log('Adding shape', shape);
+        if(!shape && !shapes[shape._id]){
+          var addedShape = addShapeBasedOnType(shape);
           addedShape.draw(shape);
           addedShape.unHighlight();
           addedShape.setMoveListeners(AppState);
@@ -35,6 +34,7 @@ module.exports = function(AppState) {
             addedShape.move({x:shape.moveX,y:shape.moveY});
           }
         }
+
       });
     }
   });
@@ -50,8 +50,9 @@ module.exports = function(AppState) {
   // lockShape
   // unlockShape
   function handleShapeEvent(eventType, shapeData) {
+
       try {
-      console.log('handle shape event', eventType, shapeData);
+        console.log('handle shape event', eventType, shapeData);
         switch(eventType) {
           case 'draw':
             shapes[shapeData._id].draw(shapeData);
@@ -109,44 +110,43 @@ module.exports = function(AppState) {
   function addShapeBasedOnType(shapeData) {
     var shape;
 
-    switch(shapeData.shapeType) {
-      case 'rectangle':
-        //AppState.Canvas.stage.addChild(shapeData);
-        shape = new Rectangle(shapeData);
-        break;
-      case 'line':
-        shape = new Line(shapeData);
-        break;
-      case 'ellipse':
-        shape = new Ellipse(shapeData);
-        break;
-      case 'pencil':
-        shape = new Pencil(shapeData);
-      // Flow Chart Shapes
-      case 'flowChartFunction':
-        break;
-      case 'table':
-        shape = new Table(shapeData);
-        break;
-      case 'textbox':
+    if(shapeData != null && shapeData != undefined){
 
-        shape = new Textbox(shapeData);
+      switch(shapeData.shapeType) {
+        case 'rectangle':
+          //AppState.Canvas.stage.addChild(shapeData);
+          shape = new Rectangle(shapeData);
+          break;
+        case 'line':
+          shape = new Line(shapeData);
+          break;
+        case 'ellipse':
+          shape = new Ellipse(shapeData);
+          break;
+        case 'pencil':
+          shape = new Pencil(shapeData);
+        // Flow Chart Shapes
+        case 'flowChartFunction':
+          break;
+        case 'table':
+          shape = new Table(shapeData);
+          break;
+        case 'textbox':
 
-        shape.draw(shapeData);
+          shape = new Textbox(shapeData);
 
-        break;
+          shape.draw(shapeData);
+
+          break;
+      }
     }
-
     // Add Shape to the Shapes hashmap
     if(shape) {
-
       return shapes.addNew(shape);
     }
     else console.log('ERROR: Did not create a Shape of requested type', shapeData);
 
     return shape;
   }
-
-
 };
 

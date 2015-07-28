@@ -6,6 +6,7 @@ var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(el, AppState) {
   console.log('AppState', AppState);
+
   var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
   var shapes = AppState.Canvas.Shapes;

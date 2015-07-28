@@ -12,7 +12,23 @@ whiteboardSockets.deleteSessionCB = function(socket,nsp){
     socket.broadcast.emit(EVENT.deleteSession);
   };
 }
+whiteboardSockets.saveSessionCB = function(socket,nsp){
+  return function(callback){
+        var sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
 
+        Session.findById(sessionid, function(err, session){
+          if(err){
+            throw new Error('Error retrieving Session');
+          }
+          else if(session && session._id){
+            var wrapper = {shapes: session.canvasShapes, messages: session.messages};
+            callback(JSON.stringify(wrapper));
+          }
+
+        });
+  };
+}
 whiteboardSockets.userListCB = function(socket,nsp){
   return function(sessionId){
         var sessionid = socket.adapter.nsp.name.split('/');
@@ -297,6 +313,7 @@ whiteboardSockets.removeUser = function(socket) {
 
   }
 }
+
 whiteboardSockets.removeThisUser = function(socket) {
   return function(userModel) {
     var sessionid = socket.adapter.nsp.name.split('/');
@@ -313,5 +330,42 @@ whiteboardSockets.removeThisUser = function(socket) {
   }
 }
 
+whiteboardSockets.clearShapesCB = function(socket) {
+  return function(data, onComplete) {
+    var sessionid = socket.adapter.nsp.name.replace(/.*\//, '');
+    var error;
+
+    ShapeManager.deleteAll(sessionid, function(err, result) {
+      if(err) {
+        error = err;
+        console.log(err, sessionid);
+      }
+      else {
+        socket.broadcast.emit(EVENT.clearShapes);
+      }
+    });
+
+    onComplete(error, 'Successfully cleared shapes');
+  };
+}
+
+whiteboardSockets.removeShapeCB = function(socket) {
+  return function(shapeId, onComplete) {
+    var sessionid = socket.adapter.nsp.name.replace(/.*\//, '');
+    var error;
+
+    ShapeManager.deleteOne(sessionid, shapeId, function(err, result) {
+      if(err) {
+        error = err;
+        console.log(err, sessionid);
+      }
+      else {
+        socket.broadcast.emit(EVENT.removeShape, shapeId);
+      }
+    });
+
+    onComplete(error, 'Successfully removed shapes');
+  };
+}
 
 module.exports = whiteboardSockets;

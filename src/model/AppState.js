@@ -85,94 +85,89 @@ var Tools = {
  * it by hashkeys (ObjectIds), this will ensure each Shape created can be uniquely
  * identified and quick to access
  */
-var Shapes = {
-  addNew: addNew,
-  removeShape: removeShape,
-  removeShapeByID: removeShapeByID,
-  _shapeTypes: {
+function Shapes() {
+  this._shapeTypes = {
     'pencil': 0,
     'line': 0,
     'rectangle': 0,
     'ellipse': 0,
     'textbox': 0,
     'table': 0
-  },
-  _shapes: {},
-  _order: [],
-  hashKeys: ['#', '@', '&', '*', '%'] // These are scrambler characters to make Key more unique
+  };
+  this.hashKeys = ['#', '@', '&', '*', '%']; // These are scrambler characters to make Key more unique
 };
 
-Object.defineProperty(Shapes, 'originalUser', {
+Shapes.prototype = {
+  addNew: function(shapeObject, layerLevel) {
+    // increment the number of Shapes of this type
+    var shapeCount = this._shapeTypes[shapeObject.shapeType];
+
+    // Used for scrambling the hash,
+    // ie. hashKeys[keyIndex]
+    var keyIndex = 0;
+
+    shapeObject.originalUserId = shapeObject.originalUserId || this.originalUser;
+    shapeObject.currentUserId = shapeObject.originalUserId;
+
+    // Increment the count of Shapes of this type that have been drawn
+    if(!isNaN(shapeCount)) {
+      shapeCount++;
+    }
+    else {
+      shapeCount = 0;
+    }
+
+    // Create Unique key
+    shapeObject._id = '#_' + shapeObject.shapeType +
+                      shapeCount +
+                      shapeObject.originalUserId.substr(0,3);
+
+    // Loop and attempt to create a unqiue key for this shape
+    while(this[shapeObject._id]) {
+      shapeCount = shapeCount%2 === 0 ? shapeCount + 1
+                                      : shapeCount;
+      shapeObject._id = shapeObject._id + this.hashKeys[keyIndex] + shapeCount;
+      keyIndex = ++keyIndex%5;
+    }
+
+    // Set the layer level of this Shape, ie. this is its stage level on Pixi stage
+    shapeObject.layerLevel = layerLevel || this.stage.children.length;
+
+    // Set object in Shape Map
+    this[shapeObject._id] = shapeObject;
+
+    // Add stage/layer level the shape will be inserted at
+    this.stage.addChildAt(shapeObject.getGraphics(), shapeObject.layerLevel);
+
+    // Set the number of Shapes of this type that have been drawn so far
+    this._shapeTypes[shapeObject.shapeType] = shapeCount;
+
+    return shapeObject;
+  },
+  removeShape: function(shapeObject) {
+    this.removeShapeByID(shapeObject._id);
+  },
+  removeShapeByID: function(id) {
+    var shape = this[id];
+    if(shape) {
+      this._shapeTypes[shape.shapeType]--;
+
+      this.stage.removeChildAt(shape.layerLevel);
+
+      this[id] = null;
+    }
+  }
+};
+
+
+Object.defineProperty(Shapes.prototype, 'originalUser', {
   get: function() {
     return AppState.Users.currentUser._id || 'unknown';
   }
-})
+});
 
 // Use test case to ensure userId, canvasID and Object Type are set
 // layerLevel is optional parameter
-function addNew(shapeObject, layerLevel) {
-  // increment the number of Shapes of this type
-  var shapeCount = this._shapeTypes[shapeObject.shapeType];
-
-  // Used for scrambling the hash,
-  // ie. hashKeys[keyIndex]
-  var keyIndex = 0;
-
-  shapeObject.originalUserId = shapeObject.originalUserId || this.originalUser;
-  shapeObject.currentUserId = shapeObject.originalUserId;
-
-  // Increment the count of Shapes of this type that have been drawn
-  if(!isNaN(shapeCount)) {
-    shapeCount++;
-  }
-  else {
-    shapeCount = 0;
-  }
-
-  // Create Unique key
-  shapeObject._id = '#_' + shapeObject.shapeType +
-                    shapeCount +
-                    shapeObject.originalUserId.substr(0,3);
-
-  // Loop and attempt to create a unqiue key for this shape
-  while(this[shapeObject._id]) {
-    shapeCount = shapeCount%2 === 0 ? shapeCount + 1
-                                    : shapeCount;
-    shapeObject._id = shapeObject._id + this.hashKeys[keyIndex] + shapeCount;
-    keyIndex = ++keyIndex%5;
-  }
-
-  // Set the layer level of this Shape, ie. this is its stage level on Pixi stage
-  shapeObject.layerLevel = layerLevel || this.stage.children.length;
-
-  // Set object in Shape Map
-  this[shapeObject._id] = shapeObject;
-
-  // Add stage/layer level the shape will be inserted at
-  this.stage.addChildAt(shapeObject.getGraphics(), shapeObject.layerLevel);
-
-  // Set the number of Shapes of this type that have been drawn so far
-  this._shapeTypes[shapeObject.shapeType] = shapeCount;
-
-  return shapeObject;
-}
-
-// Removes shape based on id
-function removeShapeByID(id) {
-  var shape = this[id];
-  if(shape) {
-    this._shapeTypes[shape.shapeType]--;
-
-    this.stage.removeChildAt(shape.layerLevel);
-
-    this[id] = null;
-  }
-}
-
-// Removes entire shape by reference
-function removeShape(shapeObject) {
-  this.removeShapeByID(shapeObject._id);
-}
 
 // AppState Main Object
 var AppState = {
@@ -185,7 +180,7 @@ var AppState = {
       canDraw: true,
       canChat: true
     },
-    Shapes: Shapes
+    Shapes: new Shapes()
   },
   Tools: Object.preventExtensions(Tools),
   ToolBar: {}, // Will be attached in whiteboard/index.js init method
@@ -210,7 +205,11 @@ var AppState = {
     interactive: true // A flag that is set or unset when User gains or looses permission
   }, // General settings, ie. styles or themes
   Messages: [],
-  Socket: null // Will be added later, in toolbar js or AppState.init method
+  Socket: null, // Will be added later, in toolbar js or AppState.init method
+  clearShapes: function() {
+    this.Canvas.stage.removeChildren();
+    this.Canvas.Shapes = new Shapes();
+  }
 };
 
 // Defines a more specific setter and getter for Canvas stage
@@ -231,13 +230,14 @@ Object.defineProperty(AppState.Canvas, "stage", {
 Object.defineProperty(AppState, 'init', {
   // Pixi library instance, Socket instance, HTML div container
   value: function(PIXI, Socket, Container) {
+    PIXI.dontSayHello = true;
+
     var _this = this;
     var stage = new PIXI.Stage(0xFFFFFF, true);
     var renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
                                            document.body.offsetHeight  - 60,
                                            { antialias: true });
 
-    PIXI.dontSayHello = true;
 
     this.Canvas.stage = stage;
     this.Canvas.renderer = renderer;
@@ -258,16 +258,6 @@ Object.defineProperty(AppState, 'init', {
 });
 
 module.exports = AppState;
-
-
-
-
-
-
-
-
-
-
 
 
 

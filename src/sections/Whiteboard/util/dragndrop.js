@@ -9,7 +9,6 @@ module.exports = function(AppState) {
   dropbox.addEventListener("drop", drop, false);
 
   function dragenter(e) {
-    console.log('dragenter called');
     e.stopPropagation();
     e.preventDefault();
 
@@ -17,7 +16,6 @@ module.exports = function(AppState) {
   }
 
   function dragover(e) {
-    console.log('dragover called');
     e.stopPropagation();
     e.preventDefault();
 
@@ -34,7 +32,6 @@ module.exports = function(AppState) {
 
     var dt = e.dataTransfer;
 
-    console.log('import file to pixi', importFileToPixi);
     if(dt && dt.files) importFileToPixi(dt.files, AppState, e);
     else console.log('error unable to import image');
 
