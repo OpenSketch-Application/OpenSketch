@@ -20,12 +20,9 @@ module.exports = function(io, framework, AppState){
 
   socket = io.connect(SERVERNAME + curSession);
 
-  // socket.on('connect', function(info) {
-
-  //   console.log('SOCKET CONNECTED', info);
-  //   console.dir(info);
-
-  // });
+  socket.on('connect', function(info) {
+    AppState.sessionId = curSessionId;
+  });
 
   // if(Cookies.get('UserId') === curSessionId) {
   //   socket.emit(EVENT.joinSession);

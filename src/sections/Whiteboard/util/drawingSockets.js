@@ -27,6 +27,7 @@ module.exports = function(AppState) {
         console.log('Adding shape', shape);
         if(!shapes[shape._id]) {
           var addedShape = addShapeBasedOnType(shape);
+
           addedShape.draw(shape);
           addedShape.unHighlight();
           addedShape.setMoveListeners(AppState);
@@ -49,50 +50,59 @@ module.exports = function(AppState) {
   // lockShape
   // unlockShape
   function handleShapeEvent(eventType, shapeData) {
-    console.log('handle shape event', eventType, shapeData);
-    switch(eventType) {
-      case 'draw':
-        shapes[shapeData._id].draw(shapeData);
-        shapes[shapeData._id].highlight();
-        break;
+      try {
+      console.log('handle shape event', eventType, shapeData);
+        switch(eventType) {
+          case 'draw':
+            shapes[shapeData._id].draw(shapeData);
+            shapes[shapeData._id].highlight();
+            break;
 
-      // Any interaction that involves a mouseup or mousedown
-      case 'drawEnd':
-        // shapeData is just an _id property
-        shapes[shapeData._id].setMoveListeners(AppState);
-        shapes[shapeData._id].unHighlight();
-        break;
+          // Any interaction that involves a mouseup or mousedown
+          case 'drawEnd':
+            // shapeData is just an _id property
+            shapes[shapeData._id].setMoveListeners(AppState);
+            shapes[shapeData._id].unHighlight();
+            break;
 
-      case 'lockShape':
-        console.log('lock current shape');
+          case 'lockShape':
+            console.log('lock current shape');
 
-        shapes[shapeData._id].lockShape();
-        break;
+            shapes[shapeData._id].lockShape();
+            break;
 
-      case 'unlockShape':
-        console.log('unlock shape');
-        shapes[shapeData._id].unLockShape();
-        break;
+          case 'unlockShape':
+            console.log('unlock shape');
+            shapes[shapeData._id].unLockShape();
+            break;
 
-      case 'move':
-        shapes[shapeData._id].move(shapeData);
-        break;
+          case 'move':
+            shapes[shapeData._id].move(shapeData);
+            break;
 
-      // CRUD events for Shapes
-      case 'add':
-        // Uses helper function defined below
-        addShapeBasedOnType(shapeData);
-        break;
+          // CRUD events for Shapes
+          case 'add':
+            // Uses helper function defined below
+            addShapeBasedOnType(shapeData);
+            break;
 
-      case 'modify':
-        // redraw the shape with new properties
-        shapes[shapeData._id].draw(shapeData);
-        break;
+          case 'modify':
+            // redraw the shape with new properties
+            shapes[shapeData._id].draw(shapeData);
+            break;
 
-      case 'remove':
-        shapes.removeShapeByID(shapeData);
-        break;
-    }
+          case 'remove':
+            shapes.removeShapeByID(shapeData);
+            break;
+        }
+      } catch(err) {
+        console.error('Recieved err', err);
+      }
+    // if(shapeData && shapes[shapeData._id]) {
+    // }
+    // else {
+    //   console.error('Unable to find Shape', shapeData);
+    // }
   }
 
   // Calls the right constructor based on the Object's shapeType
@@ -119,12 +129,26 @@ module.exports = function(AppState) {
         shape = new Table(shapeData);
         break;
       case 'textbox':
+
         shape = new Textbox(shapeData);
+
+        var shapeProperties = {
+          x: shapeData.x,
+          y: shapeData.y,
+          width: shapeData.width,
+          height: shapeData.height
+        }
+
+        shape.draw(shapeProperties);
+
         break;
     }
 
     // Add Shape to the Shapes hashmap
-    if(shape) return shapes.addNew(shape);
+    if(shape) {
+      debugger;
+      return shapes.addNew(shape);
+    }
     else console.log('ERROR: Did not create a Shape of requested type', shapeData);
 
     return shape;

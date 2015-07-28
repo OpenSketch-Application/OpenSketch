@@ -16,13 +16,16 @@ function BaseShape(shapeProperties, graphicsType) {
       this.graphics = new PIXI.Graphics();
       break;
   }
+
   this.highlightShape = new PIXI.Graphics();
   this.selectablePoints = new PIXI.Graphics();
   this.graphics.addChildAt(this.highlightShape, 0);
   this.graphics.addChildAt(this.selectablePoints, 1);
   this.layerLevel = 0;
-};
 
+  //BaseShape.prototype.setProperties.call(this, shapeProperties);
+};
+//
 // Normally called by Shape objects that inherit BaseShape
 var getProperties = function() {
   var shapeProperties = {

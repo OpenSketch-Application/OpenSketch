@@ -3,6 +3,7 @@ var Cookies = require('cookies-js');
 var Mustache = require('mustache');
 var find = require('dom-select');
 var fs = require('fs');
+var framework = require('../../../../framework/index');
 var userManagementTemplate = fs.readFileSync(__dirname + '/userManagement.hbs', 'utf8');
 
 module.exports = {
@@ -157,8 +158,8 @@ module.exports = {
         console.log('Current user set to: ' + users[curUserIndex]);
 
         AppState.Users.currentUser = users[curUserIndex];
-        Cookies.set('UserId', AppState.Users.currentUser._id);
-        Cookies.set('username', AppState.Users.currentUser.username);
+        if(AppState.Users.currentUser._id) Cookies.set('UserId', AppState.Users.currentUser._id);
+        if(AppState.Users.currentUser.username) Cookies.set('username', AppState.Users.currentUser.username);
       }
 
       // First check if User is head user
@@ -227,13 +228,24 @@ module.exports = {
 
     }.bind(this));
 
-    socket.on(EVENT.removeUser, function(removeUserData) {
+    // socket.on(EVENT.removeUser, function(removeUserData) {
+    //   var currentUserId = Cookies.get('UserId');
+    //   debugger;
+    //   if(removeUserData._id === currentUserId) {
+    //     Cookies.set(removeUserData.sessionId, removeUserData._id);
+    //   }
+    // })
+
+    socket.on(EVENT.disconnectUser, function(removeUserData) {
       var currentUserId = Cookies.get('UserId');
       debugger;
-      if(removeUserData._id === currentUserId) {
+      if(removeUserData._id === currentUserId && removeUserData.sessionId === AppState.sessionId) {
         Cookies.set(removeUserData.sessionId, removeUserData._id);
+        socket.emit(EVENT.removeThisUser, AppState.Users.currentUser);
+        framework.go('/home');
+        location.reload();
       }
-    })
+    });
   },
   emitSocketUserPermissionsChanged: function(userModel) {
     this.socket.emit(EVENT.permissionChanged, userModel);

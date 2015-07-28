@@ -2,60 +2,53 @@
 var PIXI = require('pixi');
 var BaseShape = require('./BaseShape');
 var Rectangle = require('./Rectangle');
-var keyboardManager = require('../keyboardManager');
-var PixiTextInput = require('./PixiTextInput');
-
-//keyboardManager.init();
 
 module.exports = Text;
 
 function Text(shapeProperties) {
+  this.fontSize = shapeProperties.fontSize || 12;
+  this.fontFamily = shapeProperties.fontFamily || 'Arial';
+  //this.width = shapeProperties.width || 100;
+  //this.height = shapeProperties.height || 100;
+  //this.padding = shapeProperties.padding || 0;
+  this.textField = new PIXI.Text(shapeProperties.textContent, shapeProperties);
 
-  this.pixiText = new PIXI.Text(shapeProperties.textContent, shapeProperties);
-  //this.backgroundGraphics = new PIXI.Graphics();
+  this.textField.font = this.fontSize + 'px '
+                 + this.fontFamily;
+
   this.caret = new PIXI.Graphics();
-
+  this.text = shapeProperties.textContent;
+  // Call Container Shape
   Rectangle.call(this, shapeProperties);
 
-  console.log(shapeProperties);
-
-  //this._text = 'this is a\n textbox';
-  //this.textArray = [];
   this.isFocusClick = false;
-  this.lineHeight = (Number.parseInt(this.pixiText.style.font.match('[0-9]+'))
-                  + this.pixiText.style.strokeThickness);
-
-  this.totalNewLines = this.getTotalNewLine(shapeProperties.textContent);
+  this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
+                  + this.textField.style.strokeThickness);
 
   this._caretXIndex = 0;
   this._caretYIndex = 0;
   this._actualXIndex = 0;
-  this.prevNewLineIndex = 0;
+
   this.textArray = this.getTextArray(this.text);
 
-  if(shapeProperties.wordWrap) {
-    //console.log('internal text', this.pixiText.text);
-    //console.log(PIXI.Text.prototype.wordWrap.call(this.pixiText, this.pixiText.text));
-
-    //console.log(this.pixiTextWrap('jshdfashjkdfjklsdff', 100));
-    // this.pixiText.setText(PIXI.Text.prototype.wordWrap.call(this.pixiText.text));
-   //new PixiTextInput('sfjksdjflskjflsd', shapeProperties);
-  }
+  if(shapeProperties.wordWrap) {}
 
   // We want text to be on top of the two other child graphics objects
-  this.graphics.addChild(this.pixiText);
+  this.graphics.addChild(this.textField);
   this.graphics.addChild(this.caret);
-  //this.graphics.addChild(this.backgroundGraphics, 4);
 
-  //this.pixiTextSprite = new PIXI.Text('text', shapeProperties);
+  this.drawBackground();
+
+  //this.graphics.addChild(this.backgroundGraphics);
+
+  //this.textFieldSprite = new PIXI.Text('text', shapeProperties);
 
   this.shapeType = 'textbox';
-  this.setProperties(shapeProperties);
 
   // Attach Event Listeners
   this.onKeyEventBinded = this.onKeyEvent.bind(this);
   this.onDocumentMouseDownBinded = this.onDocumentMouseDown.bind(this);
-  window.TEXTFIELD = this;
+  //window.TEXTFIELD = this;
   //this.onWindowDeselectBinded
 }
 
@@ -84,14 +77,13 @@ Text.prototype.hideCaret = function() {
 }
 
 Text.prototype.calculateCaretPosition = function() {
-  //this._caretXIndex = 0;
   if(this._caretYIndex < 0) {
     this._caretYIndex = 0;
   }
   else if (this._caretYIndex > this.textArray.length - 1) {
     this._caretYIndex = this.textArray.length - 1;
   }
-  // debugger;
+
   // Check for RIGHT key
   // Check if caretX if within bounds
   // First check right most bounds
@@ -115,12 +107,11 @@ Text.prototype.calculateCaretPosition = function() {
     }
     else {
       this._caretYIndex = 0;
-      //this._caretXIndex = 0;
     }
   }
 
   var sub = this.textArray[this._caretYIndex].substring(0, this._caretXIndex);
-  var coords = this.pixiText.context.measureText(sub);
+  var coords = this.textField.context.measureText(sub);
 
   this.caret.position.x = coords.width;
   this.caret.position.y = (this._caretYIndex * this.lineHeight * 1.55);
@@ -239,50 +230,31 @@ Text.prototype.onSelect = function(e) {
   document.addEventListener('keypress', this.onKeyEventBinded);
   document.addEventListener('keydown', this.onKeyEventBinded);
   document.addEventListener('mousedown', this.onDocumentMouseDownBinded);
-  //window.addEventListener('windowDeselect', this.windowDeselectBinded);
 }
 
 Text.prototype.removeListeners = function(e) {
   document.removeEventListener('keypress', this.onKeyEventBinded);
   document.removeEventListener('keydown', this.onKeyEventBinded);
-
   document.removeEventListener('mousedown', this.onDocumentMouseDownBinded);
-  //window.removeEventListener('windowDeselect', this.windowDeselect);
+
+  this.hideCaret();
 }
 
 Text.prototype.onDocumentMouseDown = function() {
   if(!this.isFocusClick) this.removeListeners();
 }
 
-Text.prototype.getNewLineIndex = function(text, startFrom, backwards) {
-  var index;
+Text.prototype.drawBackground = function() {
+  this.graphics.beginFill(this.fillColor);
 
-  if(startFrom === undefined) startFrom = 0;
+  this.graphics.drawRect({
+    x: this.x,
+    y: this.y,
+    width: this.width,
+    height: this.height
+  });
 
-  if(text.indexOf('\r') !== -1) {
-    if(backwards) {
-      index = text.lastIndexOf('\n', startFrom);
-    }
-    else {
-      index = text.indexOf('\n', startFrom);
-    }
-  }
-  else {
-    if(backwards) {
-      index = text.lastIndexOf('\r', startFrom);
-    }
-    else {
-      index = text.indexOf('\r', startFrom);
-    }
-  }
-
-  return index;
- /*
-  jlsdkjf\n
-  ksjdfksdf\n
-  jsfjkdjfkj\n
-  hjhkh
-  */
+  this.graphics.endFill();
 }
 
 Text.prototype.textWrap = function(text, wordWrapWidth) {
@@ -291,13 +263,13 @@ Text.prototype.textWrap = function(text, wordWrapWidth) {
   var result = '';
   var lines = text.split('\n');
 
-  console.log(this.pixiText.context);
+  console.log(this.textField.context);
 
   for(var i = 0; i < lines.length; i++) {
     var words = lines[i].split(' ');
     for(var j = 0; j < words.length; j++) {
-      var wordWidth = this.pixiText.context.measureText(words[j]).width;
-      var wordWidthWithSpace = wordWidth + this.pixiText.context.measureText(' ').width;
+      var wordWidth = this.textField.context.measureText(words[j]).width;
+      var wordWidthWithSpace = wordWidth + this.textField.context.measureText(' ').width;
       if(j === 0 || wordWidthWithSpace > wordWrapWidth) {
         // Skip printing the newline if it's the first word of the line that is
         // greater than the word wrap width.
@@ -305,7 +277,7 @@ Text.prototype.textWrap = function(text, wordWrapWidth) {
           result += '\n';
         }
         result += words[j];
-        wordWrapWidth = this.pixiText.style.wordWrapWidth - wordWidth;
+        wordWrapWidth = this.textField.style.wordWrapWidth - wordWidth;
       }
       else {
         wordWrapWidth -= wordWidthWithSpace;
@@ -325,55 +297,79 @@ Text.prototype.getProperties = function() {
 
   var shape = Rectangle.prototype.getProperties.call(this);
 
+  shape.fontColor = this.fontColor;
+  shape.font = this.textField.font;
   shape.fontSize = this.fontSize;
   shape.fontFamily = this.fontFamily;
+  shape.textContent = this.text;
+  shape._caretXIndex = this._caretXIndex;
+  shape._caretYIndex = this._caretYIndex;
+  shape._actualXIndex = this._actualXIndex;
+  shape.stroke = this.textField.stroke;
+  shape.align = this.textField.align;
+  shape.strokeThickness = this.textField.strokeThickness;
 
   return shape;
 };
 
 Text.prototype.setProperties = function(shapeProperties) {
-  this.fontSize = shapeProperties.fontSize || 12;
-  this.fontFamily = shapeProperties.fontFamily || 'Arial';
-  console.log(shapeProperties);
-  // if(shapeProperties.wordWrap) {
-  //   //this.pixiText.wordWrap = true;
-  //   //this.wordWrapWidth = this.pixiText.wordWrapWidth = shapeProperties.wordWrapWidth;
-  // }
-  this.padding = shapeProperties.padding || 0;
+  Rectangle.prototype.setProperties.call(this);
+  if(shapeProperties.font) this.textField.font = shapeProperties.font;
+  if(shapeProperties.fontColor) this.fontColor = shapeProperties.fontColor;
+  if(shapeProperties.fontSize) this.fontSize = shapeProperties.fontSize;
+  if(shapeProperties.fontFamily) this.fontFamily = shapeProperties.fontFamily;
+  if(shapeProperties.textContent) this.text = shapeProperties.textContent;
+  if(shapeProperties._caretXIndex) this._caretXIndex = shapeProperties._caretXIndex;
+  if(shapeProperties._caretYIndex) this._caretYIndex = shapeProperties._caretYIndex;
+  if(shapeProperties._actualXIndex) this._actualXIndex = shapeProperties._actualXIndex;
+  if(shapeProperties.stroke) this.textField.stroke = shapeProperties.stroke;
+  if(shapeProperties.align) this.textField.align = shapeProperties.align;
+  if(shapeProperties.strokeThickness) this.textField.strokeThickness;
 
-  this.pixiText.font = this.fontSize + 'px '
+  //this.textField.setText(shape.textContent);
+  this.textArray = this.getTextArray(this.text);
+
+  this.textField.font = this.fontSize + 'px '
                  + this.fontFamily;
 
-  Rectangle.prototype.setProperties.call(this, shapeProperties);
+  this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
+                  + this.textField.style.strokeThickness);
 }
 
 // Text.prototype.getGraphics = function() {
 //   return this.;
 // }
 
-Text.prototype.setText = function(text) {
-  //this.pixiTextSprite.text = text;
-};
+// Text.prototype.setText = function(text) {
+//   //this.textFieldSprite.text = text;
+// };
 
-Text.prototype.getText = function(text) {
-  //return this.pixiTextSprite.text;
-};
+// Text.prototype.getText = function(text) {
+//   //return this.textFieldSprite.text;
+// };
 
 Text.prototype.draw = function(shapeProperties) {
-  this.graphics.clear();
+
+  //this.graphics.clear();
+
   //this.graphics.interactive = false;
   console.log('Drawing text');
+
   if(shapeProperties) {
-    if(shapeProperties.x) this.x = this.pixiText.x = shapeProperties.x;
-    if(shapeProperties.y) this.y = this.pixiText.y = shapeProperties.y;
-
-    if(shapeProperties.width) {
-      this.width = shapeProperties.width;// <= this.wordWrapWidth ? this.wordWrapWidth : shapeProperties.width;
+    //if(shapeProperties.textContent) this.textField.setText(shapeProperties.textContent);
+    if(shapeProperties.x) this.x = this.textField.x = shapeProperties.x;
+    if(shapeProperties.y) this.y = this.textField.y = shapeProperties.y;
+    if(shapeProperties.textContent)  {
+      this.textField.setText(shapeProperties.textContent);
+      this.textArray = this.getTextArray(this.text);
     }
-    if(shapeProperties.height) {
-      this.height = shapeProperties.height;// <= this.pixiText.height ? this.pixiText.height : shapeProperties.height;
-    }
-
+    // if(shapeProperties.width) {
+    //   this.width = shapeProperties.width;// <= this.wordWrapWidth ? this.wordWrapWidth : shapeProperties.width;
+    // }
+    // if(shapeProperties.height) {
+    //   this.height = shapeProperties.height;// <= this.textField.height ? this.textField.height : shapeProperties.height;
+    // }
+    //Rectangle.setProperties()
     this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
                                                       : this.lineWidth;
 
@@ -386,33 +382,54 @@ Text.prototype.draw = function(shapeProperties) {
                                                           : this.fillAlpha;
     this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
                                                         : this.fillColor;
+
+    this.textField.font = this.fontSize + 'px '
+                          + this.fontFamily;
+
+    this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
+                  + this.textField.style.strokeThickness);
   }
 
-  var scale = {
-    x: 1,
-    y: 1
-  };
+  // var scale = {
+  //   x: 1,
+  //   y: 1
+  // };
 
-  this.graphics.scale = scale;
+  // this.graphics.scale = scale;
 
   // Since we cleared all the draw properties for redrawing, we need to set the styles again
-  this.graphics.beginFill(this.fillColor);
+  // this.graphics.beginFill(this.fillColor);
+  this.drawBackground();
+  // // Redraw the shape
+  // this.graphics.drawRect(
+  //   this.graphics.getLocalBounds()
+  // );
 
-  // Redraw the shape
-  this.graphics.drawRect(
-    this.graphics.getLocalBounds()
-  );
-
-  this.graphics.endFill();
+  // this.graphics.endFill();
 
   return this;
 };
 
-// Text.prototype.windowDeselect = function() {
-//   this.removeListeners();
-// }
+// Shape locking/unlocking methods
+Text.prototype.lockShape = function(userId) {
+  console.log('LOCKing shape');
+  this.currentUserId = userId;
+  this.highlight(0xFF0000);
+  //this.interactive = this.graphics.interactive = false;
+  this.locked = true;
+  this.removeListeners();
+};
+Text.prototype.unLockShape = function() {
+  console.log('unLOCKing shape');
 
-Text.prototype.setListeners = function(AppState) {
+  this.interactive = this.graphics.interactive = true;
+  this.unHighlight();
+  this.locked = false;
+  this.selected;
+
+};
+
+Text.prototype.setMoveListeners = function(AppState) {
   console.log('Text internal graphics', this.graphics);
   var Tools = AppState.Tools;
 
@@ -420,11 +437,9 @@ Text.prototype.setListeners = function(AppState) {
 
   var baseMouseDown = this.graphics.mousedown;//.bind(this, AppState);
   var baseMouseUp = this.graphics.mouseup;//.bind(this, AppState);
-  //keyboardManager.textInput(this.pixiText.setText.bind(this.pixiText));
+  //keyboardManager.textInput(this.textField.setText.bind(this.textField));
   //var Select = Tools.select;
-
   this.graphics.mousedown = function(e) {
-    console.log('text mouse down fired', keyboardManager);
     baseMouseDown.call(this, e);
 
     if(Tools.selected === 'select') {
@@ -438,57 +453,53 @@ Text.prototype.setListeners = function(AppState) {
 
       this.showCaret();
 
-      //this.pixiText.context.canvas.focus();
+      //this.textField.context.canvas.focus();
 
       setTimeout(function() {
         _this.isFocusClick = false;
       }, 0);
-      //keyboardManager.textInput(this.pixiText.setText.bind(this.pixiText));
 
-      //this.pixiText.setText('hello');
+      if(!_this.isFocusClick) this.hideCaret();
+      //keyboardManager.textInput(this.textField.setText.bind(this.textField));
+
+      //this.textField.setText('hello');
     }
   }.bind(this);
 
   // this.gaphics.mouseup = function(e) {
-  //   //this.isFocusClick = true;
+  //   this.isFocusClick = true;
   // }
+
   this.graphics.interactive = true;
-  // this.graphics.mouseover = function(e) {
-  //   this.highlight();
-  // }.bind(this);
-  // this.graphics.mouseout = function(e) {
-  //   this.unHighlight();
-  // }.bind(this);
-  //this.setRectMoveListeners(AppState);
 };
 
 Object.defineProperty(Text.prototype, 'text', {
   get: function() {
-    return this.pixiText.text;
+    return this.textField.text;
   },
 
   set: function(v) {
     //this._text = v.toString();
-    this.pixiText.setText(v.toString());
+    this.textField.setText(v.toString());
   }
 })
 
 Object.defineProperty(Text.prototype, 'height', {
   get: function() {
-    return this.pixiText.height;
+    return this.textField.height;
   },
   set: function(v) {
-    this.pixiText.height = v;//this.graphics.height = v;
-    this.draw();
+    //this.textField.height = v;//this.graphics.height = v;
+    //this.draw();
   }
 })
 
 Object.defineProperty(Text.prototype, 'width', {
   get: function() {
-    return this.pixiText.width;
+    return this.textField.width;
   },
   set: function(v) {
-    this.pixiText.width = v;//this.graphics.width = v;
-    this.draw();
+    //this.textField.width = v;//this.graphics.width = v;
+    //this.draw();
   }
 })

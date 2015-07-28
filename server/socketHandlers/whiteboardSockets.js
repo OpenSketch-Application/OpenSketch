@@ -93,7 +93,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 
                   socket.emit(EVENT.populateCanvas, session.canvasShapes);
 
-                  socket.broadcast.emit(EVENT.UserList,session.users);
+                  //socket.broadcast.emit(EVENT.UserList, session.users);
                 }
               });
             }
@@ -290,28 +290,28 @@ whiteboardSockets.removeUser = function(socket) {
 
     console.log('Removing User', userModel);
 
-    console.log('socket namespaces', socket.io.nsps);
-
-    UserManager.deleteOne(sessionid, userModel._id, function(err, result) {
-      if(err) console.log('Unable to remove user', userModel);
-      else  {
-        console.log('User removed from session', userModel.username);
-
-      }
-    })
-
-    socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has been kicked out of the session');
-
-    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
-
-    socket.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
-
-    socket.emit(EVENT.removeUser, {
+    socket.broadcast.emit(EVENT.disconnectUser, {
       _id: userModel._id,
       sessionId: sessionid
     });
-    //socket.broadcast.emit(EVENT.removeUser, userModel);
+
   }
 }
+whiteboardSockets.removeThisUser = function(socket) {
+  return function(userModel) {
+    var sessionid = socket.adapter.nsp.name.split('/');
+    sessionid = sessionid[sessionid.length - 1];
+
+    console.log('Removing User', userModel);
+    socket.disconnect();
+    UserManager.deleteOne(sessionid, userModel._id, function(err) {
+      if(err) console.log('Unable to remove User from DB');
+      else {
+        socket.broadcast.emit(EVENT.announcement, userModel.username + ' has been removed from the session');
+      }
+    })
+  }
+}
+
 
 module.exports = whiteboardSockets;

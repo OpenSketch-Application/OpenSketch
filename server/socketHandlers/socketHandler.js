@@ -63,6 +63,7 @@ module.exports = function(io,DB) {
       // User Permissions
       socket.on(EVENT.permissionChanged, wbLogic.permissionChangedCB(socket));
       socket.on(EVENT.removeUser, wbLogic.removeUser(socket));
+      socket.on(EVENT.removeThisUser, wbLogic.removeThisUser(socket))
     };
   }
 
@@ -73,15 +74,17 @@ module.exports = function(io,DB) {
     socket.on(EVENT.validateSession, function(sessionid) {
       console.log('in validate, validating sessionId', sessionid);
 
-      var cookieString = socket.request.headers.cookie;
-      var userName = cookieString.match(/username=.*?(?=;)/gi);
-      var userId = cookieString.match(/UserId=.*/gi);
+      // var cookieString = socket.request.headers.cookie;
+      // if(cookieString) {
+      //   var userName = cookieString.match(/username=.*?(?=;)/gi);
+      //   var userId = cookieString.match(/UserId=.*/gi);
+      // }
 
-      userName = userName && userName[0].split('=')[1];
-      userId = userId && userId[0].split('=')[1];
+      // userName = userName && userName[0].split('=')[1];
+      // userId = userId && userId[0].split('=')[1];
 
-      console.log(socket.request.headers.cookie);
-      console.log('user info', userName, userId);
+      // console.log(socket.request.headers.cookie);
+      // console.log('user info', userName, userId);
 
       Session.findById(sessionid, function(err, session) {
         var userFound = false;
@@ -94,13 +97,13 @@ module.exports = function(io,DB) {
 
           //console.log('full');
         }
-        else if(userId) {
-          var retreivedUser = session.users.id(userId);
-          if(retreivedUser && retreivedUser.username === userName) {
-            console.log('Matched UserName and UserId!', retreivedUser);
+        // else if(userId) {
+        //   var retreivedUser = session.users.id(userId);
+        //   if(retreivedUser && retreivedUser.username === userName) {
+        //     console.log('Matched UserName and UserId!', retreivedUser);
 
-          }
-        }
+        //   }
+        // }
 
 //'io=qF8EhX7TOCH9_DftAAAB; username=gordenRamsay; created=k857e8TSbSnH3-pKAAAE; UserId=k857e8TSbSnH3-pKAAAE'
         // session.users.forEach(function(user) {

@@ -18,12 +18,13 @@ Section.prototype = {
     this.createID = Cookies.get('created');
     var userId = Cookies.get('UserId');
 
+
     var curSession = window.location.href;
     curSession = curSession.split('/');
     var end = curSession.length -1;
     var curSessionId = curSession[end];
     curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
-
+    var bannedSession = Cookies.get(curSessionId);
     var socket = io.connect(SERVERNAME +curSession);
     // Wait four seconds before deciding to navigate User back to Home Page
     var timerCallback = setTimeout(function() {
@@ -37,16 +38,27 @@ Section.prototype = {
     console.log(this.createID);
 
     socket.on('connect', function() {
+
       // Clear the previous timer
       if(timerCallback) clearTimeout(timerCallback);
+      if(bannedSession && bannedSession === userId) {
+        alert('You have been kicked out of this session, please either join another or create a new one');
+        socket.disconnect();
+        framework.go('/home');
+        done();
+        location.reload();
+      }
 
       socket.emit(EVENT.UserList);
-      // }
+
     })
 
     socket.on(EVENT.UserList, function(users) {
+      //debugger;
+      // Head User has been added to session for the first time
       if(users.length === 0) {
         socket.emit(EVENT.joinSession, Cookies.get('username'), Cookies.get('UserId'));
+        done();
       }
       else {
         var matchedUser;
@@ -62,6 +74,7 @@ Section.prototype = {
         // If we found a match, show user the whiteboard, since he has already joined the session
         if(matchedUser && matchedUser._id === userId) {
           socket.emit(EVENT.joinSession, matchedUser.username, matchedUser._id);
+
         }
         //
         else {
@@ -130,6 +143,7 @@ Section.prototype = {
         this.animateOut();
         done();
       }.bind(this));
+
     }.bind(this);
     // else {
     //   // The cookie info is passed automatically through sockets

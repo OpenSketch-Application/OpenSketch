@@ -19,6 +19,9 @@ module.exports = {
     // User Permissions
     'permissionChanged': 'permissionChanged',
     'removeUser':'removeUser',
+    'removeThisUser':'removeThisUser',
+    'disconnectUser': 'disconnectUser',
+
     //'addUser':'addUser' // just show email pop and email the user the session url
 
     // Session Creation/Validation Events

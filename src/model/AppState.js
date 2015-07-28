@@ -45,20 +45,20 @@ var Tools = {
   text: {
     // Text Properties
     font: '16px Arial',
-    // fontSize: 5,
-    // fontFamily: 'Arial',
+    fontSize: 16,
+    fontFamily: 'Arial',
     stroke: 0xff1010,
     align: 'left',
     strokeThickness: 1,
-    wordWrap: true,
-    wordWrapWidth: 600,
+    // wordWrap: true,
+    // wordWrapWidth: 600,
     textContent: 'This\n is \na textbox\n',
     // Rectangle class properties
-    // lineColor: 0x000000,
-    // lineWidth: 1,
-    // lineAlpha: 1,
-    // fillColor: 0xFFFFFF,
-    // fillAlpha: 1
+    lineColor: 0x000000,
+    lineWidth: 1,
+    lineAlpha: 1,
+    fillColor: 0xFF0000,
+    fillAlpha: 1
     // {font : '24px Arial',
     // fill : 0xff1010,
     // align : 'center'}
@@ -176,6 +176,7 @@ function removeShape(shapeObject) {
 
 // AppState Main Object
 var AppState = {
+  sessionId: '',
   Canvas: {
     _stage: null, // private property, accessed through getter AppState.Canvas.stage, set value by AppState.Canvas.stage = new PIXI.Stage(color)
     renderer: null,

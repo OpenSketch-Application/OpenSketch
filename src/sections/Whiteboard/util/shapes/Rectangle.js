@@ -12,7 +12,7 @@ function Rectangle(shapeProperties) {
 
   // Invoke Derived Class's setProperties method to add all shapeProperties to
   // this object
-  this.setProperties(shapeProperties);
+  Rectangle.prototype.setProperties.call(this, shapeProperties);
 }
 
 // Set prototype to the BaseShape
