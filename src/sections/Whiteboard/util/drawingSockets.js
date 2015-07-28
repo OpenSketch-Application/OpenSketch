@@ -132,21 +132,14 @@ module.exports = function(AppState) {
 
         shape = new Textbox(shapeData);
 
-        var shapeProperties = {
-          x: shapeData.x,
-          y: shapeData.y,
-          width: shapeData.width,
-          height: shapeData.height
-        }
-
-        shape.draw(shapeProperties);
+        shape.draw(shapeData);
 
         break;
     }
 
     // Add Shape to the Shapes hashmap
     if(shape) {
-      debugger;
+
       return shapes.addNew(shape);
     }
     else console.log('ERROR: Did not create a Shape of requested type', shapeData);

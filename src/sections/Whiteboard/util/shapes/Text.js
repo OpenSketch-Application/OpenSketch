@@ -2,7 +2,7 @@
 var PIXI = require('pixi');
 var BaseShape = require('./BaseShape');
 var Rectangle = require('./Rectangle');
-
+var EVENT = require('../../../../model/model').socketEvents;
 module.exports = Text;
 
 function Text(shapeProperties) {
@@ -18,6 +18,10 @@ function Text(shapeProperties) {
 
   this.caret = new PIXI.Graphics();
   this.text = shapeProperties.textContent;
+
+  this.textField.stroke = shapeProperties.stroke || 0xff1010;
+  this.textField.align = shapeProperties.align || 'left';
+  this.textField.strokeThickness = shapeProperties.strokeThickness || 1;
   // Call Container Shape
   Rectangle.call(this, shapeProperties);
 
@@ -223,6 +227,8 @@ Text.prototype.onKeyEvent = function(e) {
 
   }
 
+  if(this.socket) this.socket.emit(EVENT.shapeEvent, 'modify', this.getProperties());
+
   this.highlight();
 }
 
@@ -230,6 +236,10 @@ Text.prototype.onSelect = function(e) {
   document.addEventListener('keypress', this.onKeyEventBinded);
   document.addEventListener('keydown', this.onKeyEventBinded);
   document.addEventListener('mousedown', this.onDocumentMouseDownBinded);
+}
+
+Text.prototype.unSelect = function(e) {
+  this.removeListeners(e);
 }
 
 Text.prototype.removeListeners = function(e) {
@@ -313,7 +323,7 @@ Text.prototype.getProperties = function() {
 };
 
 Text.prototype.setProperties = function(shapeProperties) {
-  Rectangle.prototype.setProperties.call(this);
+  Rectangle.prototype.setProperties.call(this, shapeProperties);
   if(shapeProperties.font) this.textField.font = shapeProperties.font;
   if(shapeProperties.fontColor) this.fontColor = shapeProperties.fontColor;
   if(shapeProperties.fontSize) this.fontSize = shapeProperties.fontSize;
@@ -334,19 +344,9 @@ Text.prototype.setProperties = function(shapeProperties) {
 
   this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
                   + this.textField.style.strokeThickness);
+
+  this.calculateCaretPosition();
 }
-
-// Text.prototype.getGraphics = function() {
-//   return this.;
-// }
-
-// Text.prototype.setText = function(text) {
-//   //this.textFieldSprite.text = text;
-// };
-
-// Text.prototype.getText = function(text) {
-//   //return this.textFieldSprite.text;
-// };
 
 Text.prototype.draw = function(shapeProperties) {
 
@@ -359,10 +359,12 @@ Text.prototype.draw = function(shapeProperties) {
     //if(shapeProperties.textContent) this.textField.setText(shapeProperties.textContent);
     if(shapeProperties.x) this.x = this.textField.x = shapeProperties.x;
     if(shapeProperties.y) this.y = this.textField.y = shapeProperties.y;
-    if(shapeProperties.textContent)  {
-      this.textField.setText(shapeProperties.textContent);
-      this.textArray = this.getTextArray(this.text);
-    }
+
+    this.setProperties(shapeProperties);
+    // if(shapeProperties.textContent)  {
+    //   this.textField.setText(shapeProperties.textContent);
+    //   this.textArray = this.getTextArray(this.text);
+    // }
     // if(shapeProperties.width) {
     //   this.width = shapeProperties.width;// <= this.wordWrapWidth ? this.wordWrapWidth : shapeProperties.width;
     // }
@@ -370,24 +372,26 @@ Text.prototype.draw = function(shapeProperties) {
     //   this.height = shapeProperties.height;// <= this.textField.height ? this.textField.height : shapeProperties.height;
     // }
     //Rectangle.setProperties()
-    this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
-                                                      : this.lineWidth;
+    // this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
+    //                                                   : this.lineWidth;
 
-    this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
-                                                        : this.lineColor;
-    this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
-                                                        : this.lineAlpha;
+    // this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
+    //                                                     : this.lineColor;
+    // this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
+    //                                                     : this.lineAlpha;
 
-    this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
-                                                          : this.fillAlpha;
-    this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
-                                                        : this.fillColor;
+    // this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
+    //                                                       : this.fillAlpha;
+    // this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
+    //                                                     : this.fillColor;
 
-    this.textField.font = this.fontSize + 'px '
-                          + this.fontFamily;
+    // this.textField.font = this.fontSize + 'px '
+    //                       + this.fontFamily;
 
-    this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
-                  + this.textField.style.strokeThickness);
+    // this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
+    //               + this.textField.style.strokeThickness);
+
+
   }
 
   // var scale = {
@@ -400,6 +404,7 @@ Text.prototype.draw = function(shapeProperties) {
   // Since we cleared all the draw properties for redrawing, we need to set the styles again
   // this.graphics.beginFill(this.fillColor);
   this.drawBackground();
+
   // // Redraw the shape
   // this.graphics.drawRect(
   //   this.graphics.getLocalBounds()
@@ -417,7 +422,8 @@ Text.prototype.lockShape = function(userId) {
   this.highlight(0xFF0000);
   //this.interactive = this.graphics.interactive = false;
   this.locked = true;
-  this.removeListeners();
+  this.selected = true;
+  this.unSelect();
 };
 Text.prototype.unLockShape = function() {
   console.log('unLOCKing shape');
@@ -425,7 +431,7 @@ Text.prototype.unLockShape = function() {
   this.interactive = this.graphics.interactive = true;
   this.unHighlight();
   this.locked = false;
-  this.selected;
+  this.selected = false;
 
 };
 
@@ -437,6 +443,7 @@ Text.prototype.setMoveListeners = function(AppState) {
 
   var baseMouseDown = this.graphics.mousedown;//.bind(this, AppState);
   var baseMouseUp = this.graphics.mouseup;//.bind(this, AppState);
+  this.socket = AppState.Socket;
   //keyboardManager.textInput(this.textField.setText.bind(this.textField));
   //var Select = Tools.select;
   this.graphics.mousedown = function(e) {
@@ -489,7 +496,7 @@ Object.defineProperty(Text.prototype, 'height', {
     return this.textField.height;
   },
   set: function(v) {
-    //this.textField.height = v;//this.graphics.height = v;
+    //this.height = v;//this.graphics.height = v;
     //this.draw();
   }
 })
@@ -499,7 +506,7 @@ Object.defineProperty(Text.prototype, 'width', {
     return this.textField.width;
   },
   set: function(v) {
-    //this.textField.width = v;//this.graphics.width = v;
+    //this.width = v;//this.graphics.width = v;
     //this.draw();
   }
 })

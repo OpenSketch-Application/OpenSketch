@@ -110,7 +110,6 @@ module.exports = {
       // himself from the session
       if(clickedOnUser.userRank === 0) return false;
 
-      debugger;
       console.log('Remove this User', clickedOnUser);
 
       this.emitRemoveUser(clickedOnUser);
@@ -137,6 +136,7 @@ module.exports = {
 
   removeUserInteraction: function() {
     this.container.removeEventListener('click', this.onMouseClick, false);
+
   },
 
   setSocketEvents: function(AppState) {
@@ -158,8 +158,8 @@ module.exports = {
         console.log('Current user set to: ' + users[curUserIndex]);
 
         AppState.Users.currentUser = users[curUserIndex];
-        if(AppState.Users.currentUser._id) Cookies.set('UserId', AppState.Users.currentUser._id);
-        if(AppState.Users.currentUser.username) Cookies.set('username', AppState.Users.currentUser.username);
+        if(users[curUserIndex] && AppState.Users.currentUser._id) Cookies.set('UserId', AppState.Users.currentUser._id);
+        if(users[curUserIndex] && AppState.Users.currentUser.username) Cookies.set('username', AppState.Users.currentUser.username);
       }
 
       // First check if User is head user
@@ -167,6 +167,7 @@ module.exports = {
       // id, else dont set any listeners on User Management
       // Note: Head user will have Rank 0, which also corresponds to array index
       if(!this.mouseEventAttached && AppState.Users.currentUser.userRank === 0) {
+
         // Sets the events listeners that handle user interaction
         this.addUserInteraction();
       }
@@ -212,12 +213,13 @@ module.exports = {
         if(select.selectedObject) {
           select.selectedObject.unHighlight();
           select.selectedObject.selected = false;
-
+          if(select.selectedObject.unSelect) select.selectedObject.unSelect();
           // UnLock at this point, since user is just clicking the Canvas and
           // not the previously selected Shape
           socket.emit(EVENT.shapeEvent, 'unlockShape', { _id: select.selectedObject._id });
           select.selectedObject = null;
         }
+
       }
       else {
 
@@ -238,7 +240,7 @@ module.exports = {
 
     socket.on(EVENT.disconnectUser, function(removeUserData) {
       var currentUserId = Cookies.get('UserId');
-      debugger;
+
       if(removeUserData._id === currentUserId && removeUserData.sessionId === AppState.sessionId) {
         Cookies.set(removeUserData.sessionId, removeUserData._id);
         socket.emit(EVENT.removeThisUser, AppState.Users.currentUser);
