@@ -115,7 +115,7 @@ function verifyForm(filecontent){
       var importfile = find('#file-input');
       var error = { };
       error.errors = [];
-      debugger;
+
       if(isNaN(maxUsers) || maxUsers > 30 || maxUsers <=0) {
         error.errors.push({msg:'Max users: 1 - 30',element: max});
       }

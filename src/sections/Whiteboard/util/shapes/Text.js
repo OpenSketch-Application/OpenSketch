@@ -227,7 +227,10 @@ Text.prototype.onKeyEvent = function(e) {
 
   }
 
-  if(this.socket) this.socket.emit(EVENT.shapeEvent, 'modify', this.getProperties());
+  if(this.socket) {
+    this.socket.emit(EVENT.shapeEvent, 'modify', this.getProperties());
+    this.socket.emit(EVENT.updateObject, this.getProperties());
+  }
 
   this.highlight();
 }

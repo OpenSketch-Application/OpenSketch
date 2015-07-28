@@ -132,6 +132,8 @@ var setMoveListeners = function(AppState) {
       // properties
       socket.emit(EVENT.shapeEvent, 'modify', this.getProperties());
 
+      socket.emit(EVENT.updateObject, this.getProperties());
+
       // Turn interactive back on after clearing Graphics
       this.interactive = this.graphics.interactive = true;
     }
