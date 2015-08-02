@@ -89,8 +89,7 @@ Importer.prototype.draw = function(shapeProperties) {
   if(shapeProperties.y) this.y = shapeProperties.y;
   if(shapeProperties.width) this.width = shapeProperties.width;
   if(shapeProperties.height) this.height = shapeProperties.height;
-  //if(shapeProperties.imageUrl) //this.graphics.
-  // Since we cleared all the draw properties for redrawing, we need to set the styles again
+
   this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
                                                       : this.lineWidth;
 
@@ -99,23 +98,12 @@ Importer.prototype.draw = function(shapeProperties) {
   this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
                                                       : this.lineAlpha;
 
-  //this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
-  //                                                    : this.fillAlpha;
-  //this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
-  //                                                    : this.fillColor;
 
-  //this.graphics.beginFill(this.fillColor);
+  this.url = shapeProperties.url;
+  this.imageSprite = new PIXI.Sprite.fromImage(this.url);
 
-  // Redraw the shape
-
-
-  // this.url = shapeProperties.url;
-  // this.imageSprite = new PIXI.Sprite.fromImage(this.url);
-
-  // this.graphics.addChild(this.imageSprite);
-
-  //this.graphics.endFill();
-
+  this.graphics.addChild(this.imageSprite);
+console.log('DRAW!')
   return this;
 };
 
