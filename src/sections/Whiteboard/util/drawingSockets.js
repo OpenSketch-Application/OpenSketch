@@ -57,6 +57,7 @@ module.exports = function(AppState) {
         switch(eventType) {
           case 'draw':
             if(shapes[shapeData._id]) {
+              console.log('handleSE... WILL DRAW!')
               shapes[shapeData._id].draw(shapeData);
               shapes[shapeData._id].highlight();
             }

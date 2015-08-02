@@ -30,9 +30,10 @@ module.exports = function(el, AppState) {
                 image = AppState.Canvas.Shapes.addNew(image);
                 image.setMoveListeners(AppState);
 
+                socket.emit(EVENT.shapeEvent, 'add', image.getProperties());
+                socket.emit(EVENT.saveObject, image.getProperties());
                 socket.emit(EVENT.shapeEvent, 'draw', image.getProperties());
                 socket.emit(EVENT.shapeEvent, 'drawEnd', image.getProperties());
-                socket.emit(EVENT.saveObject, image.getProperties());
                 
                 fileSelect.value = null;
               }
