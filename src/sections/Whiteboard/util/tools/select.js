@@ -21,6 +21,7 @@ module.exports = function(AppState, el) {
   var Users = AppState.Users;
   var select = AppState.Tools.select;
   var socket = AppState.Socket;
+  var ShapeAttributeEditor = AppState.ShapeAttributeEditor;
   var shapeModified = false;
   var isDown = false;
   var isMouseOut = false;
@@ -44,6 +45,10 @@ module.exports = function(AppState, el) {
 
       select.selectedObject.unHighlight();
       select.selectedObject.selected = false;
+      select.selectedObject.resizeSelect = false;
+
+      // Show blank page for ShapeAttributes
+      ShapeAttributeEditor.clearShapeEditor();
 
       // UnLock at this point, since user is just clicking the Canvas and
       // not the previously selected Shape
@@ -58,29 +63,35 @@ module.exports = function(AppState, el) {
     // Set selected
     if(isDown && select.selectedObject !== null) {
       var selectedObject = select.selectedObject;
+      if(selectedObject.resizeSelect) {
+        console.log('Selectable selected');
+      }
+      else {
+        // Reuse our preset modifiedShape object, for efficiency sake
+        modifiedShape.x = data.global.x - selectedObject.origin.x;
+        modifiedShape.y = data.global.y - selectedObject.origin.y;
+        modifiedShape._id = selectedObject._id;
 
-      // Reuse our preset modifiedShape object, for efficiency sake
-      modifiedShape.x = data.global.x - selectedObject.origin.x;
-      modifiedShape.y = data.global.y - selectedObject.origin.y;
-      modifiedShape._id = selectedObject._id;
+        // Call the Shape's move method, with updated properties
+        selectedObject.move(modifiedShape);
 
-      // Call the Shape's move method, with updated properties
-      selectedObject.move(modifiedShape);
+        // Emit the move event to other Users, so that they can see the pretty shape
+        // dancing!
+        socket.emit(EVENT.shapeEvent, 'move', modifiedShape);
 
-      // Emit the move event to other Users, so that they can see the pretty shape
-      // dancing!
-      socket.emit(EVENT.shapeEvent, 'move', modifiedShape);
-
-      // A flag to tell us a Shape has just been modified
-      shapeModified = true;
+        // A flag to tell us a Shape has just been modified
+        shapeModified = true;
+      }
     }
   };
+
   // On mouseUp: deselect object and remove lock
   // However, if Select has an shape selected,
   // Perform the steps for selecting a Shape
   var mouseup = function(data) {
     if(select.selectedObject) {
       var shapeId = select.selectedObject._id;
+      select.selectedObject.resizeSelect = false;
 
       // Emit socket interactionEnd Event, since drawing has ended on mouse up
       //socket.emit(EVENT.shapeEvent, 'interactionEnd', shapeId);
@@ -88,6 +99,7 @@ module.exports = function(AppState, el) {
       saveObject.moveX = modifiedShape.x;
       saveObject.moveY = modifiedShape.y;
       saveObject.hasMoved = true;
+
       // saveObject._id = modifiedShape._id;
       // saveObject.x = select.selectedObject.x;
       // saveObject.y = select.selectedObject.y;

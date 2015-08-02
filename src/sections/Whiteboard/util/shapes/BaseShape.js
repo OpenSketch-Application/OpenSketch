@@ -1,6 +1,7 @@
 'use strict';
 var PIXI = require('pixi');
 var EVENT = require('../../../../model/model').socketEvents;
+//var ShapeAttributeEditor = require('../../ui/shapeeditor');
 
 module.exports = BaseShape;
 
@@ -72,7 +73,9 @@ var setMoveListeners = function(AppState) {
   var Tools = AppState.Tools;
   var Users = AppState.Users;
   var socket = AppState.Socket;
-
+  var ShapeAttributeEditor = AppState.ShapeAttributeEditor;
+  var mousedown = false;
+  this.resizeSelect = false;
   // The current position of this Shape, ie. its Top, Left coordinates
   // relative to Canvas' Top, Left coords
   this.origin = {
@@ -94,7 +97,7 @@ var setMoveListeners = function(AppState) {
     if(Tools.selected === 'select') {
       this.origin = data.getLocalPosition(this.graphics);
       this.alpha = 0.9;
-
+      mousedown = true;
       // Set the User who is currently manipulating the Shape,
       // Note: the currentUserId can be different from OriginalUserId
       // if a user other than the current user manipulates this Shape
@@ -112,6 +115,29 @@ var setMoveListeners = function(AppState) {
       // the highlight tool might vary depending on the Shape, ie. Ellipse or Rectangle
       this.highlight();
 
+      this.showSelectableUI();
+
+      // Determine if mouseDown was on the selectable outer edge area
+      // Check x-dimension
+      // if((this.origin.x >= this.bounds.x - 2.5) && (this.origin.x <= this.bounds.x + this.bounds.width + 2.5)) {
+      //   console.log('within x boundary');
+
+      //   if((this.origin.y >= this.bounds.y - 2.5) && (this.origin.y <= this.bounds.y + this.bounds.height + 2.5)) {
+      //     console.log('within x and y boundary');
+      //     this.resizeSelect = true;
+      //   }
+      // }
+      if(!this.innerBounds.contains(this.origin.x, this.origin.y)) {
+        // Selectable boundary picked
+        console.log('Selectable boundary picked');
+        this.resizeSelect = true;
+      }
+      else {
+        this.resizeSelect = false;
+      }
+
+      ShapeAttributeEditor.editShapeAttributes(this);
+
       // use socket emit to other User's that this object is selected by this user, and should
       // be locked for them
       socket.emit(EVENT.shapeEvent, 'lockShape', {
@@ -119,6 +145,7 @@ var setMoveListeners = function(AppState) {
           currentUserId: this.currentUserId
         }
       );
+
     }
     // If the selected tool is Fill tool
     else if(Tools.selected === 'fill') {
@@ -140,6 +167,35 @@ var setMoveListeners = function(AppState) {
 
   }.bind(this);
 
+  this.graphics.mousemove = function(data) {
+    data.originalEvent.preventDefault();
+    if(mousedown && this.resizeSelect) {
+      var localPos = data.getLocalPosition(this.graphics);
+
+      // Resize in the four outer edges
+      // Check if TopLeft
+      var topX = 0;
+      var topY = 0;
+      var width = localPos.x - this.x;
+      var height = localPos.y - this.y;
+
+      this.draw({
+        x: this.graphics.x,
+        y: this.graphics.y,
+        width: width,
+        height: height
+      });
+
+      //console.log(rect);
+      this.highlight();
+      this.showSelectableUI();
+    }
+  }.bind(this);
+
+  function helperGetClosestSelectable() {
+
+  }
+
   // Need this for Select tool, since it needs to know if
   // Shape had been moved, thus it will read the this.origin property
   this.graphics.mouseup = function(data) {
@@ -150,8 +206,134 @@ var setMoveListeners = function(AppState) {
         y: this.graphics.position.y
       };
     }
+    mousedown = false;
   }.bind(this);
 };
+
+var showSelectableUI = function() {
+
+  // Expand hitArea
+  this.updateHitArea();
+
+  // Assume for BaseShape as having Rectangular bounds
+  // Add selectable points for width sides of shape
+  this.widthSelectables = Math.floor(this.bounds.width/100) - 1;
+
+  //if(this.widthSelectables <= 1) this.widthSelectables = 1;
+
+  // Add selectable points for height sides of shape
+  this.heightSelectables = Math.floor(this.bounds.height/100) - 1;
+
+  //if(this.heightSelectables <= 1) this.heightSelectables = 1;
+
+  //var perimeter = this.bounds.width * 2 + this.bounds.height * 2;
+
+  this.graphics.beginFill(0x2D8EF0);
+
+  // Draw selectables at the four points around the shape
+  // Top-Left
+  this.graphics.drawRect(
+    this.bounds.x-2.5,
+    this.bounds.y-2.5,
+    5,
+    5
+  );
+
+  // Top-Right
+  this.graphics.drawRect(
+    (this.bounds.x + this.bounds.width)-2.5,
+    this.bounds.y-2.5,
+    5,
+    5
+  );
+
+  // Bottom-Left
+  this.graphics.drawRect(
+    this.bounds.x-2.5,
+    (this.bounds.y + this.bounds.height)-2.5,
+    5,
+    5
+  );
+  // Bottom-Right
+  this.graphics.drawRect(
+    (this.bounds.x + this.bounds.width)-2.5,
+    (this.bounds.y + this.bounds.height)-2.5,
+    5,
+    5
+  );
+
+  var widthSpacing = this.bounds.width/this.widthSelectables;
+  var heightSpacing = this.bounds.height/this.heightSelectables;
+
+  for(var i = this.widthSelectables; i >= 1; i--) {
+
+    this.graphics.drawRect(
+      (this.bounds.x + widthSpacing*i)-2.5,
+      (this.bounds.y)-2.5,
+      5,
+      5
+    );
+
+    this.graphics.drawRect(
+      (this.bounds.x + widthSpacing*i)-2.5,
+      (this.bounds.y + this.bounds.height)-2.5,
+      5,
+      5
+    );
+  }
+
+  for(i = this.heightSelectables; i >= 1; i--) {
+    this.graphics.drawRect(
+      (this.bounds.x)-2.5,
+      (this.bounds.y + heightSpacing * i)-2.5,
+      5,
+      5
+    );
+
+    this.graphics.drawRect(
+      (this.bounds.x + this.bounds.width)-2.5,
+      (this.bounds.y + heightSpacing * i)-2.5,
+      5,
+      5
+    );
+  }
+
+  this.graphics.endFill();
+};
+
+var updateHitArea = function() {
+  // Get bounds of the currentShape
+  //var localBounds = this.graphics.getLocalBounds();
+  this.bounds = {
+    x: this.x,
+    y: this.y,
+    width: this.width,
+    height: this.height
+  };
+
+  this.graphics.hitArea = new PIXI.Rectangle(
+    this.bounds.x - 5,
+    this.bounds.y - 5,
+    this.bounds.width + 10,
+    this.bounds.height + 10
+  );
+
+  this.innerBounds = new PIXI.Rectangle(
+    this.bounds.x,
+    this.bounds.y,
+    this.bounds.width,
+    this.bounds.height
+  );
+
+  //debugger;
+  // Expand hit area by 5
+  // this.graphics.hitArea = new PIXI.Rectangle(
+  //   this.bounds.x - 5,
+  //   this.bounds.y - 5,
+  //   this.bounds.width + 10,
+  //   this.bounds.height + 10
+  // );
+}
 
 var move = function(vector) {
   this.graphics.position.x = vector.x;
@@ -183,7 +365,6 @@ BaseShape.prototype = {
     console.log('LOCKing shape');
     this.currentUserId = userId;
     this.highlight(0xFF0000);
-    //this.interactive = this.graphics.interactive = false;
     this.locked = true;
   },
   unLockShape: function() {
@@ -192,9 +373,10 @@ BaseShape.prototype = {
     this.interactive = this.graphics.interactive = true;
     this.unHighlight();
     this.locked = false;
-  }
+  },
   /*To Do: Potentially implement methods that shows UI features around the shape */
-  // showSelectableUI
+  showSelectableUI: showSelectableUI,
+  updateHitArea: updateHitArea
   // hideSelectableUI
 };
 

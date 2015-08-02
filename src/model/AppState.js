@@ -182,7 +182,6 @@ var AppState = {
     Shapes: new Shapes()
   },
   Tools: Object.preventExtensions(Tools),
-  ToolBar: {}, // Will be attached in whiteboard/index.js init method
   Users: {
     currentUser: {},
     users: [], // index 0 is always for Head
@@ -199,6 +198,8 @@ var AppState = {
       return matchedUser;
     }
   },
+  ShapeAttributeEditor: undefined, // Will be attached in ShapeAttributeEditor init method
+  ToolBar: undefined, // Will be attached in whiteboard/index.js init method
   ChatBox: undefined, // Will be attached in chatbox.js init method
   Settings: {
     interactive: true // A flag that is set or unset when User gains or looses permission

@@ -22,7 +22,7 @@ module.exports = {
 
     this.socketOnEventHandlers();
 
-    AppState.ChatBox = this;
+    return this;
   },
 
   removeUserInteraction: function() {

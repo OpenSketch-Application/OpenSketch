@@ -128,12 +128,15 @@ function toolbar(elements, AppState) {
       socket.emit(EVENT.shapeEvent, 'unlockShape', {
         _id: tools.select.selectedObject._id
       });
-
     }
 
     if(button && button.tagName === 'IMG') {
       button.className = "tool-selected";
       previouslySelected = button;
+
+      if(tools && tools.selected) {
+        AppState.ShapeAttributeEditor.editShapeAttributes(tools[tools.selected]);
+      }
     }
   }
 

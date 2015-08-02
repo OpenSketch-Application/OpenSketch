@@ -9,7 +9,6 @@ var userManagementTemplate = fs.readFileSync(__dirname + '/userManagement.hbs', 
 module.exports = {
   init: function(AppState) {
     // Attach template to App
-    //this.userManagerContainer = find('');
     //this.userManagerContainer.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
 
     // DOM elements for User Management

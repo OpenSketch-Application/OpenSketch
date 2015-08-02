@@ -9,7 +9,7 @@ var states = require('./states');
 var createTabs = require('./util/tabs');
 var socketSetup = require('./util/sockets');
 var Chatbox = require('./util/chatbox');
-
+var ShapeAttributeEditor = require('./ui/shapeEditor');
 var UserManagement = require('./ui/usermanagement/userManagement');
 var Toolbar = require('./util/toolbar');
 var Cookies = require('cookies-js');
@@ -43,6 +43,7 @@ Section.prototype = {
     // Inits AppState with Pixi and adds Socket object to AppState objects
     AppState.init(PIXI, socket, find('#whiteboard-container'));
 
+    ShapeAttributeEditor.init(AppState);
 
     this.toolbar = new Toolbar({
       whiteboard: '#whiteboard-container',
@@ -96,7 +97,6 @@ Section.prototype = {
 
     };
 
-
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
                            .targets({ whiteboard: find('#whiteboard')})
@@ -105,9 +105,9 @@ Section.prototype = {
 
 
     this.toolbar.addUserInteraction();
+
     AppState.ToolBar = this.toolbar;
     Chatbox.init(AppState);
-
     UserManagement.init(AppState);
 
    find('body').addEventListener('click',function(e){

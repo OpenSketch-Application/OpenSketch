@@ -22,6 +22,7 @@ function Text(shapeProperties) {
   this.textField.stroke = shapeProperties.stroke || 0xff1010;
   this.textField.align = shapeProperties.align || 'left';
   this.textField.strokeThickness = shapeProperties.strokeThickness || 1;
+
   // Call Container Shape
   Rectangle.call(this, shapeProperties);
 
@@ -396,8 +397,6 @@ Text.prototype.draw = function(shapeProperties) {
 
     // this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
     //               + this.textField.style.strokeThickness);
-
-
   }
 
   // var scale = {
@@ -431,6 +430,7 @@ Text.prototype.lockShape = function(userId) {
   this.selected = true;
   this.unSelect();
 };
+
 Text.prototype.unLockShape = function() {
   console.log('unLOCKing shape');
 
