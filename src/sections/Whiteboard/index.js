@@ -111,7 +111,6 @@ Section.prototype = {
     UserManagement.init(AppState);
 
    find('body').addEventListener('click',function(e){
-      console.log(e);
       if(e.target.id != 'save-whiteboard' && e.target.parentElement.id != 'save-whiteboard-prompt')
         savePrompt.className = '';
    });

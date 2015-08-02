@@ -11,7 +11,7 @@ whiteboardSockets.deleteSessionCB = function(socket,nsp){
     Session.remove({_id:sessionid},function(err){});
     socket.broadcast.emit(EVENT.deleteSession);
   };
-}
+};
 whiteboardSockets.saveSessionCB = function(socket,nsp){
   return function(callback){
         var sessionid = socket.adapter.nsp.name.split('/');
@@ -28,7 +28,7 @@ whiteboardSockets.saveSessionCB = function(socket,nsp){
 
         });
   };
-}
+};
 whiteboardSockets.userListCB = function(socket,nsp){
   return function(sessionId){
         var sessionid = socket.adapter.nsp.name.split('/');
@@ -229,8 +229,8 @@ whiteboardSockets.shapeObjectCB = function(socket, nspWb) {
     console.log(data);
 
     socket.broadcast.emit(EVENT.shapeEvent, eventType, data);
-  }
-}
+  };
+};
 
 whiteboardSockets.saveObjectCB = function(socket, nspWb) {
   return function(data) {
@@ -264,7 +264,7 @@ whiteboardSockets.updateObjectCB = function(socket) {
     });
 
   };
-}
+};
 
 whiteboardSockets.populateCanvasCB = function(socket) {
   return function(shapes) {
@@ -281,7 +281,7 @@ whiteboardSockets.populateCanvasCB = function(socket) {
     });
 
   };
-}
+};
 
 whiteboardSockets.permissionChangedCB = function(socket) {
   return function(userModel) {
@@ -293,11 +293,11 @@ whiteboardSockets.permissionChangedCB = function(socket) {
     UserManager.updateOne(sessionid, userModel._id, userModel, function(err, result) {
       if(err) console.log('Unable to update user\'s permissions', userModel);
       else console.log('User permission updated', userModel.username);
-    })
+    });
 
     socket.broadcast.emit(EVENT.permissionChanged, userModel);
-  }
-}
+  };
+};
 
 whiteboardSockets.removeUser = function(socket) {
   return function(userModel) {
@@ -312,7 +312,7 @@ whiteboardSockets.removeUser = function(socket) {
     });
 
   }
-}
+};
 
 whiteboardSockets.removeThisUser = function(socket) {
   return function(userModel) {
@@ -326,9 +326,9 @@ whiteboardSockets.removeThisUser = function(socket) {
       else {
         socket.broadcast.emit(EVENT.announcement, userModel.username + ' has been removed from the session');
       }
-    })
-  }
-}
+    });
+  };
+};
 
 whiteboardSockets.clearShapesCB = function(socket) {
   return function(data, onComplete) {
@@ -347,7 +347,7 @@ whiteboardSockets.clearShapesCB = function(socket) {
 
     onComplete(error, 'Successfully cleared shapes');
   };
-}
+};
 
 whiteboardSockets.removeShapeCB = function(socket) {
   return function(shapeId, onComplete) {
@@ -366,6 +366,15 @@ whiteboardSockets.removeShapeCB = function(socket) {
 
     onComplete(error, 'Successfully removed shapes');
   };
-}
+};
+
+whiteboardSockets.imageUploadCB = function(socket) {
+  return function(location, onComplete) {
+    var sessionid = socket.adapter.nsp.name.replace(/.*\//, '');
+    console.log('RECEIVED')
+    socket.broadcast.emit(EVENT.imageUpload, location);
+  };
+};
+
 
 module.exports = whiteboardSockets;

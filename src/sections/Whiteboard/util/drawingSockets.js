@@ -6,6 +6,7 @@ var Ellipse = require('./shapes/Ellipse');
 var Line = require('./shapes/Line');
 var Table = require('./shapes/Table');
 var Textbox = require('./shapes/Text');
+var Import = require('./shapes/Import');
 
 module.exports = function(AppState) {
 
@@ -143,6 +144,9 @@ module.exports = function(AppState) {
           break;
         case 'table':
           shape = new Table(shapeData);
+          break;
+        case 'import':
+          shape = new Import(shapeData);
           break;
         case 'textbox':
 

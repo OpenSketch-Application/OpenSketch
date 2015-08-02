@@ -126,8 +126,6 @@ module.exports = function(AppState, el) {
   // }
 
   var mouseout = function() {
-    console.log('mouseout')
-
     isMouseOut = true;
   }
 
