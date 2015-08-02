@@ -29,10 +29,8 @@ module.exports = function(io,DB) {
 
         newSession.save(function(err, obj) {
           if(err) {
-            console.log(err);
           }
           else {
-            console.log('Session saved to db');
           }
         });
 
@@ -57,6 +55,7 @@ module.exports = function(io,DB) {
       socket.on(EVENT.shapeEvent, wbLogic.shapeObjectCB(socket, nspWb));
       socket.on(EVENT.clearShapes, wbLogic.clearShapesCB(socket));
       socket.on(EVENT.removeShape, wbLogic.removeShapeCB(socket));
+      socket.on(EVENT.imageUpload, wbLogic.imageUploadCB(socket));
 
 
       //socket.on(EVENT.populateCanvas, wbLogic.populateCanvasCB(socket));
@@ -74,9 +73,7 @@ module.exports = function(io,DB) {
   // Validation function
   io.on('connection', function (socket) {
 
-    console.log('connection made', socket.id);
     socket.on(EVENT.validateSession, function(sessionid) {
-      console.log('in validate, validating sessionId', sessionid);
 
       // var cookieString = socket.request.headers.cookie;
       // if(cookieString) {
@@ -87,24 +84,19 @@ module.exports = function(io,DB) {
       // userName = userName && userName[0].split('=')[1];
       // userId = userId && userId[0].split('=')[1];
 
-      // console.log(socket.request.headers.cookie);
-      // console.log('user info', userName, userId);
 
       Session.findById(sessionid, function(err, session) {
         var userFound = false;
-        console.log('found session', session);
         // FOR TESTING AND DEVELOPMENT
         if(sessionid === 'session41') return;
 
         if(err || !session || !session.users || session.users.length >= session.sessionProperties.maxUsers) {
           socket.emit(EVENT.badSession);
 
-          //console.log('full');
         }
         // else if(userId) {
         //   var retreivedUser = session.users.id(userId);
         //   if(retreivedUser && retreivedUser.username === userName) {
-        //     console.log('Matched UserName and UserId!', retreivedUser);
 
         //   }
         // }
@@ -122,6 +114,5 @@ module.exports = function(io,DB) {
   });
 
   io.on('disconnect', function(socket) {
-    console.log('SOmeone called disconnect');
   });
 };

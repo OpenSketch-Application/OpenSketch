@@ -5,10 +5,10 @@ var BaseShape = require('./BaseShape');
 module.exports = Importer;
 
 function Importer(shapeProperties, fileUrl) {
-  console.log('Calling new Importer');
   // Call BaseShape constructor to instantiate BaseShape's properties
   BaseShape.call(this, shapeProperties);
-  this.imageSprite = new PIXI.Sprite.fromImage(fileUrl);
+  this.url = fileUrl ? fileUrl : shapeProperties.url;
+  this.imageSprite = new PIXI.Sprite.fromImage(this.url);
 
   this.graphics.addChild(this.imageSprite);
 
@@ -41,6 +41,7 @@ Importer.prototype.getProperties = function() {
   shape.lineColor = this.lineColor;
   //shape.fillColor = this.fillColor;
   shape.lineAlpha = this.lineAlpha;
+  shape.url = this.url;
   //shape.fillAlpha = this.fillAlph;
 
   return shape;
@@ -106,12 +107,12 @@ Importer.prototype.draw = function(shapeProperties) {
   //this.graphics.beginFill(this.fillColor);
 
   // Redraw the shape
-  this.graphics.drawRect(
-    this.x,
-    this.y,
-    this.width,
-    this.height
-  );
+
+
+  // this.url = shapeProperties.url;
+  // this.imageSprite = new PIXI.Sprite.fromImage(this.url);
+
+  // this.graphics.addChild(this.imageSprite);
 
   //this.graphics.endFill();
 

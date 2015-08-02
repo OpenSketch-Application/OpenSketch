@@ -1,4 +1,4 @@
-module.exports = {
+var model  = {
   '/home': {
     'template': 'template file'
   },
@@ -41,9 +41,14 @@ module.exports = {
     'updateObject' : 'updateObject',
     'deleteObject' : 'deleteObject',
     'clearShapes' : 'clearShapes',
-    'removeShape' : 'removeShape'
+    'removeShape' : 'removeShape',
+    'imageUpload' : 'imageUpload'
 
     //'sendPencil' : 'sendPencil'
     // 'sendLine' : 'sendLine'
   }
 };
+
+// model.API_URL = window.location.origin
+
+module.exports = model;
