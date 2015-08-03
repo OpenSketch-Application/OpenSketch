@@ -36,8 +36,6 @@ Section.prototype = {
       location.reload();
     }, 5000)
 
-    console.log(this.createID);
-
     socket.on('connect', function() {
 
       // Clear the previous timer
@@ -119,7 +117,7 @@ Section.prototype = {
       for( var i = 0; i < users.length;i++)
       {
        var li = document.createElement('li');
-       console.log(users[i]);
+       
        li.appendChild(document.createTextNode(users[i].username));
        usernames[i] = users[i].username;
        userList.appendChild(li);
