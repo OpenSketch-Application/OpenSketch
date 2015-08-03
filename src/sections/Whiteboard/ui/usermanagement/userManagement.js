@@ -31,11 +31,9 @@ module.exports = {
     Mustache.render(userManagementTemplate, [user]);
   },
   updateUsers: function(users) {
-    console.log(users);
     //this.container.removeEventListener('click', this.onMouseClick);
 
     //this.container.addEventListener('click', this.onMouseClick.bind(this), false);
-    console.log('mustache render', Mustache.render(userManagementTemplate, users));
     // users should be in an Array
     this.container.innerHTML = Mustache.render(userManagementTemplate, users);
 
@@ -104,8 +102,6 @@ module.exports = {
       // himself from the session
       if(clickedOnUser.userRank === 0) return false;
 
-      console.log('Remove this User', clickedOnUser);
-
       this.emitRemoveUser(clickedOnUser);
     }
 
@@ -144,8 +140,6 @@ module.exports = {
       AppState.Users.users = users;
 
       this.container.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
-
-      console.log('CURRENT USER INDEX ' + curUserIndex);
 
       if(curUserIndex !== undefined){
         AppState.Users.currentUser = users[curUserIndex];
