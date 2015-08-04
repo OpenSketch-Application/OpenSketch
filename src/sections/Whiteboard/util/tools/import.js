@@ -1,5 +1,5 @@
 var PIXI = require('pixi');
-var importFileToPixi = require('./shapeHelpers/importFileToPixi');
+var importFileToPixi = require('../shapeHelpers/importFileToPixi');
 
 module.exports = function(el, AppState) {
   var fileSelect = document.getElementById('imgImport');

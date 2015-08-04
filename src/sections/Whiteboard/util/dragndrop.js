@@ -1,5 +1,5 @@
 //var importFileToPixi = require('./tools/shapeHelpers/importFileToPixi');
-var importFileToPixi = require('./tools/shapeHelpers/importFileToPixi');
+var importFileToPixi = require('./shapeHelpers/importFileToPixi');
 module.exports = function(AppState) {
   var dropbox;
 

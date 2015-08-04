@@ -1,5 +1,5 @@
 var PIXI = require('pixi');
-var Import = require('../../shapes/Import');
+var Import = require('../shapes/Import');
 
 module.exports = function(files, AppState, event) {
   var reader = new FileReader();

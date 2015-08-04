@@ -1,7 +1,6 @@
 'use strict';
 var PIXI = require('pixi');
 var Table = require('../shapes/Table');
-var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
 module.exports = function(settings, el, AppState) {

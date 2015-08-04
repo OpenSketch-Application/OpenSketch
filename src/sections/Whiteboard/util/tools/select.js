@@ -25,6 +25,7 @@ module.exports = function(AppState, el) {
   var shapeModified = false;
   var isDown = false;
   var isMouseOut = false;
+  var localCoords;
   var modifiedShape = {
     x: 0,
     y: 0,
@@ -41,6 +42,8 @@ module.exports = function(AppState, el) {
   var mousedown = function(data) {
     //data.originalEvent.preventDefault();
     isDown = true;
+    localCoords = data.getLocalPosition(this);
+
     if(select.selectedObject !== null) {
 
       select.selectedObject.unHighlight();
@@ -65,6 +68,16 @@ module.exports = function(AppState, el) {
       var selectedObject = select.selectedObject;
       if(selectedObject.resizeSelect) {
         console.log('Selectable selected');
+
+        var resizeVector = selectedObject.getSelectableCoordinate(selectedObject.origin);
+
+        if(resizeVector)
+          selectedObject.resizeByVector(resizeVector, localCoords);
+
+
+        selectedObject.setMoveListeners(AppState);
+
+        //selectedObject.showSelectableUI();
       }
       else {
         // Reuse our preset modifiedShape object, for efficiency sake
