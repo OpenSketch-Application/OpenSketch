@@ -72,6 +72,7 @@ var setMoveListeners = function(AppState) {
   var Tools = AppState.Tools;
   var Users = AppState.Users;
   var socket = AppState.Socket;
+  var stage = AppState.Canvas.stage;
 
   // The current position of this Shape, ie. its Top, Left coordinates
   // relative to Canvas' Top, Left coords
@@ -92,7 +93,11 @@ var setMoveListeners = function(AppState) {
 
     //data.originalEvent.preventDefault();
     if(Tools.selected === 'select') {
-      this.origin = data.getLocalPosition(this.graphics);
+      this.origin =  {
+        x: data.getLocalPosition(stage).x - this.graphics.position.x,
+        y: data.getLocalPosition(stage).y - this.graphics.position.y
+      };
+
       this.alpha = 0.9;
 
       // Set the User who is currently manipulating the Shape,

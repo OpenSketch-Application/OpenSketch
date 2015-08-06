@@ -1,5 +1,6 @@
 'use strict';
 var EVENT = require('./model').socketEvents;
+var CanvasStage = require('./CanvasStage');
 
 // Every new tool will have these defaults settings
 // Can be changed by user for her preferences later
@@ -137,7 +138,7 @@ Shapes.prototype = {
     this[shapeObject._id] = shapeObject;
 
     // Add stage/layer level the shape will be inserted at
-    this.stage.addChildAt(shapeObject.getGraphics(), shapeObject.layerLevel);
+    this.stage.addChild(shapeObject.getGraphics());//, shapeObject.layerLevel);
 
     // Set the number of Shapes of this type that have been drawn so far
     this._shapeTypes[shapeObject.shapeType] = shapeCount;
@@ -233,20 +234,35 @@ Object.defineProperty(AppState, 'init', {
     PIXI.dontSayHello = true;
 
     var _this = this;
-    var stage = new PIXI.Stage(0xFFFFFF, true);
+    var stage = new PIXI.Stage(0x858585, true);
     var renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
                                            document.body.offsetHeight  - 60,
                                            { antialias: true });
 
+    var canvasContainer = new CanvasStage(renderer.width, renderer.height);
 
-    this.Canvas.stage = stage;
+    this.Canvas.stage = canvasContainer;
+    this.Canvas.pixiStage = stage;
     this.Canvas.renderer = renderer;
     this.Socket = Socket;
-    this.Canvas.Shapes.stage = stage;
+    this.Canvas.Shapes.stage = canvasContainer;
     this.Canvas.Shapes.socket = Socket;
+
+    //this.Canvas.stage.interactive = true;
 
     Container.appendChild(renderer.view);
 
+    //canvasContainer.setMouseEvents();
+    // var backgroundGraphics = new PIXI.Graphics();
+
+    // backgroundGraphics.beginFill(0xFFFFFF);
+    // backgroundGraphics.drawRect(0,0,renderer.width,renderer.height);
+    // backgroundGraphics.endFill();
+
+    // canvasContainer.addChild(backgroundGraphics);
+    stage.addChild(canvasContainer);
+
+    //canvasContainer.setMouseEvents(this);
     // Start the render loop
     animate();
 

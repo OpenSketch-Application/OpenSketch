@@ -13,17 +13,20 @@ module.exports = function(AppState, el) {
     AppState.Tools.selected = 'select';
 
     activate();
+    //AppState.Canvas.stage.setMouseEvents(AppState);
 
     return false;
   });
 
   var stage = AppState.Canvas.stage;
+  var pixiStage = AppState.Canvas.pixiStage;
   var Users = AppState.Users;
   var select = AppState.Tools.select;
   var socket = AppState.Socket;
   var shapeModified = false;
   var isDown = false;
   var isMouseOut = false;
+  var shapeUnselected = false;
   var modifiedShape = {
     x: 0,
     y: 0,
@@ -38,10 +41,9 @@ module.exports = function(AppState, el) {
   };
 
   var mousedown = function(data) {
-    //data.originalEvent.preventDefault();
     isDown = true;
-    if(select.selectedObject !== null) {
 
+    if(select.selectedObject !== null) {
       select.selectedObject.unHighlight();
       select.selectedObject.selected = false;
 
@@ -50,18 +52,25 @@ module.exports = function(AppState, el) {
       socket.emit(EVENT.shapeEvent, 'unlockShape', { _id: select.selectedObject._id });
       select.selectedObject = null;
     }
+    else {
+      this.dragging = true;
+      this.mousePressPoint[0] = data.getLocalPosition(pixiStage).x -
+                                this.position.x;
+      this.mousePressPoint[1] = data.getLocalPosition(pixiStage).y -
+                                this.position.y;
+    }
   };
 
   var mousemove = function(data) {
     isMouseOut = false;
-    //data.originalEvent.preventDefault();
+
     // Set selected
     if(isDown && select.selectedObject !== null) {
       var selectedObject = select.selectedObject;
 
       // Reuse our preset modifiedShape object, for efficiency sake
-      modifiedShape.x = data.global.x - selectedObject.origin.x;
-      modifiedShape.y = data.global.y - selectedObject.origin.y;
+      modifiedShape.x = data.getLocalPosition(stage).x - selectedObject.origin.x;
+      modifiedShape.y = data.getLocalPosition(stage).y - selectedObject.origin.y;
       modifiedShape._id = selectedObject._id;
 
       // Call the Shape's move method, with updated properties
@@ -74,7 +83,15 @@ module.exports = function(AppState, el) {
       // A flag to tell us a Shape has just been modified
       shapeModified = true;
     }
+    else {
+      if(this.dragging) {
+        var position = data.getLocalPosition(pixiStage);
+        this.position.x = position.x - this.mousePressPoint[0];
+        this.position.y = position.y - this.mousePressPoint[1];
+      }
+    }
   };
+
   // On mouseUp: deselect object and remove lock
   // However, if Select has an shape selected,
   // Perform the steps for selecting a Shape
@@ -88,9 +105,6 @@ module.exports = function(AppState, el) {
       saveObject.moveX = modifiedShape.x;
       saveObject.moveY = modifiedShape.y;
       saveObject.hasMoved = true;
-      // saveObject._id = modifiedShape._id;
-      // saveObject.x = select.selectedObject.x;
-      // saveObject.y = select.selectedObject.y;
 
       // Remember we don't wish to keep hitting the database for every move events, since
       // we fire off 100+ events, and accessing the DB each time for every pixil is
@@ -114,16 +128,11 @@ module.exports = function(AppState, el) {
       }
     }
 
+    this.dragging = false;
+
     // Reset back to default
     isDown = shapeModified = false;
   }
-
-  // var deleteShape = function(e) {
-  //   e.preventDefault();
-  //   if (e.type == "keypress") {
-  //     console.log('keypress', e.type);
-  //   }
-  // }
 
   var mouseout = function() {
     isMouseOut = true;

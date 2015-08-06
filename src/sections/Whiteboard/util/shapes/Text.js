@@ -355,68 +355,16 @@ Text.prototype.setProperties = function(shapeProperties) {
 }
 
 Text.prototype.draw = function(shapeProperties) {
-
-  //this.graphics.clear();
-
-  //this.graphics.interactive = false;
   console.log('Drawing text');
 
   if(shapeProperties) {
-    //if(shapeProperties.textContent) this.textField.setText(shapeProperties.textContent);
     if(shapeProperties.x) this.x = this.textField.x = shapeProperties.x;
     if(shapeProperties.y) this.y = this.textField.y = shapeProperties.y;
 
     this.setProperties(shapeProperties);
-    // if(shapeProperties.textContent)  {
-    //   this.textField.setText(shapeProperties.textContent);
-    //   this.textArray = this.getTextArray(this.text);
-    // }
-    // if(shapeProperties.width) {
-    //   this.width = shapeProperties.width;// <= this.wordWrapWidth ? this.wordWrapWidth : shapeProperties.width;
-    // }
-    // if(shapeProperties.height) {
-    //   this.height = shapeProperties.height;// <= this.textField.height ? this.textField.height : shapeProperties.height;
-    // }
-    //Rectangle.setProperties()
-    // this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
-    //                                                   : this.lineWidth;
-
-    // this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
-    //                                                     : this.lineColor;
-    // this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
-    //                                                     : this.lineAlpha;
-
-    // this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
-    //                                                       : this.fillAlpha;
-    // this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
-    //                                                     : this.fillColor;
-
-    // this.textField.font = this.fontSize + 'px '
-    //                       + this.fontFamily;
-
-    // this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
-    //               + this.textField.style.strokeThickness);
-
-
   }
 
-  // var scale = {
-  //   x: 1,
-  //   y: 1
-  // };
-
-  // this.graphics.scale = scale;
-
-  // Since we cleared all the draw properties for redrawing, we need to set the styles again
-  // this.graphics.beginFill(this.fillColor);
   this.drawBackground();
-
-  // // Redraw the shape
-  // this.graphics.drawRect(
-  //   this.graphics.getLocalBounds()
-  // );
-
-  // this.graphics.endFill();
 
   return this;
 };
@@ -426,7 +374,6 @@ Text.prototype.lockShape = function(userId) {
   console.log('LOCKing shape');
   this.currentUserId = userId;
   this.highlight(0xFF0000);
-  //this.interactive = this.graphics.interactive = false;
   this.locked = true;
   this.selected = true;
   this.unSelect();
@@ -447,8 +394,8 @@ Text.prototype.setMoveListeners = function(AppState) {
 
   Rectangle.prototype.setMoveListeners.call(this, AppState);
 
-  var baseMouseDown = this.graphics.mousedown;//.bind(this, AppState);
-  var baseMouseUp = this.graphics.mouseup;//.bind(this, AppState);
+  var baseMouseDown = this.graphics.mousedown;
+  var baseMouseUp = this.graphics.mouseup;
   this.socket = AppState.Socket;
   var previousClickTime;
   this.globalKeyDown = AppState.GlobalEvents['keydown'];
@@ -487,10 +434,6 @@ Text.prototype.setMoveListeners = function(AppState) {
       if(!this.isFocusClick) {
         this.unSelect();
       }
-
-      //keyboardManager.textInput(this.textField.setText.bind(this.textField));
-
-      //this.textField.setText('hello');
     }
   }.bind(this);
 
