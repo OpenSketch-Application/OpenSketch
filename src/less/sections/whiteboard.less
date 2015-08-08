@@ -187,6 +187,30 @@
     }
   }
 
+  #color-wheel{
+    display: none;
+    position: absolute;
+    top: 80px;
+    z-index: 1000;
+    line-height: 1;
+    &.colorWheelOpen {
+      display: block;
+      position: absolute;
+      top: 60px;
+      z-index: 1000;
+      padding: 10px;
+      width: 150px;
+      color: white;
+      background-color: #132531;
+      input {
+        margin-left: 5px;
+      }
+      .sp-replacer {
+        float: right;
+      }
+    }
+  }
+
   #main {
     #whiteboard-container {
       position: relative;

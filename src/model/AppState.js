@@ -6,6 +6,10 @@ var EVENT = require('./model').socketEvents;
 var Tools = {
   // Currently selected tool from the ToolBar
   selected: '',
+  Colors: {
+    fill: 0xffffff,
+    line: 0x000000
+  },
   importer: {
     imageUrl: '',
     maxSize: 5

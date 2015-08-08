@@ -95,7 +95,7 @@ Section.prototype = {
 
     };
 
-
+  
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
                            .targets({ whiteboard: this.section.querySelector('#whiteboard')})
@@ -108,10 +108,16 @@ Section.prototype = {
     Chatbox.init(AppState);
 
     UserManagement.init(AppState);
+    var colorwheel = this.section.querySelector('#color-wheel');
 
    document.body.addEventListener('click',function(e){
       if(e.target.id != 'save-whiteboard' && e.target.parentElement.id != 'save-whiteboard-prompt')
         savePrompt.className = '';
+     
+     console.log('body');
+      if(e.target.id != 'tool-color' && e.target.parentElement.id != 'color' && e.target.parentElement.id !='color-wheel' && e.target.id != 'color-wheel')
+        colorwheel.className = '';
+
    });
 
     save.addEventListener('click',function(e){
