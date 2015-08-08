@@ -24,7 +24,17 @@
         <img id="tool-import" src="images/import-icon.png" alt="import" />
         <input type="file" id="imgImport" multiple accept="image/*" style="display:none" />
       </li>
-      <li><img id="tool-color" src="images/color-icon.png" alt="color" /></li>
+     
+      <li id = "color">
+        <img id="tool-color" src="images/color-icon.png" alt="color" />
+        <div id ="color-wheel">
+          Fill Color:
+          <input type = "text" id="fill"></input> <br/><br/><br/>
+          Line Color:
+          <input type = "text" id="line"></input> 
+        </div>
+
+      </li>
     </ul>
     <ul class="options">
       <li id="opt-save">Save</li>

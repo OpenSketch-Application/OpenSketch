@@ -32,11 +32,11 @@ module.exports = function(el, AppState) {
     if(!AppState.Settings.interactive) return false;
 
     AppState.Tools.selected = 'fill';
-    var color = prompt('Enter a hex color without #:');
     // NOTE: we cannot do event delegation in PIXI as of yet,
     // since there is no event bubbling, instead we need to set mouse events on
     // all graphics objects directly...
-    AppState.Tools.fill.fillColor = color || 0xFF0000;
+    var color = AppState.Tools.Colors.fill;
+    AppState.Tools.fill.fillColor = color ;
 
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
