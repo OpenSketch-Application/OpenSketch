@@ -108,6 +108,7 @@ var setMoveListeners = function(AppState) {
       };
 
       this.alpha = 0.9;
+
       mousedown = true;
       // Set the User who is currently manipulating the Shape,
       // Note: the currentUserId can be different from OriginalUserId

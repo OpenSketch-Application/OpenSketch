@@ -274,23 +274,6 @@ whiteboardSockets.updateObjectCB = function(socket) {
   };
 };
 
-// whiteboardSockets.populateCanvasCB = function(socket) {
-//   return function(shapes) {
-//     console.log('recieved socket update event');
-//     console.log(data);
-//     var sessionid = socket.adapter.nsp.name.split('/');
-//     sessionid = sessionid[sessionid.length - 1];
-
-//     console.log('updating and saving to sessionid', sessionid);
-
-//     ShapeManager.updateOne(sessionid, data._id, data, function(err,result){
-//       if(err) console.error('Unable to update Shape', new Date().getUTCDate(), 'Shape: ', data);
-//       else console.log('Updated shape', data);
-//     });
-
-//   };
-// };
-
 whiteboardSockets.permissionChangedCB = function(socket) {
   return function(userModel) {
     var sessionid = socket.adapter.nsp.name.split('/');
@@ -370,7 +353,6 @@ whiteboardSockets.removeShapeCB = function(socket) {
       }
       else {
         socket.broadcast.emit(EVENT.removeShape, shapeId);
-        //console.log('Successfully removed shapes');
       }
     });
 

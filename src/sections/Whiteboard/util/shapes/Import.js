@@ -79,27 +79,27 @@ Importer.prototype.setProperties = function(shapeProperties) {
 // call this method with the new properties you wish to update the Shape with;
 Importer.prototype.draw = function(shapeProperties) {
 
-  this.graphics.clear();
-  this.graphics.interactive = false;
+  // this.graphics.clear();
+  // this.graphics.interactive = false;
 
-  if(shapeProperties.x) this.x = shapeProperties.x;
-  if(shapeProperties.y) this.y = shapeProperties.y;
+  // if(shapeProperties.x) this.x = shapeProperties.x;
+  // if(shapeProperties.y) this.y = shapeProperties.y;
 
-  this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
-                                                      : this.lineWidth;
+  // this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
+  //                                                     : this.lineWidth;
 
-  this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
-                                                      : this.lineColor;
-  this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
-                                                      : this.lineAlpha;
+  // this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
+  //                                                     : this.lineColor;
+  // this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
+  //                                                     : this.lineAlpha;
 
 
-  this.url = shapeProperties.url;
-  this.imageSprite = new PIXI.Sprite.fromImage(this.url);
-  this.width = this.imageSprite.width;
-  this.height = this.imageSprite.height;
+  // this.url = shapeProperties.url;
+  // this.imageSprite = new PIXI.Sprite.fromImage(this.url);
+  // this.width = this.imageSprite.width;
+  // this.height = this.imageSprite.height;
 
-  this.graphics.addChild(this.imageSprite);
+  // this.graphics.addChild(this.imageSprite);
 
   return this;
 };

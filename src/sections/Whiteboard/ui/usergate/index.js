@@ -133,6 +133,10 @@ Section.prototype = {
            errorMsg.innerHTML = 'The name '+Name+' is currently in use.';
            return;
           }
+		  if(Name.length >= 11){
+			errorMsg.innerHTML = 'Username must not exceed 10 characters';
+			return;
+		  }
         }
         //return;
         Cookies.set('username', Name);

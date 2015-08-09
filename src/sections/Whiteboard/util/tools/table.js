@@ -128,3 +128,4 @@ module.exports = function(settings, el, AppState) {
     stage.mouseout = mouseup;
   }
 };
+

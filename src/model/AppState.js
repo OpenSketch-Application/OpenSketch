@@ -7,6 +7,10 @@ var CanvasStage = require('./CanvasStage');
 var Tools = {
   // Currently selected tool from the ToolBar
   selected: '',
+  Colors: {
+    fill: 0xffffff,
+    line: 0x000000
+  },
   importer: {
     imageUrl: '',
     maxSize: 5
@@ -278,21 +282,10 @@ Object.defineProperty(AppState, 'init', {
     this.Canvas.Shapes.stage = canvasContainer;
     this.Canvas.Shapes.socket = Socket;
 
-    //this.Canvas.stage.interactive = true;
-
     Container.appendChild(renderer.view);
 
-    //canvasContainer.setMouseEvents();
-    // var backgroundGraphics = new PIXI.Graphics();
-
-    // backgroundGraphics.beginFill(0xFFFFFF);
-    // backgroundGraphics.drawRect(0,0,renderer.width,renderer.height);
-    // backgroundGraphics.endFill();
-
-    // canvasContainer.addChild(backgroundGraphics);
     stage.addChild(canvasContainer);
 
-    //canvasContainer.setMouseEvents(this);
     // Start the render loop
     animate();
 

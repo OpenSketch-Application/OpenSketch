@@ -13,6 +13,7 @@ module.exports = function(AppState, el) {
     AppState.Tools.selected = 'select';
 
     activate();
+    //AppState.Canvas.stage.setMouseEvents(AppState);
 
     return false;
   });
@@ -27,6 +28,7 @@ module.exports = function(AppState, el) {
   var isDown = false;
   var isMouseOut = false;
   var localCoords;
+
   var shapeUnselected = false;
   var modifiedShape = {
     x: 0,
