@@ -1,4 +1,6 @@
 var PIXI = require('pixi');
+var $ = require('jquery');
+var spectrum = require('spectrum-colorpicker')($);
 
 module.exports = function(el, AppState) {
   el.addEventListener('click', function(data) {
@@ -14,78 +16,57 @@ module.exports = function(el, AppState) {
 
     selectPressed = true;
 
+    activate(AppState);
+
     return false;
   });
 };
 
-function activate(stage, renderer) {
-  var color = 0xCAFE00;
-  var path = [];
-  // var isActive = true;
-  var isDown = false;
-  var posOld;
-  var stageIndex = 0;
-  var lines = 0;
+function activate(AppState) {
 
-  stage.mousedown = function(data) {
+ $('#color-wheel').addClass('colorWheelOpen');
 
-    //if(!isActive) return;
-    isDown = true;
-    lines = 0;
-    path = [];
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    stageIndex = stage.children.length - 1;
-    //graphics.moveTo(data.global.x, data.global.y);
-  };
+ var f = AppState.Tools.Colors.fill; 
+ var l = AppState.Tools.Colors.line;
 
-  stage.mousemove = function(data) {
-    //if(!isActive) return;
-    if(!isDown) return;
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-    //path.push(data.global.y);
-    //var newPosition = this.data.getLocalPosition(this.parent);
-    graphics.moveTo(posOld[0], posOld[1]);
-    //console.log(data.global.x, data.global.y);
-    graphics.lineTo(data.global.x, data.global.y);
-    posOld = [data.global.x, data.global.y];
-    path.push(posOld[0],posOld[1]);
-    lines++;
-    stage.addChild(graphics);
+ $('#color-wheel #fill').spectrum({showInput: true, color:'#'+ hextostring(f),change: function(color){
+    AppState.Tools.Colors.fill = rgbtohex(color._r,color._g,color._b); 
+    updateTools(AppState.Tools);
+    console.log('primary changed');
+   }});
+ $('#color-wheel #line').spectrum({showInput: true, color:'#'+ hextostring(l),change: function(color){
+      
+   AppState.Tools.Colors.line = rgbtohex(color._r,color._g,color._b); 
+   updateTools(AppState.Tools);
+   console.log('secondary changed');
+   }});
 
-    //renderer.render(stage);
-  };
 
-  stage.mouseup = function() {
-    isDown = false;
 
-    if(!path.length) return;
-    //graphics.lineStyle(5, color);
-    //graphics.moveTo(path[0][0], path[0][1]);
-    //graphics.drawPolygon(path);
-    while(lines) {
-      stage.removeChildAt(stageIndex + lines);
-      lines--;
-    }
-
-    var graphics = new PIXI.Graphics().lineStyle(2, color);
-
-    graphics.drawPolygon(path);
-
-    graphics.interactive = true;
-
-    graphics.hitArea = graphics.getBounds();
-
-    // moveObject(renderer, stage, graphics, { x: graphics.hitArea.x, y: graphics.hitArea.y });
-
-    stage.addChild(graphics);
-
-    // CanvasObjects.push({
-    //   _id: CanvasObjects.length + 1,
-    //   type: 'pencil',
-    //   coords: path
-    // });
-
-    //renderer.render(stage);
-  };
+}
+function updateTools(Tools){
+  var lineC = Tools.Colors.line;
+  var fillC = Tools.Colors.fill;
+  Tools.pencil.lineColor = lineC;  
+  Tools.rectangle.lineColor = lineC;
+  Tools.ellipse.lineColor = lineC;
+  Tools.line.lineColor = lineC;
+  Tools.rectangle.fillColor = fillC;
+  Tools.ellipse.fillColor = fillC;
+  Tools.table.fillColor = fillC;
+  Tools.table.lineColor = lineC;
+  Tools.fill.fillColor = fillC; 
+  
+}
+function rgbtohex(r,g,b){
+  var ir = parseInt(r).toString(16);
+  var ig = parseInt(g).toString(16);
+  var ib = parseInt(b).toString(16);
+  var val = ir +ig + ib; 
+  val = parseInt(val,16);
+  return val; 
+}
+function hextostring(hex){
+  var val = hex.toString(16); 
+  return val; 
 }
