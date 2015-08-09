@@ -5,18 +5,17 @@ var BaseShape = require('./BaseShape');
 module.exports = Importer;
 
 function Importer(shapeProperties, fileUrl) {
-  console.log('Calling new Importer');
   // Call BaseShape constructor to instantiate BaseShape's properties
   BaseShape.call(this, shapeProperties);
-  this.imageSprite = new PIXI.Sprite.fromImage(fileUrl);
-
-  this.graphics.addChild(this.imageSprite);
+  this.url = fileUrl ? fileUrl : shapeProperties.url;
+  this.imageSprite = new PIXI.Sprite.fromImage(this.url);
 
   this.shapeType = 'import';
 
-  // Invoke Derived Class's setProperties method to add all shapeProperties to
-  // this object
   this.setProperties(shapeProperties);
+  this.width = this.imageSprite.width;
+  this.height = this.imageSprite.height;
+  this.graphics.addChild(this.imageSprite);
 }
 
 // Set prototype to the BaseShape
@@ -35,12 +34,13 @@ Importer.prototype.getProperties = function() {
   shape.x = this.x;
   shape.y = this.y;
   shape.shapeType = this.shapeType;
-  shape.width = this.width;
-  shape.height = this.height;
+  shape.width = this.imageSprite.width;
+  shape.height = this.imageSprite.height;
   shape.lineWidth = this.lineWidth;
   shape.lineColor = this.lineColor;
   //shape.fillColor = this.fillColor;
   shape.lineAlpha = this.lineAlpha;
+  shape.url = this.url;
   //shape.fillAlpha = this.fillAlph;
 
   return shape;
@@ -57,8 +57,6 @@ Importer.prototype.setProperties = function(shapeProperties) {
 
   //if(shapeProperties.width) this.width = shapeProperties.width || 0;
   //if(shapeProperties.height) this.height = shapeProperties.height || 0;
-  this.width = this.graphics.width = this.imageSprite.width;
-  this.height = this.graphics.height = this.imageSprite.height;
 
   this.lineWidth = shapeProperties.lineWidth || 1;
   this.lineColor = shapeProperties.lineColor || 0x000000;
@@ -86,10 +84,7 @@ Importer.prototype.draw = function(shapeProperties) {
 
   if(shapeProperties.x) this.x = shapeProperties.x;
   if(shapeProperties.y) this.y = shapeProperties.y;
-  if(shapeProperties.width) this.width = shapeProperties.width;
-  if(shapeProperties.height) this.height = shapeProperties.height;
-  //if(shapeProperties.imageUrl) //this.graphics.
-  // Since we cleared all the draw properties for redrawing, we need to set the styles again
+
   this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
                                                       : this.lineWidth;
 
@@ -98,22 +93,13 @@ Importer.prototype.draw = function(shapeProperties) {
   this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
                                                       : this.lineAlpha;
 
-  //this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
-  //                                                    : this.fillAlpha;
-  //this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
-  //                                                    : this.fillColor;
 
-  //this.graphics.beginFill(this.fillColor);
+  this.url = shapeProperties.url;
+  this.imageSprite = new PIXI.Sprite.fromImage(this.url);
+  this.width = this.imageSprite.width;
+  this.height = this.imageSprite.height;
 
-  // Redraw the shape
-  this.graphics.drawRect(
-    this.x,
-    this.y,
-    this.width,
-    this.height
-  );
-
-  //this.graphics.endFill();
+  this.graphics.addChild(this.imageSprite);
 
   return this;
 };
@@ -158,7 +144,7 @@ Importer.prototype.setGraphicsData = function(shapeProperties) {
 Importer.prototype.highlight = function(color) {
 
   this.highlightShape.clear();
-  this.highlightShape.lineWidth = this.lineWidth + 2;
+  this.highlightShape.lineWidth = this.lineWidth + 4;
   this.highlightShape.lineColor = color || 0x2D8EF0;
   this.highlightShape.alpha = 1;
 
@@ -168,8 +154,8 @@ Importer.prototype.highlight = function(color) {
   this.highlightShape.drawRect(
     this.x,
     this.y,
-    this.width,
-    this.height
+    this.imageSprite.width,
+    this.imageSprite.height
   );
 
 }

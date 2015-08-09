@@ -1,9 +1,93 @@
+{{#shapeType}}
+<h2>{{shapeType}}</h2>
+{{/shapeType}}
+{{#borderColor}}
+<div class="shape-attribute-row">
+  <!-- Border -->
+  <label>Border Color</label>
+  <input type="number" shapeAttr="borderColor"
+  pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})|([0-9A-Fa-f]{3})$" />
+</div>
+{{/borderColor}}
+{{#borderWidth}}
+<div class="shape-attribute-row">
+  <label>Border Width</label>
+  <input type="number" shapeAttr="borderWidth" min=0 />
+</div>
+{{/borderWidth}}
+{{#fillColor}}
+<div class="shape-attribute-row">
+  <label>Fill Color</label>
+  <input type="text" shapeAttr="fillColor" value="{{fillColor}}"
+  pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})|([0-9A-Fa-f]{3})$" />
+</div>
+{{/fillColor}}
+{{#opacity}}
+<div class="shape-attribute-row">
+  <label>Opacity</label>
+  <input type="number" shapeAttr="opacity" min=0 />
+</div>
+{{/opacity}}
 {{#width}}
-  <li class="shape-row" shapeAttr="width">
-    {{width}}
-  </li>
-  <li class="shape-row" shapeAttr="height">
-    {{^height}}0{{/height}}
-    {{ height }}
-  </li>
+<div class="shape-attribute-row">
+  <div class="dimensions">
+      <label>Width</label>
+      <input type="number" shapeAttr="width" value={{width}}  min=0 />
+  </div>
+  <div class="dimensions">
+    <label>Height</label>
+    <input type="number" shapeAttr="height" value={{height}} min=0 />
+  </div>
+</div>
 {{/width}}
+<!-- Coordinates ALWAYS Present -->
+{{#x}}
+<div class="shape-attribute-row">
+  <div class="dimensions">
+    <label>X:</label>
+    <input type="number" shapeAttr="x" value={{x}} readonly="true" />
+  </div>
+  <div class="dimensions">
+    <label>Y:</label>
+    <input type="number" shapeAttr="y" value={{y}} readonly="true" />
+  </div>
+</div>
+{{/x}}
+
+{{#textContent}}
+    {{#fontSize}}
+    <div class="dimensions">
+      <label>Font Size</label>
+      <input type="number" shapeAttr="fontSize" placeholder=12 value={{fontSize}} min=8 max=50 />
+    </div>
+    {{/fontSize}}
+    {{#strokeThickness}}
+    <div class="dimensions">
+      <label>Stroke Thickness</label>
+      <input type="text" shapeAttr="strokeThickness" placeholder="1" value={{strokeThickness}} min=1 />
+    </div>
+    {{/strokeThickness}}
+  </div>
+  {{#stroke}}
+    <div class="dimensions">
+      <label>Stroke Colour</label>
+      <input type="text" shapeAttr="stroke" placeholder="#000000" value={{stroke}}
+      pattern="^#([A-Fa-f0-9]{6}|[A-Fa-f0-9]{3})|([0-9A-Fa-f]{3})$" />
+    </div>
+  {{/stroke}}
+{{/textContent}}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

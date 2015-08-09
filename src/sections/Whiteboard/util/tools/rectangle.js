@@ -108,6 +108,11 @@ module.exports = function(el, AppState) {
     isDown = drawBegan = false;
   };
 
+  var mouseout = function(data) {
+    console.log('mouse is out');
+    isDown = drawBegan = false;
+  }
+
   function activate() {
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;

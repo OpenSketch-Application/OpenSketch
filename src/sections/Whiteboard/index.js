@@ -2,7 +2,6 @@ var fs = require('fs');
 var io = require('io');
 var f1 = require('f1');
 var PIXI = require('pixi');
-var find = require('dom-select');
 var framework = require('../../framework/index');
 var Model = require('../../model/model');
 var states = require('./states');
@@ -23,6 +22,7 @@ window.APP_STATE = AppState;
 window.SHAPES = AppState.Canvas.Shapes;
 window.TOOLS = AppState.Tools;
 window.USERS = AppState.Users;
+
 module.exports = Section;
 
 function Section() {}
@@ -31,8 +31,7 @@ Section.prototype = {
 
   init: function(req, done) {
     var socket = socketSetup(io, framework, AppState);
-
-    var content = find('#content');
+    var content = document.body.querySelector('#content');
 
     this.section = document.createElement('div');
     this.section.innerHTML = fs.readFileSync(__dirname + '/index.hbs', 'utf8');
@@ -41,7 +40,7 @@ Section.prototype = {
     createTabs();
 
     // Inits AppState with Pixi and adds Socket object to AppState objects
-    AppState.init(PIXI, socket, find('#whiteboard-container'));
+    AppState.init(PIXI, socket, this.section.querySelector('#whiteboard-container'));
 
     ShapeAttributeEditor.init(AppState);
 
@@ -63,12 +62,12 @@ Section.prototype = {
       }
     }, AppState);
 
-    var saveWB = find('#save-whiteboard');
-    var savePrompt = find('#save-whiteboard-prompt');
-    var save = find('#save-whiteboard-prompt button');
-    var input = find('#save-whiteboard-prompt input')
+    var saveWB = this.section.querySelector('#save-whiteboard');
+    var savePrompt = this.section.querySelector('#save-whiteboard-prompt');
+    var save = this.section.querySelector('#save-whiteboard-prompt button');
+    var input = this.section.querySelector('#save-whiteboard-prompt input')
 
-    this.sessionOptions = find('.options');
+    this.sessionOptions = this.section.querySelector('.options');
     this.sessionOptions.onclick = function(e) {
       e.stopPropagation();
 
@@ -99,7 +98,7 @@ Section.prototype = {
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
-                           .targets({ whiteboard: find('#whiteboard')})
+                           .targets({ whiteboard: this.section.querySelector('#whiteboard')})
                            .parsers(require('f1-dom'))
                            .init('init');
 
@@ -110,8 +109,7 @@ Section.prototype = {
     Chatbox.init(AppState);
     UserManagement.init(AppState);
 
-   find('body').addEventListener('click',function(e){
-      console.log(e);
+   document.body.addEventListener('click',function(e){
       if(e.target.id != 'save-whiteboard' && e.target.parentElement.id != 'save-whiteboard-prompt')
         savePrompt.className = '';
    });
@@ -121,7 +119,7 @@ Section.prototype = {
       socket.emit(EVENT.saveSession,function(data){
         var a  = window.document.createElement('a');
         a.href = window.URL.createObjectURL(new Blob([data],{type: 'application/javascript'}));
-        var filename = find('#save-whiteboard-prompt input').value;
+        var filename = this.section.querySelector('#save-whiteboard-prompt input').value;
         a.download = filename + '.js';
         savePrompt.className = '';
         a.click();
@@ -158,7 +156,6 @@ Section.prototype = {
   },
 
   destroy: function(req, done) {
-
     Cookies.expire('username');
     Cookies.expire('create');
 

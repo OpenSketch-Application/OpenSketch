@@ -6,22 +6,25 @@ var EVENT = require('../../../../model/model').socketEvents;
 module.exports = Text;
 
 function Text(shapeProperties) {
-  this.fontSize = shapeProperties.fontSize || 12;
-  this.fontFamily = shapeProperties.fontFamily || 'Arial';
+  this._fontSize = '';
+  this._fontFamily = '';
   //this.width = shapeProperties.width || 100;
   //this.height = shapeProperties.height || 100;
   //this.padding = shapeProperties.padding || 0;
   this.textField = new PIXI.Text(shapeProperties.textContent, shapeProperties);
+  this.fontSize = shapeProperties.fontSize || 12;
+  this.fontFamily = shapeProperties.fontFamily || 'Arial';
 
-  this.textField.font = this.fontSize + 'px '
-                 + this.fontFamily;
+  // this.textField.font = this._fontSize + 'px '
+  //                + this._fontFamily;
 
   this.caret = new PIXI.Graphics();
   this.text = shapeProperties.textContent;
 
-  this.textField.stroke = shapeProperties.stroke || 0xff1010;
+  this.stroke = shapeProperties.stroke || 0xff1010;
   this.textField.align = shapeProperties.align || 'left';
-  this.textField.strokeThickness = shapeProperties.strokeThickness || 1;
+  this.strokeThickness = shapeProperties.strokeThickness || 1;
+  this.textField.setText(shapeProperties.textContent);
 
   // Call Container Shape
   Rectangle.call(this, shapeProperties);
@@ -53,8 +56,7 @@ function Text(shapeProperties) {
   // Attach Event Listeners
   this.onKeyEventBinded = this.onKeyEvent.bind(this);
   this.onDocumentMouseDownBinded = this.onDocumentMouseDown.bind(this);
-  //window.TEXTFIELD = this;
-  //this.onWindowDeselectBinded
+
 }
 
 Text.prototype = Object.create(Rectangle.prototype);
@@ -322,16 +324,17 @@ Text.prototype.getProperties = function() {
   shape._caretXIndex = this._caretXIndex;
   shape._caretYIndex = this._caretYIndex;
   shape._actualXIndex = this._actualXIndex;
-  shape.stroke = this.textField.stroke;
+  shape.stroke = this.stroke;
   shape.align = this.textField.align;
-  shape.strokeThickness = this.textField.strokeThickness;
+  shape.strokeThickness = this.strokeThickness;
 
   return shape;
 };
 
 Text.prototype.setProperties = function(shapeProperties) {
   Rectangle.prototype.setProperties.call(this, shapeProperties);
-  if(shapeProperties.font) this.textField.font = shapeProperties.font;
+
+  //if(shapeProperties.font) this.textField.font = styleToSet.font = shapeProperties.font;
   if(shapeProperties.fontColor) this.fontColor = shapeProperties.fontColor;
   if(shapeProperties.fontSize) this.fontSize = shapeProperties.fontSize;
   if(shapeProperties.fontFamily) this.fontFamily = shapeProperties.fontFamily;
@@ -339,15 +342,20 @@ Text.prototype.setProperties = function(shapeProperties) {
   if(shapeProperties._caretXIndex) this._caretXIndex = shapeProperties._caretXIndex;
   if(shapeProperties._caretYIndex) this._caretYIndex = shapeProperties._caretYIndex;
   if(shapeProperties._actualXIndex) this._actualXIndex = shapeProperties._actualXIndex;
-  if(shapeProperties.stroke) this.textField.stroke = shapeProperties.stroke;
+  if(shapeProperties.stroke) this.stroke = shapeProperties.stroke;
   if(shapeProperties.align) this.textField.align = shapeProperties.align;
-  if(shapeProperties.strokeThickness) this.textField.strokeThickness;
+  if(shapeProperties.strokeThickness) this.strokeThickness;
+
+  var styleToSet = {
+    font: this.textField.font,
+    stroke: this.stroke,
+    strokeThickness: this.strokeThickness,
+    fill: this.fontColor
+  };
 
   //this.textField.setText(shape.textContent);
   this.textArray = this.getTextArray(this.text);
-
-  this.textField.font = this.fontSize + 'px '
-                 + this.fontFamily;
+  this.textField.setStyle(styleToSet);
 
   this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
                   + this.textField.style.strokeThickness);
@@ -356,66 +364,16 @@ Text.prototype.setProperties = function(shapeProperties) {
 }
 
 Text.prototype.draw = function(shapeProperties) {
-
-  //this.graphics.clear();
-
-  //this.graphics.interactive = false;
   console.log('Drawing text');
 
   if(shapeProperties) {
-    //if(shapeProperties.textContent) this.textField.setText(shapeProperties.textContent);
     if(shapeProperties.x) this.x = this.textField.x = shapeProperties.x;
     if(shapeProperties.y) this.y = this.textField.y = shapeProperties.y;
 
     this.setProperties(shapeProperties);
-    // if(shapeProperties.textContent)  {
-    //   this.textField.setText(shapeProperties.textContent);
-    //   this.textArray = this.getTextArray(this.text);
-    // }
-    // if(shapeProperties.width) {
-    //   this.width = shapeProperties.width;// <= this.wordWrapWidth ? this.wordWrapWidth : shapeProperties.width;
-    // }
-    // if(shapeProperties.height) {
-    //   this.height = shapeProperties.height;// <= this.textField.height ? this.textField.height : shapeProperties.height;
-    // }
-    //Rectangle.setProperties()
-    // this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
-    //                                                   : this.lineWidth;
-
-    // this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
-    //                                                     : this.lineColor;
-    // this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
-    //                                                     : this.lineAlpha;
-
-    // this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
-    //                                                       : this.fillAlpha;
-    // this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
-    //                                                     : this.fillColor;
-
-    // this.textField.font = this.fontSize + 'px '
-    //                       + this.fontFamily;
-
-    // this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
-    //               + this.textField.style.strokeThickness);
   }
 
-  // var scale = {
-  //   x: 1,
-  //   y: 1
-  // };
-
-  // this.graphics.scale = scale;
-
-  // Since we cleared all the draw properties for redrawing, we need to set the styles again
-  // this.graphics.beginFill(this.fillColor);
   this.drawBackground();
-
-  // // Redraw the shape
-  // this.graphics.drawRect(
-  //   this.graphics.getLocalBounds()
-  // );
-
-  // this.graphics.endFill();
 
   return this;
 };
@@ -425,7 +383,6 @@ Text.prototype.lockShape = function(userId) {
   console.log('LOCKing shape');
   this.currentUserId = userId;
   this.highlight(0xFF0000);
-  //this.interactive = this.graphics.interactive = false;
   this.locked = true;
   this.selected = true;
   this.unSelect();
@@ -447,8 +404,8 @@ Text.prototype.setMoveListeners = function(AppState) {
 
   Rectangle.prototype.setMoveListeners.call(this, AppState);
 
-  var baseMouseDown = this.graphics.mousedown;//.bind(this, AppState);
-  var baseMouseUp = this.graphics.mouseup;//.bind(this, AppState);
+  var baseMouseDown = this.graphics.mousedown;
+  var baseMouseUp = this.graphics.mouseup;
   this.socket = AppState.Socket;
   var previousClickTime;
   this.globalKeyDown = AppState.GlobalEvents['keydown'];
@@ -470,6 +427,8 @@ Text.prototype.setMoveListeners = function(AppState) {
         // Activate Keyboard listeners
         this.onSelect(e);
 
+        this.calculateCaretPosition();
+
         this.showCaret();
       }
       else {
@@ -487,19 +446,51 @@ Text.prototype.setMoveListeners = function(AppState) {
       if(!this.isFocusClick) {
         this.unSelect();
       }
-
-      //keyboardManager.textInput(this.textField.setText.bind(this.textField));
-
-      //this.textField.setText('hello');
     }
   }.bind(this);
 
-  // this.gaphics.mouseup = function(e) {
-  //   this.isFocusClick = true;
-  // }
-
   this.graphics.interactive = true;
 };
+
+Object.defineProperty(Text.prototype, 'fontSize', {
+  get: function() {
+    return this._fontSize;
+  },
+  set: function(v) {
+    this._fontSize = v;
+    this.textField.font = this._fontSize + 'px '
+                 + this._fontFamily;
+  }
+})
+
+Object.defineProperty(Text.prototype, 'fontFamily', {
+  get: function() {
+    return this._fontFamily;
+  },
+  set: function(v) {
+    this._fontFamily = v;
+    this.textField.font = this._fontSize + 'px '
+                 + this._fontFamily;
+  }
+})
+
+Object.defineProperty(Text.prototype, 'stroke', {
+  get: function() {
+    return this.textField.stroke;
+  },
+  set: function(v) {
+    this.textField.stroke = this.textField.fill = v;
+  }
+})
+
+Object.defineProperty(Text.prototype, 'strokeThickness', {
+  get: function() {
+    return this.textField.strokeThickness;
+  },
+  set: function(v) {
+    this.textField.strokeThickness = v;
+  }
+})
 
 Object.defineProperty(Text.prototype, 'text', {
   get: function() {

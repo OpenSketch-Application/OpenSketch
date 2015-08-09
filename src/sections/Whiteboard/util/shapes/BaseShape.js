@@ -23,13 +23,17 @@ function BaseShape(shapeProperties, graphicsType) {
   this.selectablePoints = new PIXI.Graphics();
   this.graphics.addChildAt(this.highlightShape, 0);
   this.graphics.addChildAt(this.selectablePoints, 1);
-  this.layerLevel = 0;
+  //this.layerLevel = 0;
 
   //BaseShape.prototype.setProperties.call(this, shapeProperties);
 };
 //
 // Normally called by Shape objects that inherit BaseShape
 var getProperties = function() {
+  // if(this.graphics.stage){
+  //   var layerLevel = this.graphics.stage.getChildIndex(this.graphics) || 0;
+  // }
+
   var shapeProperties = {
     _id: this._id,
     originalUserId: this.originalUserId,
@@ -49,10 +53,10 @@ var setProperties = function(shapeProperties) {
   // These properties will be set by AppState's Shapes object
   // It will set these properties based on the Session context and
   // User
-  this._id = shapeProperties._id || '';
-  this.originalUserId = shapeProperties.originalUserId;
-  this.currentUserId = shapeProperties.currentUserId;
-  this.layerLevel = shapeProperties.layerLevel || 0;
+  this._id = shapeProperties._id || this._id || '';
+  this.originalUserId = shapeProperties.originalUserId || this.originalUserId || '';
+  this.currentUserId = shapeProperties.currentUserId || this.currentUserId || '';
+  this.layerLevel = shapeProperties.layerLevel || this.layerLevel;
 
   // This will indicate whether the user has selected this object in the Canvas
   // This is normally toggled when Select tool is selected and User clicks on
@@ -73,10 +77,12 @@ var setProperties = function(shapeProperties) {
 var setMoveListeners = function(AppState) {
   var Tools = AppState.Tools;
   var Users = AppState.Users;
+  var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
   var ShapeAttributeEditor = AppState.ShapeAttributeEditor;
   var mousedown = false;
   this.resizeSelect = false;
+
   // The current position of this Shape, ie. its Top, Left coordinates
   // relative to Canvas' Top, Left coords
   this.origin = {
@@ -96,7 +102,11 @@ var setMoveListeners = function(AppState) {
 
     //data.originalEvent.preventDefault();
     if(Tools.selected === 'select') {
-      this.origin = data.getLocalPosition(this.graphics);
+      this.origin =  {
+        x: data.getLocalPosition(stage).x - this.graphics.position.x,
+        y: data.getLocalPosition(stage).y - this.graphics.position.y
+      };
+
       this.alpha = 0.9;
       mousedown = true;
       // Set the User who is currently manipulating the Shape,
@@ -139,7 +149,7 @@ var setMoveListeners = function(AppState) {
         this.resizeSelect = false;
       }
 
-      //ShapeAttributeEditor.editShapeAttributes(this);
+      ShapeAttributeEditor.editShapeAttributes(this);
 
       // use socket emit to other User's that this object is selected by this user, and should
       // be locked for them
@@ -194,10 +204,6 @@ var setMoveListeners = function(AppState) {
       this.showSelectableUI();
     }
   }.bind(this);
-
-  function helperGetClosestSelectable() {
-
-  }
 
   // Need this for Select tool, since it needs to know if
   // Shape had been moved, thus it will read the this.origin property
@@ -308,6 +314,10 @@ var showSelectableUI = function() {
   this.selectablePoints.endFill();
 };
 
+var hideSelectableUI = function() {
+  this.selectablePoints.clear();
+}
+
 var updateHitArea = function() {
   // Get bounds of the currentShape
   this.bounds = {
@@ -373,9 +383,24 @@ BaseShape.prototype = {
   },
   /*To Do: Potentially implement methods that shows UI features around the shape */
   showSelectableUI: showSelectableUI,
-  updateHitArea: updateHitArea
-  // hideSelectableUI
+  updateHitArea: updateHitArea,
+  hideSelectableUI: hideSelectableUI
 };
+
+Object.defineProperty(BaseShape.prototype, 'layerLevel', {
+  get: function() {
+    if(this.graphics.parent)
+      return this.graphics.parent.getChildIndex(this.graphics);
+    else{
+      return 0;
+    }
+  },
+  set: function(index) {
+    if(this.graphics.parent && index >= 0) {
+      this.graphics.parent.setChildIndex(this.graphics, index);
+    }
+  }
+});
 
 mixes(BaseShape, require('../shapeHelpers/selectableMixin'));
 mixes(BaseShape, require('../shapeHelpers/resizeableMixin'));

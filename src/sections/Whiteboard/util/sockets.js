@@ -2,6 +2,7 @@ var find = require('dom-select');
 var EVENT = require('../../../model/model').socketEvents;
 var SERVERNAME = window.location.origin;
 var Cookies = require('cookies-js');
+var Import = require('./shapes/Import');
 
 module.exports = function(io, framework, AppState){
   var curSession = window.location.href;
@@ -57,6 +58,13 @@ module.exports = function(io, framework, AppState){
   socket.on(EVENT.removeShape, function(shapeId) {
     AppState.Canvas.Shapes.removeShapeByID(shapeId);
   });
+
+  // socket.on(EVENT.imageUpload, function(location) {
+  //   image = new Import(AppState.Tools.importer, location);
+  //   image = AppState.Canvas.Shapes.addNew(image);
+  //   image.setMoveListeners(AppState);
+
+  // });
 
   return socket;
 }

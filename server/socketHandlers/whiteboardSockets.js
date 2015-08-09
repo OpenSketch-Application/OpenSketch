@@ -11,7 +11,7 @@ whiteboardSockets.deleteSessionCB = function(socket,nsp){
     Session.remove({_id:sessionid},function(err){});
     socket.broadcast.emit(EVENT.deleteSession);
   };
-}
+};
 whiteboardSockets.saveSessionCB = function(socket,nsp){
   return function(callback){
         var sessionid = socket.adapter.nsp.name.split('/');
@@ -28,7 +28,7 @@ whiteboardSockets.saveSessionCB = function(socket,nsp){
 
         });
   };
-}
+};
 whiteboardSockets.userListCB = function(socket,nsp){
   return function(sessionId){
         var sessionid = socket.adapter.nsp.name.split('/');
@@ -74,6 +74,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 
               socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
 
+
               socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
 
               socket.emit(EVENT.populateCanvas, session.canvasShapes);
@@ -105,10 +106,17 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
 
                   socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, session.users.length - 1);
 
-                  socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
+                  socket.emit(EVENT.updateChatList, session.messages);
 
-                  socket.emit(EVENT.populateCanvas, session.canvasShapes);
-
+                  if(session.canvasShapes && session.canvasShapes.length > 0) {
+                    for(var i = session.canvasShapes.length - 1; i >= 0; i--) {
+                      session.canvasShapes[i].layerLevel = i;
+                    }
+                    // session.canvasShapes.sort(function(a,b) {
+                    //   return a.layerLevel - b.layerLevel;
+                    // });
+                    socket.emit(EVENT.populateCanvas, session.canvasShapes);
+                  }
                   //socket.broadcast.emit(EVENT.UserList, session.users);
                 }
               });
@@ -229,8 +237,8 @@ whiteboardSockets.shapeObjectCB = function(socket, nspWb) {
     console.log(data);
 
     socket.broadcast.emit(EVENT.shapeEvent, eventType, data);
-  }
-}
+  };
+};
 
 whiteboardSockets.saveObjectCB = function(socket, nspWb) {
   return function(data) {
@@ -264,24 +272,24 @@ whiteboardSockets.updateObjectCB = function(socket) {
     });
 
   };
-}
+};
 
-whiteboardSockets.populateCanvasCB = function(socket) {
-  return function(shapes) {
-    console.log('recieved socket update event');
-    console.log(data);
-    var sessionid = socket.adapter.nsp.name.split('/');
-    sessionid = sessionid[sessionid.length - 1];
+// whiteboardSockets.populateCanvasCB = function(socket) {
+//   return function(shapes) {
+//     console.log('recieved socket update event');
+//     console.log(data);
+//     var sessionid = socket.adapter.nsp.name.split('/');
+//     sessionid = sessionid[sessionid.length - 1];
 
-    console.log('updating and saving to sessionid', sessionid);
+//     console.log('updating and saving to sessionid', sessionid);
 
-    ShapeManager.updateOne(sessionid, data._id, data, function(err,result){
-      if(err) console.error('Unable to update Shape', new Date().getUTCDate(), 'Shape: ', data);
-      else console.log('Updated shape', data);
-    });
+//     ShapeManager.updateOne(sessionid, data._id, data, function(err,result){
+//       if(err) console.error('Unable to update Shape', new Date().getUTCDate(), 'Shape: ', data);
+//       else console.log('Updated shape', data);
+//     });
 
-  };
-}
+//   };
+// };
 
 whiteboardSockets.permissionChangedCB = function(socket) {
   return function(userModel) {
@@ -293,11 +301,11 @@ whiteboardSockets.permissionChangedCB = function(socket) {
     UserManager.updateOne(sessionid, userModel._id, userModel, function(err, result) {
       if(err) console.log('Unable to update user\'s permissions', userModel);
       else console.log('User permission updated', userModel.username);
-    })
+    });
 
     socket.broadcast.emit(EVENT.permissionChanged, userModel);
-  }
-}
+  };
+};
 
 whiteboardSockets.removeUser = function(socket) {
   return function(userModel) {
@@ -312,7 +320,7 @@ whiteboardSockets.removeUser = function(socket) {
     });
 
   }
-}
+};
 
 whiteboardSockets.removeThisUser = function(socket) {
   return function(userModel) {
@@ -326,9 +334,9 @@ whiteboardSockets.removeThisUser = function(socket) {
       else {
         socket.broadcast.emit(EVENT.announcement, userModel.username + ' has been removed from the session');
       }
-    })
-  }
-}
+    });
+  };
+};
 
 whiteboardSockets.clearShapesCB = function(socket) {
   return function(data, onComplete) {
@@ -342,12 +350,13 @@ whiteboardSockets.clearShapesCB = function(socket) {
       }
       else {
         socket.broadcast.emit(EVENT.clearShapes);
+        //console.log('Successfully cleared shapes');
       }
     });
 
     onComplete(error, 'Successfully cleared shapes');
   };
-}
+};
 
 whiteboardSockets.removeShapeCB = function(socket) {
   return function(shapeId, onComplete) {
@@ -361,11 +370,21 @@ whiteboardSockets.removeShapeCB = function(socket) {
       }
       else {
         socket.broadcast.emit(EVENT.removeShape, shapeId);
+        //console.log('Successfully removed shapes');
       }
     });
 
     onComplete(error, 'Successfully removed shapes');
   };
-}
+};
+
+whiteboardSockets.imageUploadCB = function(socket) {
+  return function(location, onComplete) {
+    var sessionid = socket.adapter.nsp.name.replace(/.*\//, '');
+    console.log('RECEIVED')
+    socket.broadcast.emit(EVENT.imageUpload, location);
+  };
+};
+
 
 module.exports = whiteboardSockets;

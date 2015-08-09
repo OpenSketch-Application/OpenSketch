@@ -86,5 +86,5 @@ module.exports = function () {
     if (doPrevent) {
         event.preventDefault();
     }
-});
+  });
 };

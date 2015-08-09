@@ -1,5 +1,6 @@
 'use strict';
 var EVENT = require('./model').socketEvents;
+var CanvasStage = require('./CanvasStage');
 
 // Every new tool will have these defaults settings
 // Can be changed by user for her preferences later
@@ -44,8 +45,9 @@ var Tools = {
   },
   text: {
     // Text Properties
-    font: '16px Arial',
-    fontSize: 16,
+    font: '12px Arial',
+    fontSize: 12,
+    fontColor: 0x000000,
     fontFamily: 'Arial',
     stroke: 0xff1010,
     align: 'left',
@@ -75,7 +77,33 @@ var Tools = {
     lineWidth: 1,
     lineAlpha: 1,
     fillColor: 0xFFFFFF,
-    fillAlpha: 1
+    fillAlpha: 1,
+    cellTextStyle: {
+      //font: '16px Arial',
+      fontSize: 10,
+      fontFamily: 'Arial',
+      stroke: 0xff1010,
+      align: 'left',
+      strokeThickness: 1,
+      textContent: 'Textbox',
+
+      // Textbox background
+      lineColor: 0x000000,
+      lineWidth: 1,
+      lineAlpha: 1,
+      fillColor: 0xFF0000,
+      fillAlpha: 1
+    },
+    rows: 2,
+    cols: 2,
+    // Row Header Style
+    headerStyle: {
+      lineColor: 0x000000,
+      lineWidth: 1,
+      lineAlpha: 1,
+      fillColor: 0xFFFFFF,
+      fillAlpha: 1
+    }
   },
   uml: {}
 };
@@ -131,14 +159,15 @@ Shapes.prototype = {
     }
 
     // Set the layer level of this Shape, ie. this is its stage level on Pixi stage
-    shapeObject.layerLevel = layerLevel || this.stage.children.length;
+    //shapeObject.layerLevel = layerLevel || this.stage.children.length;
 
     // Set object in Shape Map
     this[shapeObject._id] = shapeObject;
 
     // Add stage/layer level the shape will be inserted at
-    this.stage.addChildAt(shapeObject.getGraphics(), shapeObject.layerLevel);
+    this.stage.addChild(shapeObject.getGraphics());//, shapeObject.layerLevel);
 
+    console.log('ADDED SHAPE', shapeObject);
     // Set the number of Shapes of this type that have been drawn so far
     this._shapeTypes[shapeObject.shapeType] = shapeCount;
 
@@ -201,6 +230,7 @@ var AppState = {
   ShapeAttributeEditor: undefined, // Will be attached in ShapeAttributeEditor init method
   ToolBar: undefined, // Will be attached in whiteboard/index.js init method
   ChatBox: undefined, // Will be attached in chatbox.js init method
+  UserManagement: undefined,
   Settings: {
     interactive: true // A flag that is set or unset when User gains or looses permission
   }, // General settings, ie. styles or themes
@@ -234,20 +264,35 @@ Object.defineProperty(AppState, 'init', {
     PIXI.dontSayHello = true;
 
     var _this = this;
-    var stage = new PIXI.Stage(0xFFFFFF, true);
+    var stage = new PIXI.Stage(0x858585, true);
     var renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
                                            document.body.offsetHeight  - 60,
                                            { antialias: true });
 
+    var canvasContainer = new CanvasStage(renderer.width, renderer.height);
 
-    this.Canvas.stage = stage;
+    this.Canvas.stage = canvasContainer;
+    this.Canvas.pixiStage = stage;
     this.Canvas.renderer = renderer;
     this.Socket = Socket;
-    this.Canvas.Shapes.stage = stage;
+    this.Canvas.Shapes.stage = canvasContainer;
     this.Canvas.Shapes.socket = Socket;
+
+    //this.Canvas.stage.interactive = true;
 
     Container.appendChild(renderer.view);
 
+    //canvasContainer.setMouseEvents();
+    // var backgroundGraphics = new PIXI.Graphics();
+
+    // backgroundGraphics.beginFill(0xFFFFFF);
+    // backgroundGraphics.drawRect(0,0,renderer.width,renderer.height);
+    // backgroundGraphics.endFill();
+
+    // canvasContainer.addChild(backgroundGraphics);
+    stage.addChild(canvasContainer);
+
+    //canvasContainer.setMouseEvents(this);
     // Start the render loop
     animate();
 

@@ -6,6 +6,7 @@ var Ellipse = require('./shapes/Ellipse');
 var Line = require('./shapes/Line');
 var Table = require('./shapes/Table');
 var Textbox = require('./shapes/Text');
+var Import = require('./shapes/Import');
 
 module.exports = function(AppState) {
 
@@ -56,6 +57,7 @@ module.exports = function(AppState) {
         switch(eventType) {
           case 'draw':
             if(shapes[shapeData._id]) {
+              console.log('handleSE... WILL DRAW!')
               shapes[shapeData._id].draw(shapeData);
               shapes[shapeData._id].highlight();
             }
@@ -112,11 +114,6 @@ module.exports = function(AppState) {
         console.error('Recieved err for', err);
         console.warn('Shape that errored:\n', shapeData);
       }
-    // if(shapeData && shapes[shapeData._id]) {
-    // }
-    // else {
-    //   console.error('Unable to find Shape', shapeData);
-    // }
   }
 
   // Calls the right constructor based on the Object's shapeType
@@ -144,13 +141,15 @@ module.exports = function(AppState) {
         case 'table':
           shape = new Table(shapeData);
           break;
+        case 'import':
+          shape = new Import(shapeData);
+          break;
         case 'textbox':
-
           shape = new Textbox(shapeData);
 
-          shape.draw(shapeData);
+          //shape.draw(shapeData);
 
-          shape.setMoveListeners(AppState);
+          //shape.setMoveListeners(AppState);
 
           break;
       }

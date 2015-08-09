@@ -77,25 +77,34 @@ Rectangle.prototype.draw = function(shapeProperties) {
 
   this.graphics.clear();
   this.graphics.interactive = false;
+  if(shapeProperties) {
+    if(shapeProperties.x) this.x = shapeProperties.x;
+    if(shapeProperties.y) this.y = shapeProperties.y;
+    if(shapeProperties.width) this.width = shapeProperties.width;
+    if(shapeProperties.height) this.height = shapeProperties.height;
 
-  if(shapeProperties.x) this.x = shapeProperties.x;
-  if(shapeProperties.y) this.y = shapeProperties.y;
-  if(shapeProperties.width) this.width = shapeProperties.width;
-  if(shapeProperties.height) this.height = shapeProperties.height;
 
-  // Since we cleared all the draw properties for redrawing, we need to set the styles again
-  this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
-                                                      : this.lineWidth;
+    // Since we cleared all the draw properties for redrawing, we need to set the styles again
+    this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
+                                                        : this.lineWidth;
 
-  this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
-                                                      : this.lineColor;
-  this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
-                                                      : this.lineAlpha;
+    this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
+                                                        : this.lineColor;
+    this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
+                                                        : this.lineAlpha;
 
-  this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
-                                                      : this.fillAlpha;
-  this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
-                                                      : this.fillColor;
+    this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
+                                                        : this.fillAlpha;
+    this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
+                                                        : this.fillColor;
+  }
+  else {
+    this.graphics.lineWidth = this.lineWidth;
+    this.graphics.lineColor = this.lineColor;
+    this.graphics.lineAlpha = this.lineAlpha;
+    this.graphics.fillAlpha = this.fillAlpha;
+    this.graphics.fillColor = this.fillColor;
+  }
 
   this.graphics.beginFill(this.fillColor);
 

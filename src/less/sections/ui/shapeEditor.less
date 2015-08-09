@@ -1,0 +1,53 @@
+#shapeEditor {
+    margin: 0 auto;
+    h2 {
+      // margin: 0 5px;
+      padding: 0;
+      text-align: center;
+      text-transform: capitalize;
+    }
+
+    .shape-attribute-row {
+      width: 100%;
+      border: solid 1px black;
+      overflow: auto;
+      margin: 5px;
+      padding: 4px;
+      input {
+         width: 50%;
+         float: right;
+      }
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+
+      label {
+        width: 45%;
+        float: left;
+      }
+    }
+
+    .dimensions {
+      box-sizing: border-box;
+      width: 46%;
+      float: none;
+      display: inline-box;
+      float: left;
+      margin-right: 5px;
+      input {
+        display: inline-box;
+        width: 40%;
+      }
+      input[type=number]::-webkit-inner-spin-button,
+      input[type=number]::-webkit-outer-spin-button {
+        -webkit-appearance: none;
+        margin: 0;
+      }
+      label {
+        display: inline-box;
+        width: 45%;
+      }
+    }
+}

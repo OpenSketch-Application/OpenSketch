@@ -96,15 +96,11 @@ module.exports = {
       _this.addMsg(data);
     });
 
-    _this.socket.on(EVENT.updateChatList, function(data, shapes) {
+    _this.socket.on(EVENT.updateChatList, function(data) {
       for(var i = 0;i<data.length;i++){
         _this.addMsg(data[i]);
       }
     });
-
-    // _this.socket.on(EVENT.populateCanvas, function(shapelist) {
-    //   console.log('Update ShapeList', shapelist);
-    // })
 
     _this.socket.on(EVENT.announcement, function(msg){
       _this.addAnnouncement(msg);

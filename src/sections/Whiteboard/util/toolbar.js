@@ -135,7 +135,7 @@ function toolbar(elements, AppState) {
       previouslySelected = button;
 
       if(tools && tools.selected) {
-        AppState.ShapeAttributeEditor.editShapeAttributes(tools[tools.selected]);
+        AppState.ShapeAttributeEditor.editShapeAttributes(tools[tools.selected], tools.selected);
       }
     }
   }
