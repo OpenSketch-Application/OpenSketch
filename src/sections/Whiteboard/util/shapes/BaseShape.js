@@ -47,10 +47,10 @@ var setProperties = function(shapeProperties) {
   // These properties will be set by AppState's Shapes object
   // It will set these properties based on the Session context and
   // User
-  this._id = shapeProperties._id || '';
-  this.originalUserId = shapeProperties.originalUserId;
-  this.currentUserId = shapeProperties.currentUserId;
-  this.layerLevel = shapeProperties.layerLevel || 0;
+  this._id = shapeProperties._id || this._id || '';
+  this.originalUserId = shapeProperties.originalUserId || this.originalUserId || '';
+  this.currentUserId = shapeProperties.currentUserId || this.currentUserId || '';
+  this.layerLevel = shapeProperties.layerLevel || this.layerLevel;
 
   // This will indicate whether the user has selected this object in the Canvas
   // This is normally toggled when Select tool is selected and User clicks on
@@ -66,6 +66,7 @@ var setProperties = function(shapeProperties) {
   this.rotation = this.graphics.rotation = shapeProperties.rotation || 0;
   this.graphics.interactive = this.interactive = shapeProperties.interactive || false;
 };
+
 
 // Sets the listeners to handle Movement and Selection as well
 var setMoveListeners = function(AppState) {
@@ -198,10 +199,22 @@ BaseShape.prototype = {
     this.unHighlight();
     this.locked = false;
   }
-  /*To Do: Potentially implement methods that shows UI features around the shape */
-  // showSelectableUI
-  // hideSelectableUI
 };
+
+Object.defineProperty(BaseShape.prototype, 'layerLevel', {
+  get: function() {
+    if(this.graphics.parent)
+      return this.graphics.parent.getChildIndex(this.graphics);
+    else{
+      return 0;
+    }
+  },
+  set: function(index) {
+    if(this.graphics.parent && index >= 0) {
+      this.graphics.parent.setChildIndex(this.graphics, index);
+    }
+  }
+});
 
 
 
