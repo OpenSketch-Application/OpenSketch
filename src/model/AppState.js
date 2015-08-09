@@ -103,7 +103,7 @@ function Shapes() {
 };
 
 Shapes.prototype = {
-  addNew: function(shapeObject, layerLevel) {
+  addNew: function(shapeObject) {
     // increment the number of Shapes of this type
     var shapeCount = this._shapeTypes[shapeObject.shapeType];
 
@@ -135,9 +135,6 @@ Shapes.prototype = {
       keyIndex = ++keyIndex%5;
     }
 
-    // Set the layer level of this Shape, ie. this is its stage level on Pixi stage
-    shapeObject.layerLevel = layerLevel || this.stage.children.length;
-
     // Set object in Shape Map
     this[shapeObject._id] = shapeObject;
 
@@ -157,7 +154,7 @@ Shapes.prototype = {
     if(shape) {
       this._shapeTypes[shape.shapeType]--;
 
-      this.stage.removeChildAt(shape.layerLevel);
+      this.stage.removeChild(shape.graphics);
 
       this[id] = null;
     }
@@ -169,9 +166,6 @@ Object.defineProperty(Shapes.prototype, 'originalUser', {
     return AppState.Users.currentUser._id || 'unknown';
   }
 });
-
-// Use test case to ensure userId, canvasID and Object Type are set
-// layerLevel is optional parameter
 
 // AppState Main Object
 var AppState = {
@@ -205,6 +199,7 @@ var AppState = {
     }
   },
   ChatBox: undefined, // Will be attached in chatbox.js init method
+  UserManagement: undefined, // Will be attached in usermanagement.js init method
   Settings: {
     interactive: true // A flag that is set or unset when User gains or looses permission
   }, // General settings, ie. styles or themes
@@ -252,21 +247,10 @@ Object.defineProperty(AppState, 'init', {
     this.Canvas.Shapes.stage = canvasContainer;
     this.Canvas.Shapes.socket = Socket;
 
-    //this.Canvas.stage.interactive = true;
-
     Container.appendChild(renderer.view);
 
-    //canvasContainer.setMouseEvents();
-    // var backgroundGraphics = new PIXI.Graphics();
-
-    // backgroundGraphics.beginFill(0xFFFFFF);
-    // backgroundGraphics.drawRect(0,0,renderer.width,renderer.height);
-    // backgroundGraphics.endFill();
-
-    // canvasContainer.addChild(backgroundGraphics);
     stage.addChild(canvasContainer);
 
-    //canvasContainer.setMouseEvents(this);
     // Start the render loop
     animate();
 

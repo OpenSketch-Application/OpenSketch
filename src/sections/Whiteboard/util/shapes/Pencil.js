@@ -8,23 +8,6 @@ function Pencil(shapeProperties) {
   this.graphics = new PIXI.Graphics();
   BaseShape.call(this,shapeProperties);
   this.shapeType = 'pencil';
-  // Prefill Shape Model
-  // this.shape = {
-  //   _id: '',
-  //   userId: '',
-  //   layerLevel: 0,
-  //   rotation: 0,
-  //   interactive: false,
-  //   x: 0,
-  //   y: 0,
-  //   width: 0,
-  //   height: 0,
-  //   lineWidth: 0,
-  //   lineColor: 0,
-  //   fillColor: 0,
-  //   lineAlpha: 0,
-  //   fillAlpha: 0
-  // }
 
   this.setProperties(shapeProperties);
 }
@@ -44,8 +27,6 @@ Pencil.prototype.getProperties = function() {
   shape.lineColor= this.lineColor;
   shape.lineAlpha= this.lineAlpha;
   shape.shapeType= this.shapeType;
-  
-
 
   return shape;
 };
@@ -93,13 +74,6 @@ Pencil.prototype.draw = function(shapeProperties) {
 
   return this;
 };
-
-//Rectangle.prototype.update = function(shapeProperties) {}
-
-// Rectangle.prototype.move = function(x, y) {
-//   this.graphics.position.x = x;
-//   this.graphics.position.y = y;
-// };
 
 // To keep track of the number of shapes of this type
 Pencil.prototype.shapeCount = 0;

@@ -21,7 +21,6 @@ function BaseShape(shapeProperties, graphicsType) {
   this.selectablePoints = new PIXI.Graphics();
   this.graphics.addChildAt(this.highlightShape, 0);
   this.graphics.addChildAt(this.selectablePoints, 1);
-  this.layerLevel = 0;
 
   //BaseShape.prototype.setProperties.call(this, shapeProperties);
 };
@@ -32,7 +31,6 @@ var getProperties = function() {
     _id: this._id,
     originalUserId: this.originalUserId,
     currentUserId: this.currentUserId,
-    layerLevel: this.layerLevel,
     rotation: this.rotation,
     interactive: this.interactive,
     scale: this.scale
@@ -50,7 +48,6 @@ var setProperties = function(shapeProperties) {
   this._id = shapeProperties._id || this._id || '';
   this.originalUserId = shapeProperties.originalUserId || this.originalUserId || '';
   this.currentUserId = shapeProperties.currentUserId || this.currentUserId || '';
-  this.layerLevel = shapeProperties.layerLevel || this.layerLevel;
 
   // This will indicate whether the user has selected this object in the Canvas
   // This is normally toggled when Select tool is selected and User clicks on

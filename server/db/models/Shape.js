@@ -6,7 +6,6 @@ module.exports = new mongoose.Schema({
   _id: String,
   userId: String,
   objectType: String,
-  layerLevel: Number,
   position: {
     x: Number,
     y: Number
