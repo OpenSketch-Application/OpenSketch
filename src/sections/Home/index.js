@@ -123,6 +123,9 @@ function verifyForm(filecontent){
   if(userName.value == ''){
     error.errors.push({msg:'Please Enter a Username',element: userName});
   }
+  if(userName.value.length >= 11){
+	error.errors.push({msg:'Username must not exceed 10 characters',element: userName});
+  }
 
   var session = filecontent ? ValidateJSON(filecontent) : false;
   if(session === false && filecontent != null)
