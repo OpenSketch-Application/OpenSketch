@@ -36,8 +36,6 @@ module.exports = function(el, AppState) {
     // var _Text = new PixiTextInput('This is a textbox', Tools.text);
     // _Text.x = originalCoords.x;
     // _Text.y = originalCoords.y;
-
-    // stage.addChild(_Text);
     textbox = new Textbox(Tools.text);
 
     var shapeProperties = {
@@ -62,7 +60,6 @@ module.exports = function(el, AppState) {
     // text.setProperties(Tools.textangle);
     //console.log('Text', Tools.text);
     // Adds shape to the shapes object/container and stage
-
 
     //console.log(text);
     //console.log('text added', text.getProperties());

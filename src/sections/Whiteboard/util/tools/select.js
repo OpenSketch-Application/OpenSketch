@@ -148,7 +148,7 @@ module.exports = function(AppState, el) {
       if ((keycode >= 48 && keycode <= 57) || keycode == 45 || keycode == 46 || keycode == 8){
         socket.emit(EVENT.removeShape, select.selectedObject._id, function(err) {
           if(err) {
-            console.log(err);
+            console.error(err);
           } else {
             AppState.Canvas.Shapes.removeShapeByID(select.selectedObject._id);
           }

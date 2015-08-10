@@ -4,7 +4,7 @@ var Table = require('../shapes/Table');
 var setMoveShapeListeners = require('./shapeHelpers/setMoveShapeListeners');
 var EVENT = require('../../../../model/model').socketEvents;
 
-module.exports = function(settings, el, AppState) {
+module.exports = function(el, AppState) {
 
   // Mininum Table Col and Row
   var minRows = 2;
@@ -35,7 +35,8 @@ module.exports = function(settings, el, AppState) {
 
     console.log('Drawing table');
 
-    activate(settings, AppState);
+    // Activates the Table UI mouse events
+    activate();
 
     return false;
   });

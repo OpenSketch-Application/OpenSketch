@@ -95,7 +95,7 @@ Section.prototype = {
 
     };
 
-  
+
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
                            .targets({ whiteboard: this.section.querySelector('#whiteboard')})
@@ -113,7 +113,7 @@ Section.prototype = {
    document.body.addEventListener('click',function(e){
       if(e.target.id != 'save-whiteboard' && e.target.parentElement.id != 'save-whiteboard-prompt')
         savePrompt.className = '';
-     
+
      console.log('body');
       if(e.target.id != 'tool-color' && e.target.parentElement.id != 'color' && e.target.parentElement.id !='color-wheel' && e.target.id != 'color-wheel')
         colorwheel.className = '';
@@ -162,12 +162,11 @@ Section.prototype = {
   },
 
   destroy: function(req, done) {
-    Cookies.expire('username');
-    Cookies.expire('create');
-
     AppState.Socket.emit('disconnect');
 
     this.section.parentNode.removeChild(this.section);
+
+    location.reload();
     done();
   }
 };

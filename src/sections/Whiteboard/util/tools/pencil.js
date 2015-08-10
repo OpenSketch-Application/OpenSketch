@@ -2,8 +2,7 @@ var PIXI = require('pixi');
 var Pencil = require('../shapes/Pencil')
 var EVENT = require('../../../../model/model').socketEvents;
 
-module.exports = function(info, el, AppState) {
-  var userID = info.userID;
+module.exports = function(el, AppState) {
   var stage = AppState.Canvas.stage;
   var socket = AppState.Socket;
   var shapes = AppState.Canvas.Shapes;
@@ -12,7 +11,7 @@ module.exports = function(info, el, AppState) {
   var pencil;
   var path;
   var prevID;
-  isFirst=false;
+
   var drawingBegan = false;
   var settings = {
     el: el,
@@ -22,7 +21,6 @@ module.exports = function(info, el, AppState) {
 
   function mousedown(data) {
     isDown = true;
-    isFirst = true;
     prevPos.x = data.global.x;
     prevPos.y = data.global.y;
     prevID = 0;
@@ -31,16 +29,13 @@ module.exports = function(info, el, AppState) {
     path.push(prevPos.y);
 
     pencil = new Pencil(AppState.Tools.pencil);
+
     drawingBegan = false;
   }
 
   function mousemove(data) {
     if(isDown) {
-      //Removing oldpath
-      //if(!isFirst){
-      //  shapes.removeShapeByID(prevID);
-      //  socket.emit(EVENT.shapeEvent,'remove',{_id:prevID});
-      // }
+
       var prevX = prevPos.x;
       var prevY = prevPos.y;
 
@@ -50,21 +45,27 @@ module.exports = function(info, el, AppState) {
       path.push(prevPos.y);
       pencil = pencil.draw({path: path});
       prevID = pencil._id;
+
       if(!drawingBegan){
         pencil = shapes.addNew(pencil);
+
         socket.emit(EVENT.shapeEvent,'add',pencil.getProperties());
+
+        AppState.ToolBar.currentlyDrawingShape = pencil;
       }else{
         socket.emit(EVENT.shapeEvent,'draw',pencil.getProperties());
       }
+
       drawingBegan = true;
     }
   }
 
   function mouseup() {
-    //shapes.addNew(pencil);
     socket.emit(EVENT.saveObject,pencil.getProperties());
 
     isDown = drawingBegan = false;
+
+    AppState.ToolBar.currentlyDrawingShape = undefined;
   }
 
   function mouseout(data) {
@@ -83,7 +84,7 @@ module.exports = function(info, el, AppState) {
     stage.mousedown = mousedown;
     stage.mousemove = mousemove;
     stage.mouseup = mouseup;
-    stage.mouseout = mouseout;
+    stage.mouseout = mouseup;
 
     return false;
   }

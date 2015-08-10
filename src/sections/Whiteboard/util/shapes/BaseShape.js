@@ -22,7 +22,7 @@ function BaseShape(shapeProperties, graphicsType) {
   this.graphics.addChildAt(this.highlightShape, 0);
   this.graphics.addChildAt(this.selectablePoints, 1);
 
-  //BaseShape.prototype.setProperties.call(this, shapeProperties);
+  BaseShape.prototype.setProperties.call(this, shapeProperties);
 };
 //
 // Normally called by Shape objects that inherit BaseShape

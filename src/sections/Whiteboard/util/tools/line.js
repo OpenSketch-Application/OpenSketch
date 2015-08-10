@@ -68,6 +68,8 @@ module.exports = function(el, AppState) {
 
         // Emit socket add shape event
         socket.emit(EVENT.shapeEvent, 'add', line.getProperties());
+
+        AppState.ToolBar.currentlyDrawingShape = line;
       }
       drawBegan = true;
     }
@@ -84,9 +86,19 @@ module.exports = function(el, AppState) {
         socket.emit(EVENT.shapeEvent, 'drawEnd', line.getProperties());
         socket.emit(EVENT.saveObject, line.getProperties());
 
+        AppState.ToolBar.currentlyDrawingShape = undefined;
       }
       else {
         shapes.removeShape(line);
+
+        // Emit socket interactionEnd Event, since drawing has ended on mouse up
+        socket.emit(EVENT.removeShape, line._id, function(err) {
+          if(err) {
+            console.error(err);
+          } else {
+            AppState.Canvas.Shapes.removeShapeByID(line._id);
+          }
+        });
       }
     }
     drawBegan = isDown = false;

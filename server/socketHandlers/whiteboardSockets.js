@@ -14,19 +14,18 @@ whiteboardSockets.deleteSessionCB = function(socket,nsp){
 };
 whiteboardSockets.saveSessionCB = function(socket,nsp){
   return function(callback){
-        var sessionid = socket.adapter.nsp.name.split('/');
-        sessionid = sessionid[sessionid.length - 1];
+    var sessionid = socket.adapter.nsp.name.split('/');
+    sessionid = sessionid[sessionid.length - 1];
 
-        Session.findById(sessionid, function(err, session){
-          if(err){
-            throw new Error('Error retrieving Session');
-          }
-          else if(session && session._id){
-            var wrapper = {shapes: session.canvasShapes, messages: session.messages};
-            callback(JSON.stringify(wrapper));
-          }
-
-        });
+    Session.findById(sessionid, function(err, session){
+      if(err){
+        throw new Error('Error retrieving Session');
+      }
+      else if(session && session._id){
+        var wrapper = {shapes: session.canvasShapes, messages: session.messages};
+        callback(JSON.stringify(wrapper));
+      }
+    });
   };
 };
 whiteboardSockets.userListCB = function(socket,nsp){
@@ -40,8 +39,8 @@ whiteboardSockets.userListCB = function(socket,nsp){
           }
           else if(session && session._id){
 
-           socket.emit(EVENT.UserList,session.users);
-           }
+            socket.emit(EVENT.UserList,session.users);
+          }
 
         });
 
@@ -70,6 +69,8 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
               socket.emit(EVENT.badSession);
             }
             else if(currentUser && currentUser.username === uName) {
+
+
               socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
 
               socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
@@ -85,8 +86,8 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                 username: uName,
                 userRank: session.users.length,
                 permissions: {
-                  canDraw: session.sessionProperties.canDraw,
-                  canChat: session.sessionProperties.canChat
+                  canDraw: session.users.length === 0 ? true : session.sessionProperties.canDraw,
+                  canChat: session.users.length === 0 ? true : session.sessionProperties.canChat
                 },
                 _id: socket.id
               };
@@ -108,8 +109,6 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                   socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
 
                   socket.emit(EVENT.populateCanvas, session.canvasShapes);
-
-                  //socket.broadcast.emit(EVENT.UserList, session.users);
                 }
               });
             }
@@ -149,7 +148,6 @@ whiteboardSockets.chatMessageCB = function(socket,nsp){
                  if(err) console.log(err);
                  else{
                    console.log('saved msg');
-
                  }
               });
            }
@@ -177,36 +175,39 @@ whiteboardSockets.disconnectCB = function(socket, nspWb){
       if(err){
         console.log('error');
       } else if(session) {
-        //delete user
-       var removedUser;
-       if(session.users){
-         if(session.users.id(socket.id)!=null){
-           removedUser = session.users.id(socket.id);
-           session.users.id(socket.id).remove();
+      //delete user
+      var removedUser;
+      if(session.users && session.users.length > 0){
+        if(session.users.id(socket.id)!==null){
+          removedUser = session.users.id(socket.id);
+          session.users.id(socket.id).remove();
+
+          for(var i = session.users.length - 1; i >= 0; i--) {
+            session.users[i].userRank = i;
+          }
+
+          if(session.users[0] && session.users[0].permissions) {
+            session.users[0].permissions.canChat = true;
+            session.users[0].permissions.canDraw = true;
+          }
+        }
+      }
+
+      if(removedUser !== undefined){
+       socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has left the session');
+
+       socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+
+       socket.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+      }
+      session.save(function(err){
+         if(err) console.log(err);
+         else {
+          console.log(session);
+
+          socket.disconnect();
          }
-       }
-       if(removedUser != undefined){
-         socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has left the session');
-
-         socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
-
-         socket.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
-
-         // socket.emit(EVENT.userLeft, removedUser);
-         // socket.broadcast.emit(EVENT.userLeft, removedUser.id);
-
-         //socket.broadcast.emit(EVENT.UserList,session.users);
-
-       }
-       session.save(function(err){
-           if(err) console.log(err);
-           else {
-            console.log(session);
-
-            socket.disconnect();
-
-           }
-        });
+      });
       }
     });
   };
@@ -240,7 +241,7 @@ whiteboardSockets.saveObjectCB = function(socket, nspWb) {
     sessionid = sessionid[sessionid.length - 1];
 
     console.log('SAVING to sessionid', sessionid);
-    // ShapeManager.findOne(sessionid, data._id, function(err,result){
+
     ShapeManager.addOne(sessionid, data, function(err, result){
       if(err) console.error('Unable to save Shape', new Date().getUTCDate(), 'Shape: ', data);
       else console.log('Shape added to DB');
@@ -320,13 +321,51 @@ whiteboardSockets.removeThisUser = function(socket) {
     sessionid = sessionid[sessionid.length - 1];
 
     console.log('Removing User', userModel);
-    socket.disconnect();
-    UserManager.deleteOne(sessionid, userModel._id, function(err) {
-      if(err) console.log('Unable to remove User from DB');
+
+    Session.findById(sessionid, function(err, session){
+      if(err){
+        console.log('error');
+      } else if(session) {
+        //delete user
+        var removedUser;
+        if(session.users && session.users.id(socket.id)!== null){
+          removedUser = session.users.id(socket.id);
+
+          session.users.id(socket.id).remove();
+
+          for(var i = session.users.length - 1; i >= 0; i--) {
+            session.users[i].userRank = i;
+          }
+
+          // Whenever we change the user list, ensure head user can always draw and chat
+          session.users[0].permissions.canChat = true;
+          session.users[0].permissions.canDraw = true;
+
+          session.save(function(err){
+             if(err) console.log(err);
+             else {
+              socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has been removed from the session');
+
+              socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+
+              socket.disconnect();
+             }
+          });
+        }
+        else {
+          console.log('Error unable to find Users for session ID: ', sessionid);
+        }
+      }
       else {
-        socket.broadcast.emit(EVENT.announcement, userModel.username + ' has been removed from the session');
+        console.log('Unable to find Session ID', sessionid);
       }
     });
+    // UserManager.deleteOne(sessionid, userModel._id, function(err) {
+    //   if(err) console.log('Unable to remove User from DB');
+    //   else {
+    //     socket.broadcast.emit(EVENT.announcement, userModel.username + ' has been removed from the session');
+    //   }
+    // });
   };
 };
 

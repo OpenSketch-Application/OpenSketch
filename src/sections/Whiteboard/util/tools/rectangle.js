@@ -75,6 +75,8 @@ module.exports = function(el, AppState) {
         // Send socket info since drawing has began now, use the getProperties() to
         // return only the Shape properties we need and nothing else
         socket.emit(EVENT.shapeEvent, 'add', RectProp);
+
+        AppState.ToolBar.currentlyDrawingShape = rect;
       }
 
       drawBegan = true;
@@ -96,13 +98,17 @@ module.exports = function(el, AppState) {
         socket.emit(EVENT.shapeEvent, 'drawEnd', rect.getProperties());
         socket.emit(EVENT.saveObject, rect.getProperties());
 
+        AppState.ToolBar.currentlyDrawingShape = undefined;
       }
       else {
-        // We always add a Shape Id to hash on
-        shapes.removeShape(rect);
-
-        // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        //socket.emit(EVENT.shapeEvent, 'remove', rect._id);
+        // Remove shape since it was not drawn properly
+        socket.emit(EVENT.removeShape, rect._id, function(err) {
+          if(err) {
+            console.error(err);
+          } else {
+            shapes.removeShapeByID(rect._id);
+          }
+        });
       }
     }
 

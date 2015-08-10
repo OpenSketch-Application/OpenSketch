@@ -26,6 +26,8 @@ module.exports = {
     // We will always set socket event listeners
     this.setSocketEvents(AppState);
 
+    AppState.UserManagement = this;
+
   },
   addUser: function(user) {
     Mustache.render(userManagementTemplate, [user]);
@@ -38,7 +40,6 @@ module.exports = {
     this.container.innerHTML = Mustache.render(userManagementTemplate, users);
 
     //Mustache.render(userManagementTemplate, AppState.Users);
-
   },
   onMouseClick: function(e) {
     var target = e.target;
@@ -47,12 +48,15 @@ module.exports = {
 
     e.stopPropagation();
     e.preventDefault();
+    console.log('UM Clicked', target);
 
     if(target.className.match('chatToggle')) {
 
       // Get the parent li, which has the User's Id
       // path is li div div.chatToggle
       userId = e.target.parentNode.parentNode.id;
+
+
       clickedOnUser = this.Users.getUserById(userId);
 
       if(clickedOnUser.userRank === 0) return false;
@@ -61,11 +65,16 @@ module.exports = {
         clickedOnUser.permissions.canChat = false;
 
         // Basically removing onSet class, by only keeping canChat class on className
-        target.className = 'chatToggle';
+        target.className = 'chatToggle img-circle';
+
+        console.log('Chat disabled', target);
+
       }
       else {
         clickedOnUser.permissions.canChat = true;
-        target.className = 'chatToggle canChat';
+        target.className = 'chatToggle canChat img-circle';
+
+        console.log('Chat enabled', target);
       }
 
       this.emitSocketUserPermissionsChanged(clickedOnUser);
@@ -83,13 +92,12 @@ module.exports = {
         clickedOnUser.permissions.canDraw = false;
 
         // Basically removing onSet class, by only keeping canChat class on className
-        target.className = 'drawToggle';
+        target.className = 'drawToggle img-circle';
       }
       else {
-
         clickedOnUser.permissions.canDraw = true;
 
-        target.className = 'drawToggle canDraw';
+        target.className = 'drawToggle canDraw img-circle';
       }
 
       this.emitSocketUserPermissionsChanged(clickedOnUser);
@@ -116,6 +124,7 @@ module.exports = {
     // User permission, normally only Head user can have this functionality
     this.container.addEventListener('click', this.onMouseClick, false);
 
+    this.mouseEventAttached = true;
     // Array.prototype.forEach.call(function(row) {
     //   row.addEventListener('dragstart', handleDragStart, false);
     //   row.addEventListener('dragenter', handleDragEnter, false);
@@ -126,16 +135,16 @@ module.exports = {
 
   removeUserInteraction: function() {
     this.container.removeEventListener('click', this.onMouseClick, false);
-
+    this.mouseEventAttached = false;
   },
 
   setSocketEvents: function(AppState) {
     // Attach Socket to User Management Class
     var socket = this.socket = AppState.Socket;
     var stage = AppState.Canvas.stage;
-    var select = AppState.Tools.select;
 
     socket.on(EVENT.updateUserList, function(msg, users, curUserIndex) {
+      console.log('Updating user list');
 
       AppState.Users.users = users;
 
@@ -145,16 +154,9 @@ module.exports = {
         AppState.Users.currentUser = users[curUserIndex];
         if(users[curUserIndex] && AppState.Users.currentUser._id) Cookies.set('UserId', AppState.Users.currentUser._id);
         if(users[curUserIndex] && AppState.Users.currentUser.username) Cookies.set('username', AppState.Users.currentUser.username);
-      }
 
-      // First check if User is head user
-      // We can do this by seeing if the first User in Array matches this user's
-      // id, else dont set any listeners on User Management
-      // Note: Head user will have Rank 0, which also corresponds to array index
-      if(!this.mouseEventAttached && AppState.Users.currentUser.userRank === 0) {
-
-        // Sets the events listeners that handle user interaction
-        this.addUserInteraction();
+        // Set up the User Interface, based on the User's permissions
+        this.setUserInterface(AppState.Users.currentUser, AppState);
       }
 
     }.bind(this));
@@ -170,44 +172,10 @@ module.exports = {
       else
         console.error('Unable to find User', userModel);
 
-      // Check if User is the new Head
-      if(userModel.userRank === 0) {
-        this.addUserInteraction();
-      }
+      // Set up the User Interface, based on the User's permissions
+      this.setUserInterface(userModel, AppState);
 
-      // Remove listeners on other components to prevent user from
-      // interacting with parts of the application he has no permission
-
-      // Remove ChatBox listeners
-      if(userModel.permissions.canChat === false) {
-        AppState.ChatBox.removeUserInteraction();
-      }
-      else {
-        AppState.ChatBox.addUserInteraction();
-      }
-
-      // Remove Canvas/Stage and Toolbar Listeners
-      if(userModel.permissions.canDraw === false) {
-
-        AppState.ToolBar.removeUserInteraction();
-
-        // Disable and unHighlight/unLock any selected Shape
-        if(select.selectedObject) {
-          select.selectedObject.unHighlight();
-          select.selectedObject.selected = false;
-          if(select.selectedObject.unSelect) select.selectedObject.unSelect();
-          // UnLock at this point, since user is just clicking the Canvas and
-          // not the previously selected Shape
-          socket.emit(EVENT.shapeEvent, 'unlockShape', { _id: select.selectedObject._id });
-          select.selectedObject = null;
-        }
-
-      }
-      else {
-
-        AppState.ToolBar.addUserInteraction();
-      }
-
+      // Update the User List visible to the User
       this.updateUsers(AppState.Users);
 
     }.bind(this));
@@ -221,7 +189,38 @@ module.exports = {
         framework.go('/home');
         location.reload();
       }
+
     });
+  },
+
+  setUserInterface: function(userModel, AppState) {
+    // First check if User is head user
+    // We can do this by seeing if the first User in Array matches this user's
+    // id, else dont set any listeners on User Management
+    // Note: Head user will have Rank 0, which also corresponds to array index
+    if(!this.mouseEventAttached && AppState.Users.currentUser.userRank === 0) {
+
+      // Sets the events listeners that handle user interaction
+      this.addUserInteraction();
+    }
+
+    // Remove listeners on other components to prevent user from
+    // interacting with parts of the application he has no permission
+    // Remove ChatBox listeners
+    if(userModel.permissions.canChat === false) {
+      AppState.ChatBox.removeUserInteraction();
+    }
+    else {
+      AppState.ChatBox.addUserInteraction();
+    }
+
+    // Remove Canvas/Stage and Toolbar Listeners
+    if(userModel.permissions.canDraw === false) {
+      AppState.ToolBar.removeUserInteraction();
+    }
+    else {
+      AppState.ToolBar.addUserInteraction();
+    }
   },
   emitSocketUserPermissionsChanged: function(userModel) {
     this.socket.emit(EVENT.permissionChanged, userModel);

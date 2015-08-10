@@ -4,8 +4,6 @@ var Cookies = require('cookies-js');
 
 module.exports = {
   init: function(AppState) {
-    //var _this = this;
-
     this.socket = AppState.Socket;
     this.users = AppState.Users;
 
@@ -27,13 +25,18 @@ module.exports = {
 
   removeUserInteraction: function() {
     this.sendButton.removeEventListener('click', this.onSubmitClick, false);
-
     this.inputBox.removeEventListener('keydown', this.onKeyDownHandler, false);
+
+    $('.messageInputUI').hide();
   },
 
   addUserInteraction: function() {
-    this.sendButton.addEventListener('click', this.onSubmitClick, false);
+    $('.messageInputUI').show();
 
+    this.sendButton.removeEventListener('click', this.onSubmitClick, false);
+    this.inputBox.removeEventListener('keydown', this.onKeyDownHandler, false);
+
+    this.sendButton.addEventListener('click', this.onSubmitClick, false);
     this.inputBox.addEventListener('keydown', this.onKeyDownHandler, false);
   },
 
@@ -101,10 +104,6 @@ module.exports = {
         _this.addMsg(data[i]);
       }
     });
-
-    // _this.socket.on(EVENT.populateCanvas, function(shapelist) {
-    //   console.log('Update ShapeList', shapelist);
-    // })
 
     _this.socket.on(EVENT.announcement, function(msg){
       _this.addAnnouncement(msg);

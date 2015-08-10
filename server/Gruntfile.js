@@ -60,7 +60,6 @@ module.exports = function(grunt) {
       }
     }
   });
-
   // load the tasks
   grunt.loadNpmTasks('grunt-contrib-watch');
   grunt.loadNpmTasks('grunt-express-server');

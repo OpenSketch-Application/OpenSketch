@@ -24,7 +24,7 @@ module.exports = function(el, AppState) {
                 console.log(err);
               } else {
                 location = window.location.origin + '/' + JSON.parse(res.text).location;
-                
+
                 image = new Import(AppState.Tools.importer, location);
                 image.graphics.x = image.graphics.y = 0;
                 image = AppState.Canvas.Shapes.addNew(image);
@@ -34,7 +34,7 @@ module.exports = function(el, AppState) {
                 socket.emit(EVENT.saveObject, image.getProperties());
                 socket.emit(EVENT.shapeEvent, 'draw', image.getProperties());
                 socket.emit(EVENT.shapeEvent, 'drawEnd', image.getProperties());
-                
+
                 fileSelect.value = null;
               }
            });

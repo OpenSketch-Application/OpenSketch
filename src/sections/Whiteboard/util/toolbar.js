@@ -35,6 +35,8 @@ function toolbar(elements, AppState) {
   // Used to store the ToolBox Tools that can be selected
   this.toolButtons = {};
 
+  this.currentlyDrawingShape;
+
   // NEED TO GET RID OF THIS
   var settings = {
     container: this.container,
@@ -60,7 +62,7 @@ function toolbar(elements, AppState) {
         createSelect(AppState, el);
         break;
       case 'pencil':
-        createPencil(settings, el, AppState);
+        createPencil(el, AppState);
         break;
       case 'eraser':
         this.eraser = createEraser(el, AppState);
@@ -81,7 +83,7 @@ function toolbar(elements, AppState) {
         createText(el, AppState);
         break;
       case 'table':
-        createTable(settings, el, AppState);
+        createTable(el, AppState);
         break;
       case 'import':
         createImport(el, AppState);
@@ -98,6 +100,9 @@ function toolbar(elements, AppState) {
   }
 
   this.addUserInteraction = function() {
+    // Show toolbar User Interface
+    toolbox.style.display = "inline-block";
+
     AppState.Settings.interactive = true;
 
     stage.interactive = true;
@@ -139,6 +144,7 @@ function toolbar(elements, AppState) {
 
   // Will prevent User from Interacting with Toolbar
   this.removeUserInteraction = function() {
+    var select = AppState.Tools.select;
 
     // Disables all interaction with Canvas
     AppState.Settings.interactive = false;
@@ -149,14 +155,40 @@ function toolbar(elements, AppState) {
       previouslySelected.className = "";
     }
 
+    // Disable and unHighlight/unLock any selected Shape
+    if(select.selectedObject) {
+      select.selectedObject.unHighlight();
+      select.selectedObject.selected = false;
+
+      if(select.selectedObject.unSelect) select.selectedObject.unSelect();
+
+      // UnLock at this point, since user is just clicking the Canvas and
+      // not the previously selected Shape
+      socket.emit(EVENT.shapeEvent, 'unlockShape', { _id: select.selectedObject._id });
+      select.selectedObject = null;
+    }
+
     stage.interactive = false;
+    stage.mousedown = function(data){ data.originalEvent.preventDefault() };
+    stage.mouseup = function(data){ data.originalEvent.preventDefault() };
+    stage.mousemove = function(data) { data.originalEvent.preventDefault() };
+    stage.mouseover = function(data){ data.originalEvent.preventDefault() };
+    stage.mouseout = function(data){ data.originalEvent.preventDefault() };
 
     tools.selected = '';
 
-    stage.mousedown = function(data){ data.originalEvent.preventDefault() };
-    stage.mouseup = function(data){ data.originalEvent.preventDefault() };
-    stage.mouseover = function(data){ data.originalEvent.preventDefault() };
-    stage.mouseout = function(data){ data.originalEvent.preventDefault() };
+    if(this.currentlyDrawingShape && this.currentlyDrawingShape._id) {
+      socket.emit(EVENT.removeShape, this.currentlyDrawingShape._id, function(err) {
+        if(err) {
+          console.error(err);
+        } else {
+          shapes.removeShapeByID(this.currentlyDrawingShape._id);
+        }
+      });
+    }
+
+    // Hide toolbar from this user
+    toolbox.style.display = "none";
   }
 };
 

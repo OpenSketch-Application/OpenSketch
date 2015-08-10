@@ -76,6 +76,8 @@ module.exports = function(el, AppState) {
         // Adds shape to the shapes object/container and stage
         ellipse = shapes.addNew(ellipse);
         socket.emit(EVENT.shapeEvent, 'add', ellipse.getProperties());
+
+        AppState.ToolBar.currentlyDrawingShape = ellipse;
       }
 
       drawBegan = true;
@@ -96,13 +98,21 @@ module.exports = function(el, AppState) {
         // Emit socket save Event, since drawing has ended on mouse up
         // and User has finished saving Shape Object
         socket.emit(EVENT.saveObject, ellipse.getProperties());
+
+        AppState.ToolBar.currentlyDrawingShape = undefined;
       }
       else {
         // Remove Shape from Shapes hashmap
         shapes.removeShape(ellipse);
 
         // Emit socket interactionEnd Event, since drawing has ended on mouse up
-        //socket.emit(EVENT.shapeEvent, 'remove', ellipse._id);
+        socket.emit(EVENT.removeShape, ellipse._id, function(err) {
+          if(err) {
+            console.error(err);
+          } else {
+            AppState.Canvas.Shapes.removeShapeByID(ellipse._id);
+          }
+        });
       }
     }
 
