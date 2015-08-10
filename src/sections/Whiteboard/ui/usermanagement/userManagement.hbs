@@ -1,6 +1,6 @@
 <!-- Template for User Management Cell -->
 {{#users}}
-  <li id="{{_id}}" data-content="Users">
+  <li id="{{_id}}" data-content="Users" draggable="true">
     <!-- <img class="profilePicture" alt="U"/> -->
     <p>
       {{^username}}{{_id}}{{/username}}
@@ -11,7 +11,6 @@
       <img src="/images/chat-icon.png" class="chatToggle {{#permissions.canChat}} canChat{{/permissions.canChat}} img-circle" alt="C"/>
       <img src="/images/can-draw-icon.ico" class="drawToggle {{#permissions.canDraw}} canDraw{{/permissions.canDraw}} img-circle" alt="D"/>
       <img src="/images/remove-user-icon.png" class="removeUser img-rounded" alt="R"/>
-
     </div>
   </li>
 {{/users}}

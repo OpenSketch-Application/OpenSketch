@@ -9,8 +9,17 @@
     margin: 0 auto;
     text-align: center;
     display: inline-block;
-	
-	
+	  user-select: none;
+    margin-bottom: 1px;
+
+    &:hover {
+      background-color: #55c88c;
+    }
+
+    &.over {
+      background-color: #617CB7;
+    }
+
     p {
       display: inline-block;
       font-size: 1.2em;
@@ -31,20 +40,18 @@
         width: 25px;
         height: 25px;
         transform: translateY(50%);
-		border-radius: 500px;
-		z-index: -1;
+    		border-radius: 500px;
+    		z-index: -1;
       }
-	  img:hover {
-          margin: 0;
-          padding: 0;
-          //width: 20px;
-		  //height: 20px;
-		  background-color: grey;
-          cursor: pointer;
-          cursor: hand;
-          -webkit-transition: opacity .25s ease;
-          -moz-transition: opacity .25s ease;
-        }
+	    img:hover {
+        margin: 0;
+        padding: 0;
+	      background-color: grey;
+        cursor: pointer;
+        cursor: hand;
+        -webkit-transition: opacity .25s ease;
+        -moz-transition: opacity .25s ease;
+      }
       // Default is no chat
       .chatToggle {
         background-color: red;

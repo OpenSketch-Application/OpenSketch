@@ -34,7 +34,7 @@ Section.prototype = {
       framework.go('/home');
       done();
       location.reload();
-    }, 5000)
+    }, 3000)
 
     socket.on('connect', function() {
 
@@ -73,7 +73,6 @@ Section.prototype = {
         // If we found a match, show user the whiteboard, since he has already joined the session
         if(matchedUser && matchedUser._id === userId) {
           socket.emit(EVENT.joinSession, matchedUser.username, matchedUser._id);
-
         }
         //
         else {
@@ -117,7 +116,7 @@ Section.prototype = {
       for( var i = 0; i < users.length;i++)
       {
        var li = document.createElement('li');
-       
+
        li.appendChild(document.createTextNode(users[i].username));
        usernames[i] = users[i].username;
        userList.appendChild(li);
