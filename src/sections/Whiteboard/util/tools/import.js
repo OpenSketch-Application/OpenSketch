@@ -7,6 +7,8 @@ var request = require('superagent');
 
 module.exports = function(el, AppState) {
   var fileSelect = document.getElementById('imgImport');
+  var select = document.getElementById('tool-select');
+
   var socket = AppState.Socket;
   var image;
   var location;
@@ -35,6 +37,7 @@ module.exports = function(el, AppState) {
                 socket.emit(EVENT.shapeEvent, 'draw', image.getProperties());
                 socket.emit(EVENT.shapeEvent, 'drawEnd', image.getProperties());
 
+                select.click();
                 fileSelect.value = null;
               }
            });

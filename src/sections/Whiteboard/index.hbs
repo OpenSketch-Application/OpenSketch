@@ -24,7 +24,7 @@
         <img id="tool-import" src="images/import-icon.png" alt="import" />
         <input type="file" id="imgImport" multiple accept="image/*" style="display:none" />
       </li>
-     
+
       <li id = "color">
         <img id="tool-color" src="images/color-icon.png" alt="color" />
         <div id ="color-wheel">
@@ -39,50 +39,69 @@
     <ul class="options">
       <li id="opt-save">Save</li>
       <div id="save-whiteboard-prompt">
-          Save as:
-          <input type ="text"></input>
-          <button>OK</button>
+        Save as:
+        <input type ="text"></input>
+        <button>OK</button>
       </div>
       <li id="opt-clear">Clear</li>
       <li id="opt-settings">Settings</li>
-      <li id="opt-close">Close</li>
-    </ul>
-  </header>
-  <div id="main">
-    <div id="whiteboard-container"></div>
-    <div id="tabs">
-      <div class="cd-tabs">
-        <!-- Navigation Header -->
-        <nav>
-          <ul class="cd-tabs-navigation">
-            <li><a data-content="Chat" class="selected" href="#0">Chat</a></li>
-            <li><a data-content="Users" href="#0">Users</a></li>
-          </ul>
-        </nav>
-
-        <ul class="cd-tabs-content">
-
-          <!-- ChatBox Tab -->
-          <li data-content="Chat" class="selected">
-            <div class="chatMessageBox">
-              <div class="chatMessages">
-              </div>
-              <div class="messageInputUI">
-                <hr class="divider" />
-                <textarea id="chatarea"></textarea>
-                <button>Send</button>
-              </div>
-            </div>
-          </li>
-
-          <!-- User Management Tab -->
-          <li data-content="Users">
-            <ul id="userManagement">
-            <ul>
-          </li>
-
+      <div id="opt-settings-menu">
+       <div class="control">
+         <label>Participants can Chat</label>
+         <div class="roundedOne">
+           <input type="checkbox" value="None" id="roundedOne" name="canChat" checked />
+           <label for="roundedOne"></label>
+         </div>
+       </div>
+       <div class="control">
+         <label>Participants can Draw</label>
+         <div class="roundedTwo">
+           <input type="checkbox" value="None" id="roundedTwo" name="canDraw" checked />
+           <label for="roundedTwo"></label>
+         </div>
+       </div>
+       <div class="control">
+       <label>Max Users</label><input maxlength="2" id="inputMax" type="number" size="2" min="1" max="30" name="maxUsers"/><br/>
+      </div>
+    </div>
+    <li id="opt-close">Close</li>
+  </ul>
+</header>
+<div id="main">
+  <div id="whiteboard-container"></div>
+  <div id="tabs">
+    <div class="cd-tabs">
+      <!-- Navigation Header -->
+      <nav>
+        <ul class="cd-tabs-navigation">
+          <li><a data-content="Chat" class="selected" href="#0">Chat</a></li>
+          <li><a data-content="Users" href="#0">Users</a></li>
         </ul>
+      </nav>
+
+      <ul class="cd-tabs-content">
+
+        <!-- ChatBox Tab -->
+        <li data-content="Chat" class="selected">
+          <div class="chatMessageBox">
+            <div class="chatMessages">
+            </div>
+            <div class="messageInputUI">
+              <hr class="divider" />
+              <textarea id="chatarea"></textarea>
+              <button>Send</button>
+            </div>
+          </div>
+        </li>
+
+        <!-- User Management Tab -->
+        <li data-content="Users">
+          <ul id="userManagement">
+            <ul>
+            </li>
+
+          </ul>
+        </div>
       </div>
     </div>
   </div>
-</div>

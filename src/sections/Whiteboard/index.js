@@ -8,6 +8,7 @@ var states = require('./states');
 var createTabs = require('./util/tabs');
 var socketSetup = require('./util/sockets');
 var Chatbox = require('./util/chatbox');
+var Tween = require('gsap');
 
 var UserManagement = require('./ui/usermanagement/userManagement');
 var Toolbar = require('./util/toolbar');
@@ -64,9 +65,17 @@ Section.prototype = {
     var saveWB = this.section.querySelector('#save-whiteboard');
     var savePrompt = this.section.querySelector('#save-whiteboard-prompt');
     var save = this.section.querySelector('#save-whiteboard-prompt button');
-    var input = this.section.querySelector('#save-whiteboard-prompt input')
+    var input = this.section.querySelector('#save-whiteboard-prompt input');
+    var settings = this.section.querySelector('#opt-settings-menu');
+    this.showSettings = false;
 
     this.sessionOptions = this.section.querySelector('.options');
+
+    var closeSettings = function() {
+
+      
+    };
+
     this.sessionOptions.onclick = function(e) {
       e.stopPropagation();
 
@@ -83,6 +92,16 @@ Section.prototype = {
           });
           break;
         case 'opt-settings':
+          this.showSettings = !this.showSettings;
+          document.set = settings;
+          if(settings.style.visibility != 'visible') {
+            settings.style.visibility = 'visible';
+            Tween.set(settings, {opacity: 0});
+            Tween.to(settings, 0.3, { opacity: 1});
+          } else {
+            Tween.to(settings, 0.25, { opacity: 0, onComplete: function(){ settings.style.visibility = 'hidden'; } });
+          }
+
 
           break;
         case 'opt-close':
@@ -118,6 +137,7 @@ Section.prototype = {
       if(e.target.id != 'tool-color' && e.target.parentElement.id != 'color' && e.target.parentElement.id !='color-wheel' && e.target.id != 'color-wheel')
         colorwheel.className = '';
 
+      Tween.to(settings, 0.25, { opacity: 0, onComplete: function(){ settings.style.visibility = 'hidden'; } });
    });
 
     save.addEventListener('click',function(e){
