@@ -7,5 +7,6 @@ module.exports = new mongoose.Schema({
     canDraw : Boolean,
     canChat : Boolean
   },
-  userRank: Number
+  userRank: Number,
+  isOnline : Boolean
 });

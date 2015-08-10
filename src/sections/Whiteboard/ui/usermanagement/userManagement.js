@@ -137,7 +137,16 @@ module.exports = {
 
     socket.on(EVENT.updateUserList, function(msg, users, curUserIndex) {
 
-      AppState.Users.users = users;
+      var onlineUsers = []; 
+      var j = 0;
+      for(var i = 0; i< users.length;i++){
+        if(users[i].isOnline === true){
+          onlineUsers[j] = users[i];
+          j++;
+        }
+      }
+
+      AppState.Users.users = onlineUsers;
 
       this.container.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
 

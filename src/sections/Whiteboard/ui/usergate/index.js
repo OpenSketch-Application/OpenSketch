@@ -60,25 +60,29 @@ Section.prototype = {
         done();
       }
       else {
-        var matchedUser;
+       var matchedUser;
+       for( var i =0 ;i < users.length;i++){
+         if(users[i]._id === Cookies.get('UserId')){
+           matchedUser = users[i];
+           break; 
+         }
+       }
 
-        users.some(function(user) {
-          if(userId === user._id) {
-            matchedUser = user;
-            return true;
-          }
-          return false;
-        });
-
-        // If we found a match, show user the whiteboard, since he has already joined the session
-        if(matchedUser && matchedUser._id === userId) {
-          socket.emit(EVENT.joinSession, matchedUser.username, matchedUser._id);
-
-        }
-        //
-        else {
-          showUserGate(req, done, users);
-        }
+       if(matchedUser && matchedUser._id === Cookies.get('UserId')){
+         socket.emit(EVENT.joinSession, matchedUser.username, Cookies.get('UserId'));
+         done();
+       }else{
+         var userlist = [];
+         var j = 0;
+         for( var i = 0; i<users.length;i++){
+           if(users[i].isOnline){
+             userlist[j] = users[i]; 
+             j++;
+           }
+         }
+        showUserGate(req,done,userlist);       
+       }
+        
       }
 
       done();

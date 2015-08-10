@@ -39,9 +39,17 @@ whiteboardSockets.userListCB = function(socket,nsp){
             throw new Error('Error retrieving Session');
           }
           else if(session && session._id){
-
-           socket.emit(EVENT.UserList,session.users);
+           var userlist =[];
+           var j = 0;
+           for(var i = 0; i < session.users.length;i++){
+             if( session.users[i].isOnline){
+               userlist[j] = session.users[i];
+               j++;
+             }
            }
+           socket.emit(EVENT.UserList,session.users);
+            
+          }
 
         });
 
@@ -70,7 +78,14 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
               socket.emit(EVENT.badSession);
             }
             else if(currentUser && currentUser.username === uName) {
+              session.users.id(uID).isOnline = true;
+              socket.id = uID;
+              session.save(function(err){
+                if(err)console.log(err);  
+              });
               socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
+
+              socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
 
               socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
 
@@ -88,6 +103,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
                   canDraw: session.sessionProperties.canDraw,
                   canChat: session.sessionProperties.canChat
                 },
+                isOnline: true,
                 _id: socket.id
               };
 
@@ -182,9 +198,10 @@ whiteboardSockets.disconnectCB = function(socket, nspWb){
        if(session.users){
          if(session.users.id(socket.id)!=null){
            removedUser = session.users.id(socket.id);
-           session.users.id(socket.id).remove();
+           session.users.id(socket.id).isOnline = false;
          }
        }
+       console.log('removed user:',removedUser);
        if(removedUser != undefined){
          socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has left the session');
 
@@ -202,7 +219,6 @@ whiteboardSockets.disconnectCB = function(socket, nspWb){
            if(err) console.log(err);
            else {
             console.log(session);
-
             socket.disconnect();
 
            }
