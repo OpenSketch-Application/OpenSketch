@@ -30,5 +30,3 @@ app/css/*.css
 server/mongoBinaries/**
 
 server/logs/**
-
-server/images/**
