@@ -49,15 +49,15 @@ var Tools = {
   },
   text: {
     // Text Properties
-    font: '16px Arial',
-    fontSize: 16,
+    font: '12px Arial',
+    fontSize: 12,
     fontFamily: 'Arial',
     stroke: 0xff1010,
     align: 'left',
     strokeThickness: 1,
     // wordWrap: true,
     // wordWrapWidth: 600,
-    textContent: 'Textbox\n',
+    textContent: 'Textbox',
     // Rectangle class properties
     lineColor: 0x000000,
     lineWidth: 1,

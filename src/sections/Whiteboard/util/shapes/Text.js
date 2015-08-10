@@ -26,8 +26,11 @@ function Text(shapeProperties) {
   Rectangle.call(this, shapeProperties);
 
   this.isFocusClick = false;
-  this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
-                  + this.textField.style.strokeThickness);
+  this.fontProperties = this.textField.determineFontProperties(this.textField.font);
+  this.caretHeight = this.fontProperties.fontSize * 0.80;
+  this.lineHeight = this.fontProperties.fontSize + this.textField.style.strokeThickness;
+  //(Number.parseInt(this.textField.style.font.match('[0-9]+'))
+  //                + this.textField.style.strokeThickness);
 
   this._caretXIndex = 0;
   this._caretYIndex = 0;
@@ -72,7 +75,7 @@ Text.prototype.getTextArray = function(text) {
 Text.prototype.showCaret = function() {
   this.caret.clear();
   this.caret.beginFill(0x000000);
-  this.caret.drawRect(this.x, this.y, 1, this.lineHeight);
+  this.caret.drawRect(this.x, this.y, 1, this.caretHeight);
   this.caret.endFill();
 }
 
@@ -118,7 +121,7 @@ Text.prototype.calculateCaretPosition = function() {
   var coords = this.textField.context.measureText(sub);
 
   this.caret.position.x = coords.width;
-  this.caret.position.y = (this._caretYIndex * this.lineHeight * 1.55);
+  this.caret.position.y = (this._caretYIndex * this.lineHeight);
 }
 
 Text.prototype.getActualXIndex = function() {
@@ -348,8 +351,9 @@ Text.prototype.setProperties = function(shapeProperties) {
   this.textField.font = this.fontSize + 'px '
                  + this.fontFamily;
 
-  this.lineHeight = (Number.parseInt(this.textField.style.font.match('[0-9]+'))
-                  + this.textField.style.strokeThickness);
+  this.fontProperties = this.textField.determineFontProperties(this.textField.font);
+  this.caretHeight = this.fontProperties.fontSize * 0.80;
+  this.lineHeight = this.fontProperties.fontSize + this.textField.style.strokeThickness;
 
   this.calculateCaretPosition();
 }
@@ -436,10 +440,6 @@ Text.prototype.setMoveListeners = function(AppState) {
       }
     }
   }.bind(this);
-
-  // this.gaphics.mouseup = function(e) {
-  //   this.isFocusClick = true;
-  // }
 
   this.graphics.interactive = true;
 };
