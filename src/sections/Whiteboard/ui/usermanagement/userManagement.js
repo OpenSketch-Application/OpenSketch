@@ -148,7 +148,7 @@ module.exports = {
     //}
   },
   dragEnterHandler: function(e) {
-    if(this.currentRow && e.target.id !== this.currentRow.id) {
+    if(this.currentRow && e.target.id !== this.currentRow.id && e.target.classList) {
       e.target.classList.add('over');
     }
   },
@@ -157,17 +157,17 @@ module.exports = {
     //   e.preventDefault(); // Necessary. Allows us to drop.
     //   //e.stopPropagation();
     // }
-    // if(this.currentRow && e.target.id !== this.currentRow.id) {
-    e.dataTransfer.dropEffect = 'move';
+    if(e.dataTransfer) {
+      e.dataTransfer.dropEffect = 'move';
     //  console.log('Dropping over ', e.target.id);
-    //}
+    }
     return false;
   },
   dragLeaveHandler: function (e) {
     // this / e.target is previous target element.
-    //if(e.target.id && e.target.localName && e.target.localName === 'li') {
-    e.target.classList.remove('over');
-    //}
+    if(e.target.id && e.target.classList) {
+      e.target.classList.remove('over');
+    }
   },
   dragEndHandler: function(e) {
     console.log('Drag End called', this);
@@ -230,10 +230,18 @@ module.exports = {
 
       this.container.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
 
-      if(curUserIndex !== undefined){
+      if(curUserIndex !== undefined && users[curUserIndex]){
         AppState.Users.currentUser = users[curUserIndex];
-        if(users[curUserIndex] && AppState.Users.currentUser._id) Cookies.set('UserId', AppState.Users.currentUser._id);
-        if(users[curUserIndex] && AppState.Users.currentUser.username) Cookies.set('username', AppState.Users.currentUser.username);
+
+        if(AppState.Users.currentUser._id) {
+          Cookies.set(
+            AppState.sessionId,
+            AppState.Users.currentUser._id + ',' +
+            AppState.Users.currentUser.username + ',' +
+            AppState.Users.currentUser.userRank + ',',
+            { expires: 800 }
+          );
+        }
 
         // Set up the User Interface, based on the User's permissions
         this.setUserInterface(AppState.Users.currentUser, AppState);
@@ -261,15 +269,15 @@ module.exports = {
     }.bind(this));
 
     socket.on(EVENT.disconnectUser, function(removeUserData) {
-      var currentUserId = Cookies.get('UserId');
+      var currentUserId = AppState.Users.currentUser._id;
 
       if(removeUserData._id === currentUserId && removeUserData.sessionId === AppState.sessionId) {
-        Cookies.set(removeUserData.sessionId, removeUserData._id);
+        Cookies.expire(removeUserData.sessionId);
+        Cookies.set(removeUserData.sessionId, removeUserData.sessionId);
         socket.emit(EVENT.removeThisUser, AppState.Users.currentUser);
         framework.go('/home');
         location.reload();
       }
-
     });
   },
 

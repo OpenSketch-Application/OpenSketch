@@ -76,11 +76,30 @@ var Tools = {
     fillAlpha: 1
   },
   table: {
+    cols: 2,
+    rows: 2,
     lineColor: 0x000000,
     lineWidth: 1,
     lineAlpha: 1,
     fillColor: 0xFFFFFF,
-    fillAlpha: 1
+    fillAlpha: 1,
+    cellDefaults: {
+      font: '12px Arial',
+      fontSize: 12,
+      fontFamily: 'Arial',
+      stroke: 0xff1010,
+      align: 'left',
+      strokeThickness: 1,
+      // wordWrap: true,
+      // wordWrapWidth: 600,
+      textContent: 'Textbox',
+      // Rectangle class properties
+      lineColor: 0x000000,
+      lineWidth: 1,
+      lineAlpha: 1,
+      fillColor: 0xFF0000,
+      fillAlpha: 1
+    }
   },
   uml: {}
 };
@@ -231,7 +250,10 @@ Object.defineProperty(AppState, 'init', {
   // Pixi library instance, Socket instance, HTML div container
   value: function(PIXI, Socket, Container) {
     PIXI.dontSayHello = true;
-
+    var curSession = window.location.href;
+    curSession = curSession.split('/');
+    var end = curSession.length -1;
+    var curSessionId = curSession[end];
     var _this = this;
     var stage = new PIXI.Stage(0x858585, true);
     var renderer = new PIXI.CanvasRenderer(document.body.offsetWidth * 0.75,
@@ -246,7 +268,7 @@ Object.defineProperty(AppState, 'init', {
     this.Socket = Socket;
     this.Canvas.Shapes.stage = canvasContainer;
     this.Canvas.Shapes.socket = Socket;
-
+    this.sessionId = curSessionId;
     Container.appendChild(renderer.view);
 
     stage.addChild(canvasContainer);

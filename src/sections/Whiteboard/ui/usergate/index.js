@@ -16,16 +16,19 @@ Section.prototype = {
 
   init: function(req, done) {
     this.createID = Cookies.get('created');
-    var userId = Cookies.get('UserId');
-    var curSession = window.location.href;
 
+    var curSession = window.location.href;
     curSession = curSession.split('/');
     var end = curSession.length -1;
     var curSessionId = curSession[end];
+    var userInfo =  Cookies.get(curSessionId);
+    userInfo = userInfo && userInfo.split(',');
+    var userId = userInfo && userInfo[0];
+    var username = userInfo && userInfo[1];
+    var userRank = userInfo && userInfo[2];
 
     curSession = '/'+curSession[end - 1] +'/'+ curSession[end];
 
-    var bannedSession = Cookies.get(curSessionId);
     var socket = io.connect(SERVERNAME +curSession);
     // Wait four seconds before deciding to navigate User back to Home Page
     var timerCallback = setTimeout(function() {
@@ -40,46 +43,46 @@ Section.prototype = {
 
       // Clear the previous timer
       if(timerCallback) clearTimeout(timerCallback);
-      if(bannedSession && bannedSession === userId) {
+      if(userInfo && userInfo.length === 1 && userInfo[0] === curSessionId) {
         alert('You have been kicked out of this session, please either join another or create a new one');
         socket.disconnect();
         framework.go('/home');
         done();
         location.reload();
       }
-
-      socket.emit(EVENT.UserList);
-
-    })
-
-    socket.on(EVENT.UserList, function(users) {
-      //debugger;
-      // Head User has been added to session for the first time
-      if(users.length === 0) {
-        socket.emit(EVENT.joinSession, Cookies.get('username'), Cookies.get('UserId'));
+      // Need to store all user info in DB
+      if(userId && username) {
+        socket.emit(EVENT.joinSession, username, userId, userRank);
         done();
       }
       else {
-        var matchedUser;
+        socket.emit(EVENT.UserList);
+      }
+    })
 
-        users.some(function(user) {
-          if(userId === user._id) {
-            matchedUser = user;
-            return true;
-          }
-          return false;
-        });
+    socket.on(EVENT.UserList, function(users) {
+      // Head User has been added to session for the first time
+      // if(users.length === 0) {
+      //   socket.emit(EVENT.joinSession, username, userId);
+      //   done();
+      // }
+      // else {
+        // var matchedUser;
+
+        // users.some(function(user) {
+        //   if(userId === user._id) {
+        //     matchedUser = user;
+        //     return true;
+        //   }
+        //   return false;
+        // });
 
         // If we found a match, show user the whiteboard, since he has already joined the session
-        if(matchedUser && matchedUser._id === userId) {
-          socket.emit(EVENT.joinSession, matchedUser.username, matchedUser._id);
-        }
-        //
-        else {
-          showUserGate(req, done, users);
-        }
-      }
 
+        //
+        //else {
+      showUserGate(req, done, users);
+        //}
       done();
     })
 
@@ -111,7 +114,6 @@ Section.prototype = {
 
       var usernames = [];
 
-      //socket.on(EVENT.UserList,function(users){
       userList.innerHTML = '';
       for( var i = 0; i < users.length;i++)
       {
@@ -121,24 +123,26 @@ Section.prototype = {
        usernames[i] = users[i].username;
        userList.appendChild(li);
       }
-      //});
 
       btnJoin.addEventListener('click', function(el){
         errorMsg.innerHTML = '';
 
         var Name = input.value;
+        Name = Name && Name.trim();
         for(var i = 0; i < usernames.length;i++){
           if(Name == usernames[i]){
            errorMsg.innerHTML = 'The name '+Name+' is currently in use.';
            return;
           }
-		  if(Name.length >= 11){
-			errorMsg.innerHTML = 'Username must not exceed 10 characters';
-			return;
-		  }
+          if(Name.length >= 11){
+           errorMsg.innerHTML = 'Username must not exceed 10 characters';
+           return;
+          }
+          else if(Name.length === 0) {
+           errorMsg.innerHTML = 'Username Cannot be blank';
+           return;
+          }
         }
-        //return;
-        Cookies.set('username', Name);
 
         socket.emit(EVENT.joinSession, Name);
 
