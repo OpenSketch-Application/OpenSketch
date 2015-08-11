@@ -25,6 +25,8 @@ var model  = {
     //'addUser':'addUser' // just show email pop and email the user the session url
 
     // Session Creation/Validation Events
+    'saveSettings': 'saveSettings',
+    'loadSettings': 'loadSettings',
     'getSocketID': 'getSocketID',
     'joinSession': 'joinSession',
     'validateSession': 'validateSession',

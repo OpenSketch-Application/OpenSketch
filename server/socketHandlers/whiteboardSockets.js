@@ -46,6 +46,52 @@ whiteboardSockets.userListCB = function(socket,nsp){
 
     };
 };
+whiteboardSockets.loadSettingsCB = function(socket,nsp){
+  return function(callback){
+      var sessionid = socket.adapter.nsp.name.split('/');
+        sessionid = sessionid[sessionid.length - 1];
+       Session.findById(sessionid, function(err, session){
+          if(err){
+            throw new Error('Error retrieving Session');
+          }
+          else if(session && session._id){
+            
+            callback(session.sessionProperties);
+          }
+
+        });
+  };
+};
+
+whiteboardSockets.saveSettingsCB = function(socket,nsp){
+  return function(settings,callback){
+     var sessionid = socket.adapter.nsp.name.split('/');
+     sessionid = sessionid[sessionid.length - 1];
+     Session.findById(sessionid, function(err, session){
+          if(err){
+            throw new Error('Error retrieving Session');
+          }
+          else if(session && session._id){
+            var max = session.sessionProperties.maxUsers;
+            session.sessionProperties = settings;
+            if(settings.maxUsers < session.users.length ){
+              session.sessionProperties.maxUsers =session.users.length;
+            }
+            if(settings.maxUsers > 30 )
+              session.sessionProperties.maxUsers = 30;
+
+            if(isNaN(settings.maxUsers)){
+              session.sessionProperties.maxUsers = max;
+            }
+
+            callback(session.sessionProperties); 
+            session.save(function(err){});
+
+          }
+
+        });
+  };
+};
 //JOIN
 whiteboardSockets.joinSessionCB = function(socket,nsp) {
   return function(uName, uID) {
