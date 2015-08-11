@@ -3,13 +3,19 @@ var PIXI = require('pixi');
 var BaseShape = require('./BaseShape');
 var Rectangle = require('./Rectangle');
 var EVENT = require('../../../../model/model').socketEvents;
-module.exports = Text;
+module.exports = TableCell;
 
-function Text(shapeProperties) {
+function TableCell(shapeProperties) {
   this.fontSize = shapeProperties.fontSize || 12;
   this.fontFamily = shapeProperties.fontFamily || 'Arial';
   this._width;// = shapeProperties.width || 100;
   this._height;// = shapeProperties.height || 100;
+
+  this.parentContainer; // When attached to a parent
+  this.cellCoords = [];
+  this.maxWidth = 0; // Will be set by Parent's draw method
+  this.maxHeight = 0; // Set by Parent's draw method
+
   //this.padding = shapeProperties.padding || 0;
   this.textField = new PIXI.Text(shapeProperties.textContent, shapeProperties);
 
@@ -24,6 +30,7 @@ function Text(shapeProperties) {
   this.textField.stroke = shapeProperties.stroke || 0xff1010;
   this.textField.align = shapeProperties.align || 'left';
   this.textField.strokeThickness = shapeProperties.strokeThickness || 1;
+
   // Call Container Shape
   Rectangle.call(this, shapeProperties);
 
@@ -63,31 +70,31 @@ function Text(shapeProperties) {
   //this.onWindowDeselectBinded
 }
 
-Text.prototype = Object.create(Rectangle.prototype);
-Text.prototype.constructor = Text;
+TableCell.prototype = Object.create(Rectangle.prototype);
+TableCell.prototype.constructor = TableCell;
 
-Text.prototype.getTotalNewLine = function(text) {
+TableCell.prototype.getTotalNewLine = function(text) {
   var newLines = text.match(/\r|\n/gi);
 
   return newLines && newLines.length;
 }
 
-Text.prototype.getTextArray = function(text) {
+TableCell.prototype.getTextArray = function(text) {
   return text.split(/\n|\r/g);
 }
 
-Text.prototype.showCaret = function() {
+TableCell.prototype.showCaret = function() {
   this.caret.clear();
   this.caret.beginFill(0x000000);
   this.caret.drawRect(this.x, this.y, 1, this.caretHeight);
   this.caret.endFill();
 }
 
-Text.prototype.hideCaret = function() {
+TableCell.prototype.hideCaret = function() {
   this.caret.clear();
 }
 
-Text.prototype.calculateCaretPosition = function() {
+TableCell.prototype.calculateCaretPosition = function() {
   if(this._caretYIndex < 0) {
     this._caretYIndex = 0;
   }
@@ -128,7 +135,7 @@ Text.prototype.calculateCaretPosition = function() {
   this.caret.position.y = (this._caretYIndex * this.lineHeight);
 }
 
-Text.prototype.getActualXIndex = function() {
+TableCell.prototype.getActualXIndex = function() {
   var stringLength = 0;
   for (var i = 0, len = this.textArray.length; i < len; i++) {
 
@@ -142,7 +149,7 @@ Text.prototype.getActualXIndex = function() {
   return stringLength;
 }
 
-Text.prototype.onKeyEvent = function(e) {
+TableCell.prototype.onKeyEvent = function(e) {
 
   if(e.type === 'keypress') {
     if(e.keyCode !== 13) {
@@ -241,37 +248,63 @@ Text.prototype.onKeyEvent = function(e) {
 
   this.highlight();
 
+
   // Update background width/height
-  // if(this.textField.width > this.width) {
-  //   this.width = this.textField.width;
-  // }
-  // else {
+  if(this.textField.width > this.width) {
+    this.width = this.textField.width;
+  }
+  else {
 
-  // }
-  // if(this.textField.height > this.height) {
-  //   this.height = this.textField.height;
-  // }
-  // this.width = this.textField.width;
-  // this.height = this.textField.height;
+  }
+  if(this.textField.height > this.height) {
+    this.height = this.textField.height;
+  }
 
-  //this.drawBackground();
+  this.width = this.textField.width;
+  this.height = this.textField.height;
+  var xDiff = this.width > this.maxWidth ? this.width - this.maxWidth : 0;
+  var yDiff = this.height > this.maxHeight ? this.height - this.maxHeight : 0;
+
+  if(xDiff !== 0 || yDiff !== 0) {
+
+    // Recalculate all the parent's containers children's cells
+    this.parentContainer.reDraw({
+      xDiff: xDiff,
+      yDiff: yDiff
+    }, this.cellCoords);
+    if(xDiff !== 0) {
+      this.maxWidth = this.width;
+      this.parentContainer.colWidths[this.cellCoords[1]] = this.width;
+    }
+    if(yDiff !== 0) {
+      this.maxHeight = this.height;
+      this.parentContainer.rowHeights[this.cellCoords[0]] = this.height;
+    }
+  }
+  //else {
+  this.drawBackground();
+  //}
   // Check if width is greater than parent width
+  // ie. parent's column width
+
+  // Check if height is greater than parent's row height
+  // ie. parent's row height
 }
 
-Text.prototype.onSelect = function(e) {
+TableCell.prototype.onSelect = function(e) {
   document.addEventListener('keypress', this.onKeyEventBinded);
   document.addEventListener('keydown', this.onKeyEventBinded);
   document.addEventListener('mousedown', this.onDocumentMouseDownBinded);
 }
 
-Text.prototype.unSelect = function(e) {
+TableCell.prototype.unSelect = function(e) {
   this.removeListeners(e);
-
+  this.unHighlight();
   // Restore the original Global Delete Keyboard event
   document.addEventListener('keydown', this.globalKeyDown);
 }
 
-Text.prototype.removeListeners = function(e) {
+TableCell.prototype.removeListeners = function(e) {
   document.removeEventListener('keypress', this.onKeyEventBinded);
   document.removeEventListener('keydown', this.onKeyEventBinded);
   document.removeEventListener('mousedown', this.onDocumentMouseDownBinded);
@@ -279,11 +312,11 @@ Text.prototype.removeListeners = function(e) {
   this.hideCaret();
 }
 
-Text.prototype.onDocumentMouseDown = function() {
+TableCell.prototype.onDocumentMouseDown = function() {
   if(!this.isFocusClick) this.removeListeners();
 }
 
-Text.prototype.drawBackground = function() {
+TableCell.prototype.drawBackground = function() {
   //this.backgroundGraphics.clear();
   console.log('FILLCOLOR', this.fillColor);
   console.log('width', this.width);
@@ -302,7 +335,7 @@ Text.prototype.drawBackground = function() {
   this.graphics.endFill();
 }
 
-Text.prototype.textWrap = function(text, wordWrapWidth) {
+TableCell.prototype.textWrap = function(text, wordWrapWidth) {
   // Greedy wrapping algorithm that will wrap words as the line grows longer
   // than its horizontal bounds.
   var result = '';
@@ -338,7 +371,7 @@ Text.prototype.textWrap = function(text, wordWrapWidth) {
   return result;
 }
 
-Text.prototype.getProperties = function() {
+TableCell.prototype.getProperties = function() {
 
   var shape = Rectangle.prototype.getProperties.call(this);
 
@@ -357,7 +390,7 @@ Text.prototype.getProperties = function() {
   return shape;
 };
 
-Text.prototype.setProperties = function(shapeProperties) {
+TableCell.prototype.setProperties = function(shapeProperties) {
   Rectangle.prototype.setProperties.call(this, shapeProperties);
   if(shapeProperties.font) this.textField.font = shapeProperties.font;
   if(shapeProperties.fontColor) this.fontColor = shapeProperties.fontColor;
@@ -385,7 +418,7 @@ Text.prototype.setProperties = function(shapeProperties) {
   this.calculateCaretPosition();
 }
 
-Text.prototype.draw = function(shapeProperties) {
+TableCell.prototype.draw = function(shapeProperties) {
   console.log('Drawing text');
 
   if(shapeProperties) {
@@ -401,7 +434,7 @@ Text.prototype.draw = function(shapeProperties) {
 };
 
 // Shape locking/unlocking methods
-Text.prototype.lockShape = function(userId) {
+TableCell.prototype.lockShape = function(userId) {
   console.log('LOCKing shape');
   this.currentUserId = userId;
   this.highlight(0xFF0000);
@@ -409,7 +442,7 @@ Text.prototype.lockShape = function(userId) {
   this.selected = true;
   this.unSelect();
 };
-Text.prototype.unLockShape = function() {
+TableCell.prototype.unLockShape = function() {
   console.log('unLOCKing shape');
 
   this.interactive = this.graphics.interactive = true;
@@ -419,22 +452,21 @@ Text.prototype.unLockShape = function() {
 
 };
 
-Text.prototype.setMoveListeners = function(AppState) {
+TableCell.prototype.setMoveListeners = function(AppState) {
   console.log('Text internal graphics', this.graphics);
   var Tools = AppState.Tools;
 
-  Rectangle.prototype.setMoveListeners.call(this, AppState);
+  //Rectangle.prototype.setMoveListeners.call(this, AppState);
 
-  var baseMouseDown = this.graphics.mousedown;
-  var baseMouseUp = this.graphics.mouseup;
+  //var baseMouseDown = this.graphics.mousedown;
+  //var baseMouseUp = this.graphics.mouseup;
   this.socket = AppState.Socket;
   var previousClickTime;
   this.globalKeyDown = AppState.GlobalEvents['keydown'];
   var dblClickTimer;
 
   this.graphics.mousedown = function(e) {
-    baseMouseDown.call(this, e);
-
+    //baseMouseDown.call(this, e);
     if(Tools.selected === 'select') {
 
       var _this = this;
@@ -444,7 +476,7 @@ Text.prototype.setMoveListeners = function(AppState) {
         document.removeEventListener('keydown', this.globalKeyDown);
 
         this.isFocusClick = true;
-
+        this.parentContainer.selectedCell = this;
         // Activate Keyboard listeners
         this.onSelect(e);
 
@@ -453,6 +485,8 @@ Text.prototype.setMoveListeners = function(AppState) {
       else {
         previousClickTime = Date.now();
       }
+
+      this.highlight();
 
       dblClickTimer = setTimeout(function() {
         previousClickTime = undefined;
@@ -469,9 +503,28 @@ Text.prototype.setMoveListeners = function(AppState) {
   }.bind(this);
 
   this.graphics.interactive = true;
+
 };
 
-Object.defineProperty(Text.prototype, 'text', {
+// Object.defineProperty(TableCell.prototype, 'x', {
+//   get: function() {
+//     return this.graphics.x;
+//   },
+//   set: function(v) {
+//     this.graphics.position.x = v;
+//   }
+// });
+
+// Object.defineProperty(TableCell.prototype, 'y', {
+//   get: function() {
+//     return this.graphics.position.y;
+//   },
+//   set: function(v) {
+//     this.graphics.position.y = v;
+//   }
+// });
+
+Object.defineProperty(TableCell.prototype, 'text', {
   get: function() {
     return this.textField.text;
   },
@@ -482,7 +535,7 @@ Object.defineProperty(Text.prototype, 'text', {
   }
 })
 
-Object.defineProperty(Text.prototype, 'height', {
+Object.defineProperty(TableCell.prototype, 'height', {
   get: function() {
     return this._height;
   },
@@ -493,7 +546,7 @@ Object.defineProperty(Text.prototype, 'height', {
   }
 })
 
-Object.defineProperty(Text.prototype, 'width', {
+Object.defineProperty(TableCell.prototype, 'width', {
   get: function() {
     return this._width;//this.textField.width;
   },

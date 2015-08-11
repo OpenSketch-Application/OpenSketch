@@ -94,7 +94,7 @@ whiteboardSockets.saveSettingsCB = function(socket,nsp){
 };
 //JOIN
 whiteboardSockets.joinSessionCB = function(socket,nsp) {
-  return function(uName, uID) {
+  return function(uName, uID, userRank) {
         var sessionid = socket.adapter.nsp.name.split('/');
         sessionid = sessionid[sessionid.length - 1];
         //validate name
@@ -130,7 +130,7 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
             else if(session.users.length < session.sessionProperties.maxUsers){
               var newUser = {
                 username: uName,
-                userRank: session.users.length,
+                userRank: userRank || session.users.length,
                 permissions: {
                   canDraw: session.users.length === 0 ? true : session.sessionProperties.canDraw,
                   canChat: session.users.length === 0 ? true : session.sessionProperties.canChat

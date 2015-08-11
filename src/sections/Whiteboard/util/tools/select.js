@@ -52,13 +52,13 @@ module.exports = function(AppState, el) {
       socket.emit(EVENT.shapeEvent, 'unlockShape', { _id: select.selectedObject._id });
       select.selectedObject = null;
     }
-    else {
-      this.dragging = true;
-      this.mousePressPoint[0] = data.getLocalPosition(pixiStage).x -
-                                this.position.x;
-      this.mousePressPoint[1] = data.getLocalPosition(pixiStage).y -
-                                this.position.y;
-    }
+    // else {
+    //   this.dragging = true;
+    //   this.mousePressPoint[0] = data.getLocalPosition(pixiStage).x -
+    //                             this.position.x;
+    //   this.mousePressPoint[1] = data.getLocalPosition(pixiStage).y -
+    //                             this.position.y;
+    // }
   };
 
   var mousemove = function(data) {
@@ -83,13 +83,13 @@ module.exports = function(AppState, el) {
       // A flag to tell us a Shape has just been modified
       shapeModified = true;
     }
-    else {
-      if(this.dragging) {
-        var position = data.getLocalPosition(pixiStage);
-        this.position.x = position.x - this.mousePressPoint[0];
-        this.position.y = position.y - this.mousePressPoint[1];
-      }
-    }
+    // else {
+    //   if(this.dragging) {
+    //     var position = data.getLocalPosition(pixiStage);
+    //     this.position.x = position.x - this.mousePressPoint[0];
+    //     this.position.y = position.y - this.mousePressPoint[1];
+    //   }
+    // }
   };
 
   // On mouseUp: deselect object and remove lock
