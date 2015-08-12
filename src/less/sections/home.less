@@ -69,6 +69,25 @@
         margin-bottom: 5%;
         font-weight: 900;
       }
+
+      input#file-input {
+        display: none;
+      }
+
+      label#file-input-lbl {
+        cursor: pointer;
+        padding: 8px 12px;
+        background-image: linear-gradient(to bottom, #6491D0, #6491D9);
+        font-size: 0.8em;
+      }
+
+      .file-name {
+        display: inline-block;
+        font-size: 0.8em;
+        margin-left: 10px;
+        font-style: italic;
+      }
+
       .control {
         display: block;
         height: 45px;
@@ -278,10 +297,11 @@
           filter: alpha(opacity=100);
           opacity: 1;
         }
+
         .btn {
           position: relative;
           float: right;
-          bottom: 0px;
+          bottom: 5px;
           background: #07b807;
           background-image: -webkit-linear-gradient(top, #07b807, #5dc748);
           background-image: -moz-linear-gradient(top, #07b807, #5dc748);

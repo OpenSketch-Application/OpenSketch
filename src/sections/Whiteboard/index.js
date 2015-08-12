@@ -70,9 +70,25 @@ Section.prototype = {
 
     this.sessionOptions = this.section.querySelector('.options');
 
+    var canChat =  this.section.querySelector('.roundedOne input');
+    var canDraw =  this.section.querySelector('.roundedTwo input');
+    var inputMax = this.section.querySelector('#inputMax');
     var closeSettings = function() {
 
+      socket.emit(EVENT.saveSettings, {canChat: canChat.checked,canDraw: canDraw.checked,maxUsers: inputMax.value},function(settings){
+        canChat.checked = settings.canChat;
+        canDraw.checked = settings.canDraw;
+        inputMax.value = settings.maxUsers;
+
+      });
+
     };
+
+    socket.emit(EVENT.loadSettings, function(settings){
+      canChat.checked = settings.canChat;
+      canDraw.checked = settings.canDraw;
+      inputMax.value = settings.maxUsers;
+    }.bind());
 
     this.sessionOptions.onclick = function(e) {
       e.stopPropagation();
@@ -97,9 +113,9 @@ Section.prototype = {
             Tween.set(settings, {opacity: 0});
             Tween.to(settings, 0.3, { opacity: 1});
           } else {
+            closeSettings();
             Tween.to(settings, 0.25, { opacity: 0, onComplete: function(){ settings.style.visibility = 'hidden'; } });
           }
-
 
           break;
         case 'opt-close':
@@ -151,7 +167,11 @@ Section.prototype = {
       if(e.target.id != 'tool-color' && e.target.parentElement.id != 'color' && e.target.parentElement.id !='color-wheel' && e.target.id != 'color-wheel')
         colorwheel.className = '';
 
-      Tween.to(settings, 0.25, { opacity: 0, onComplete: function(){ settings.style.visibility = 'hidden'; } });
+      Tween.to(settings, 0.25, { opacity: 0, onComplete: function(){
+        if(settings.style.visibility !='hidden')
+          closeSettings();
+        settings.style.visibility = 'hidden'; } });
+
    });
 
     save.addEventListener('click',function(e){
@@ -159,13 +179,13 @@ Section.prototype = {
       socket.emit(EVENT.saveSession,function(data){
         var a  = window.document.createElement('a');
         a.href = window.URL.createObjectURL(new Blob([data],{type: 'application/javascript'}));
-        var filename = this.section.querySelector('#save-whiteboard-prompt input').value;
-        a.download = filename + '.js';
+        var filename = this.section.querySelector('#save-prompt').value;
+        a.download = filename + '.json';
         savePrompt.className = '';
         a.click();
-      });
+      }.bind(this));
 
-    },false);
+    }.bind(this),false);
 
 
     setTimeout(function(){
@@ -184,12 +204,14 @@ Section.prototype = {
   },
 
   animateIn: function(req, done) {
+    if(this.animate)
       this.animate.go('idle', function() {
         done();
       }.bind(this));
   },
 
   animateOut: function(req, done) {
+    if(this.animate)
     this.animate.go('out', function() {
       done();
     }.bind(this));
