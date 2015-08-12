@@ -241,7 +241,6 @@ TableCell.prototype.onKeyEvent = function(e) {
         this.calculateCaretPosition();
         break;
     }
-
   }
 
   if(this.socket) {
@@ -251,14 +250,11 @@ TableCell.prototype.onKeyEvent = function(e) {
 
   this.highlight();
 
-
   // Update background width/height
   if(this.textField.width > this.width) {
     this.width = this.textField.width;
   }
-  else {
 
-  }
   if(this.textField.height > this.height) {
     this.height = this.textField.height;
   }
@@ -554,7 +550,7 @@ Object.defineProperty(TableCell.prototype, 'text', {
 
 Object.defineProperty(TableCell.prototype, 'height', {
   get: function() {
-    return this._height;
+    return this.textField.height;
   },
   set: function(v) {
     this._height = v > this.textField.height
@@ -565,7 +561,7 @@ Object.defineProperty(TableCell.prototype, 'height', {
 
 Object.defineProperty(TableCell.prototype, 'width', {
   get: function() {
-    return this._width;//this.textField.width;
+    return this.textField.width;
   },
   set: function(v) {
     //this.backgroundGraphics.width = v;

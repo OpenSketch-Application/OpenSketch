@@ -76,8 +76,8 @@ var Tools = {
     fillAlpha: 1
   },
   table: {
-    cols: 2,
-    rows: 2,
+    cols: 4,
+    rows: 4,
     lineColor: 0x000000,
     lineWidth: 1,
     lineAlpha: 1,

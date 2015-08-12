@@ -222,21 +222,11 @@ Table.prototype.draw = function(shapeProperties) {
     }
   }
 
-  // var widestCells = this.getWidestCellColumns(this.cells);
-  // var highestCells = this.getHighestCellRows(this.cells);
-
-  // widestCells.forEach(function(cell) {
-  //   cell.widestCell = true;
-  // })
-  // highestCells.forEach(function(cell) {
-  //   cell.highestCell = true;
-  // })
-
   this.height = this.rowHeights.reduce(function(sum, row) {
     return sum += row;
   }, 0);
   this.width = this.colWidths.reduce(function(sum, col) {
-    return col += col;
+    return sum += col;
   }, 0);
 
   console.log(this.rowHeights);
@@ -255,42 +245,60 @@ Table.prototype.reDraw = function(newDimensions, cellCoords) {
 
   var widestCells = this.getWidestCellColumns(this.cells);
   var highestCells = this.getHighestCellRows(this.cells);
+  debugger;
+  // Width of Column needs to be changed
+  if(newDimensions.xDiff !== 0){
+    for(r = 0; r < maxR; r++) {
+      for(c = cellCoords[1]; c < maxC; c++) {
+        // Check if cell is widest in row
+        if(widestCells.indexOf(this.cells[r][c]) !== -1) {
+          this.cells[r][c].widestCell = true;
+        }
+        else {
+          this.cells[r][c].widestCell = false;
+        }
 
-  for(r = 0; r < maxR; r++) {
-    for(c = 0; c < maxC; c++) {
+        if(r === cellCoords[0] && c === cellCoords[1]) continue;
 
-      // Check if cell is widest in row
-      if(widestCells.indexOf(this.cells[r][c]) !== -1) {
-        this.cells[r][c].widestCell = true;
-      }
-      else {
-        this.cells[r][c].widestCell = false;
-      }
-
-      if(highestCells.indexOf(this.cells[r][c]) !== -1) {
-        this.cells[r][c].highestCell = true;
-      }
-      else {
-        this.cells[r][c].highestCell = false;
-      }
-
-      if(r === cellCoords[0] && c === cellCoords[1]) continue;
-
-      // Width of Column needs to be changed
-      if(newDimensions.xDiff !== 0){
         if(c !== cellCoords[1]) {
           this.cells[r][c].graphics.x = this.cells[r][c].graphics.x + newDimensions.xDiff;
         }
       }
+    }
+  }
 
-      // Height of the row needs to be changed
-      if(newDimensions.yDiff !== 0) {
+  // Height of the row needs to be changed
+  if(newDimensions.yDiff !== 0) {
+    for(r = 0; r < maxR; r++) {
+      for(c = cellCoords[1]; c < maxC; c++) {
+
+        if(highestCells.indexOf(this.cells[r][c]) !== -1) {
+          this.cells[r][c].highestCell = true;
+        }
+        else {
+          this.cells[r][c].highestCell = false;
+        }
+
+        if(r === cellCoords[0] && c === cellCoords[1]) continue;
+
         if(r !== cellCoords[0]) {
           this.cells[r][c].graphics.y = this.cells[r][c].graphics.y + newDimensions.yDiff;
         }
       }
     }
   }
+
+  widestCells = this.getWidestCellColumns(this.cells);
+  highestCells = this.getHighestCellRows(this.cells);
+
+  this.height = highestCells.reduce(function(sum, cell) {
+    return sum += cell.height;
+  }, 0);
+  this.width = widestCells.reduce(function(sum, cell) {
+    return sum += cell.width;
+  }, 0);
+
+  this.highlight();
 }
 
 Table.prototype.getWidestCellColumns = function (cells) {
