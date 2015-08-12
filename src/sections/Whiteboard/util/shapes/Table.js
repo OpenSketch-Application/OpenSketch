@@ -1,13 +1,13 @@
 'use strict';
 var PIXI = require('pixi');
 var BaseShape = require('./BaseShape');
-var TableCell = require('./TableCell');
+
 module.exports = Table;
 
 function Table(shapeProperties) {
   BaseShape.call(this, shapeProperties);
   this.shapeType = 'table';
-
+  
   BaseShape.prototype.setProperties.call(this, shapeProperties);
 
   if(shapeProperties.x) this.x = shapeProperties.x || 0;
@@ -23,7 +23,6 @@ function Table(shapeProperties) {
   this.fillColor = shapeProperties.fillColor || 0xFFFFFF;
   this.lineAlpha = shapeProperties.lineAlpha || 1;
   this.fillAlpha = Number.parseFloat(shapeProperties.fillAlpha || 1);
-  this.cellTextStyle = shapeProperties.cellTextStyle;
 
   // Set Style properties to the internal Graphics object
   this.graphics.lineWidth = this.lineWidth;
@@ -32,15 +31,7 @@ function Table(shapeProperties) {
   this.graphics.lineAlpha = this.lineAlpha;
   this.graphics.fillAlpha = this.fillAlpha;
   this.graphics.alpha = this.fillAlpha;
-
-  var tempCell;
-
-  this.cellDefaults = shapeProperties.cellDefaults;
-  this.cells = [];
-
-  this.rowHeights = [];
-  this.colWidths = [];
-
+  this.cell = { height: 30, width: 65 };
 }
 
 Table.prototype = Object.create(BaseShape.prototype);
@@ -66,225 +57,73 @@ Table.prototype.getProperties = function() {
   shape.cell = this.cell;
   shape.rows = this.rows;
   shape.cols = this.cols;
-  shape.headerStyle = this.headerStyle;
-
-  shape.cells = this.cells.map(function(cell) {
-    return cell.getProperties();
-  });
 
   return shape;
 };
-
-Table.prototype.setProperties = function(shapeProperties) {
-
-  BaseShape.prototype.setProperties.call(this, shapeProperties);
-
-  if(shapeProperties.x) this.x = shapeProperties.x || 0;
-  if(shapeProperties.y) this.y = shapeProperties.y || 0;
-
-  if(shapeProperties.width) this.width = shapeProperties.width || 0;
-  if(shapeProperties.height) this.height = shapeProperties.height || 0;
-  if(shapeProperties.cols) this.cols = shapeProperties.cols || 2;
-  if(shapeProperties.rows) this.rows = shapeProperties.rows || 2;
-  if(shapeProperties.cellTextStyle) this.cellTextStyle = shapeProperties.cellTextStyle;
-  if(shapeProperties.headerStyle) this.headerStyle = shapeProperties.headerStyle;
-
-  this.lineWidth = shapeProperties.lineWidth || 1;
-  this.lineColor = shapeProperties.lineColor || 0x000000;
-  this.fillColor = shapeProperties.fillColor || 0xFFFFFF;
-  this.lineAlpha = shapeProperties.lineAlpha || 1;
-  this.fillAlpha = Number.parseFloat(shapeProperties.fillAlpha || 1);
-
-  // Set Style properties to the internal Graphics object
-  this.graphics.lineWidth = this.lineWidth;
-  this.graphics.lineColor = this.lineColor;
-  this.graphics.fillColor = this.fillColor;
-  this.graphics.lineAlpha = this.lineAlpha;
-  this.graphics.fillAlpha = this.fillAlpha;
-  this.graphics.alpha = this.fillAlpha;
-
-  var tempCell;
-
-
-
-  // if(shapeProperties.children && shapeProperties.children.length > 0) {
-  //   this.children = shapeProperties.children.map(function(cell) {
-  //     tempCell = new TableCell(cell.shapeProperties);
-  //     this.graphics.addChild(tempCell.getGraphics());
-  //     return tempCell;
-  //   });
-  // }
-  // else {
-  //   this.children = [];
-  // }
-}
 
 Table.prototype.draw = function(shapeProperties) {
 
   this.graphics.clear();
   this.graphics.interactive = false;
-  if(shapeProperties) {
-    if(shapeProperties.x) this.x = shapeProperties.x;
-    if(shapeProperties.y) this.y = shapeProperties.y;
-    //if(shapeProperties.cellWidth) this.cell.width = shapeProperties.cellWidth;
-    //if(shapeProperties.cellHeight) this.cell.height = shapeProperties.cellHeight;
-    if(shapeProperties.rows) this.rows = shapeProperties.rows;
-    if(shapeProperties.cols) this.cols = shapeProperties.cols;
-    if(shapeProperties.lineWidth) this.lineWidth = shapeProperties.lineWidth;
-    if(shapeProperties.lineColor) this.lineColor = shapeProperties.lineColor;
-    if(shapeProperties.lineAlpha) this.lineAlpha = shapeProperties.lineAlpha;
-    if(shapeProperties.fillAlpha) this.fillAlpha = shapeProperties.fillAlpha;
-    if(shapeProperties.fillColor) this.fillColor = shapeProperties.fillColor;
-  }
-  // this.width = this.cols*this.cell.width;
-  // this.height = this.rows*this.cell.height;
+
+  if(shapeProperties.x) this.x = shapeProperties.x;
+  if(shapeProperties.y) this.y = shapeProperties.y;
+  if(shapeProperties.cellWidth) this.cell.width = shapeProperties.cellWidth;
+  if(shapeProperties.cellHeight) this.cell.height = shapeProperties.cellHeight;
+  if(shapeProperties.rows) this.rows = shapeProperties.rows;
+  if(shapeProperties.cols) this.cols = shapeProperties.cols;
+  
+  this.width = this.cols*this.cell.width;
+  this.height = this.rows*this.cell.height;
 
   // Since we cleared all the draw properties for redrawing, we need to set the styles again
-  this.graphics.lineWidth =  this.lineWidth;
+  this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
+                                                      : this.lineWidth;
 
-  this.graphics.lineColor = this.lineColor;// = shapeProperties.lineColor
+  this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
+                                                      : this.lineColor;
+  this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
+                                                      : this.lineAlpha;
 
-  this.graphics.lineAlpha = this.lineAlpha;
+  this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
+                                                      : this.fillAlpha;
+  this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
+                                                      : this.fillColor;
+  this.graphics.beginFill(this.fillColor);
+  this.graphics.drawRect(this.x, this.y, this.width, this.height) ;
+  this.graphics.lineStyle(1, 0x000000);
 
-  this.graphics.fillAlpha = this.fillAlpha;// = shapeProperties.fillAlpha
-
-  this.graphics.fillColor = this.fillColor;
-
-  //this.graphics.beginFill(this.fillColor);
-
-  // this.rowHeights = [];
-  // this.colWidths = [];
-
-  // Generate rows
-  for(var r = this.rows-1; r >= 0; r--) {
-    this.cells[r] = [];
-
-    if(this.rowHeights[r] === undefined) this.rowHeights[r] = 0;
-
-    for(var c = this.cols-1; c >= 0; c--) {
-      var cellAdded = false;
-      if(this.colWidths[c] === undefined) this.colWidths[c] = 0;
-
-      if(this.cells[r][c] === undefined)  {
-        this.cells[r][c] = new TableCell(this.cellDefaults);
-        cellAdded = true;
+  for(var i = this.cols-1; i >= 0; i--) {
+    for(var j = this.rows-1; j >= 0; j--) {
+      if(j === 0) {
+        this.graphics.beginFill(0x8DCFDE);
+      } else {
+        this.graphics.beginFill(0xFFFFFF);
       }
 
-      this.cells[r][c].parentContainer = this;
-
-      if(cellAdded)  {
-        this.graphics.addChild(this.cells[r][c].getGraphics());
-      }
-
-      if(this.rowHeights[r] < this.cells[r][c].height) {
-        this.rowHeights[r] = this.cells[r][c].height;
-      }
-      if(this.colWidths[c] < this.cells[r][c].width) {
-        this.colWidths[c] = this.cells[r][c].width;
-      }
-
-      this.cells[r][c].cellCoords = [r, c];
+      this.graphics.drawRect(this.x + i*this.cell.width, this.y + j*this.cell.height, this.cell.width, this.cell.height);
     }
   }
 
-  // Calculate width/heights of row/cols and draw the cells
-  for(r = this.rows-1; r >= 0; r--) {
-    for(c = this.cols-1; c >= 0; c--) {
-      this.cells[r][c].draw({
-        x: this.x + c * this.cells[r][c].width,
-        y: this.y + r * this.cells[r][c].height,
-        width: this.colWidths[c],
-        height: this.rowHeights[r]
-      });
-
-      // Set the max dimensions a cell can expand to before affecting other cells
-      // in the table
-      this.cells[r][c].maxWidth = this.colWidths[c];
-      this.cells[r][c].maxHeight = this.colWidths[r];
-    }
-  }
-
-  this.height = this.rowHeights.reduce(function(sum, row) {
-    return sum += row;
-  }, 0);
-  this.width = this.colWidths.reduce(function(sum, col) {
-    return col += col;
-  }, 0);
-
-  console.log(this.rowHeights);
-  console.log(this.colWidths);
+  this.graphics.endFill();
 
   return this;
 };
 
-Table.prototype.reDraw = function(newDimensions, cellCoords) {
-  var r = 0, c = 0;
+Table.prototype.getGraphicsData = function() {
 
-  for(r = this.rows-1; r >= 0; r--) {
-    for(c = this.cols-1; c >= 0; c--) {
-      if(r === cellCoords[0] && c === cellCoords[1]) continue;
+  var graphicsData = this.graphics.graphicsData[0];
 
-      // Width of Column needs to be changed
-      if(newDimensions.x !== 0)
-        this.cells[r][c].graphics.x = this.cells[r][c].x + newDimensions.x;
+  var graphics = {
+    lineWidth: graphicsData.lineWidth,
+    lineColor: graphicsData.lineColor,
+    lineAlpha: graphicsData.lineAlpha,
+    fillAlpha: graphicsData.fillAlpha,
+    fillColor: graphicsData.fillColor
+  };
 
-      // Height of the row needs to be changed
-      if(newDimensions.y !== 0)
-        this.cells[r][c].graphics.y = this.cells[r][c].y + newDimensions.y;
-    }
-  }
-  //this.draw();
-}
-
-Table.prototype.getWidestCellColumns = function (cells) {
-  var cellWidths = cells[0].map(function(column, index) {
-
-      return cells.reduce(function(prevCell, curRow) {
-          if(prevCell && prevCell[index]) prevCell = prevCell[index];
-          return curRow[index].width > prevCell.width
-                                     ? curRow[index]
-                                     : prevCell;
-      });
-  });
-
-  return cellWidths.sort(function(a,b) {
-      return a.width - b.width;
-  });
-}
-
-Table.prototype.getHighestCellRows = function(cells) {
-  return cells.map(function(row) {
-      return row.reduce(function(prev, curr) {
-          return prev.height > curr.height
-                             ? prev
-                             : curr;
-      })
-  }).sort(function(a,b) {
-      return a.height - b.height;
-  })
-}
-
-/*
-  onResize:
-
-  - getCurrentWidth
-  - getCurrentHeight
-
- // Used for recalculating x,y of all remaining cells
- Get diffWidth
- Get diffHeight
-
- if width changed
-    // check if current width > highest width for current column
-    // change widestCell to current cell width
-
-    // calculate x coordinates for all cells on this row
- if height changed
-  // check if current height > highest height for current row
-  // change highestCell to current highest cell
-
-  // Calculate y coordinate for all cells
- */
+  return graphics;
+};
 
 /*
   Will be used later if we wish to access the actual graphics data object
@@ -333,7 +172,7 @@ Table.prototype.setMoveListeners = function(AppState) {
   var Tools = AppState.Tools;
 
   // Call BaseShape's setMoveListeners
-  //BaseShape.prototype.setMoveListeners.call(this, AppState);
+  BaseShape.prototype.setMoveListeners.call(this, AppState);
 
   // If we wish to keep the BaseShape's mouse events, bind the mouse events
   // of the graphics object and store the bound mouse event handlers in this scope
@@ -351,43 +190,6 @@ Table.prototype.setMoveListeners = function(AppState) {
   //   // here
   // }
 
-  // Calculate width/heights of row/cols and draw the cells
-  for(var r = this.rows-1; r >= 0; r--) {
-    for(var c = this.cols-1; c >= 0; c--) {
-      this.cells[r][c].setMoveListeners(AppState);
-      this.cells[r][c].graphics.mousemove = function() {};
-
-    }
-  }
-
-  this.graphics.mousedown = function(data) {
-    // Get x,y of mouseclick
-    // var localPos = data.getLocalPosition(this.graphics);
-    // console.log(localPos);
-    // var relativeCoords = {
-    //   x: localPos.x - this.x,
-    //   y: localPos.y - this.y
-    // };
-
-    // console.log(relativeCoords);
-    // console.log('this.width', this.width, 'this.height', this.height);
-    // var cellCoords = {
-    //   row: Math.floor(relativeCoords.y/this.height * this.rows),
-    //   col: Math.floor(relativeCoords.x/this.width * this.cols)
-    // };
-
-    console.log(cellCoords);
-
-    //this.cells[cellCoords.row][cellCoords.col].highlight();
-
-    // this.cells[cellCoords.row][cellCoords.col].graphics.mousedown.call(
-    //   this.cells[cellCoords.row][cellCoords.col].graphics,
-    //   data
-    // );
-
-    //this.highlight();
-
-  }.bind(this);
   // Mouse handlers for highlighting shapes
   this.graphics.mouseover = function(data) {
     if(this.locked) return;

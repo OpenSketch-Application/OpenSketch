@@ -26,19 +26,11 @@ module.exports = function(el, AppState) {
 
   el.addEventListener('click', function(data) {
     data.preventDefault();
-
-    // A flag that determines whether User should be able to interact with
-    // this tool, as well as the Canvas Stage, usually set by Head user, through UserManagement
-    if(!AppState.Settings.interactive) return false;
-
     AppState.Tools.selected = 'table';
 
     console.log('Drawing table');
 
-    // Activates the Table UI mouse events
-    activate();
-
-    return false;
+    activate(AppState);
   });
 
   var mousedown = function(data) {
@@ -46,67 +38,60 @@ module.exports = function(el, AppState) {
     drawRows = curRows =  0;
     drawCols = curCols = 0;
     startPos = data.getLocalPosition(this);
-
-    table = shapes.addNew(new Table(Tools.table));
-    table.draw({
-      x: startPos.x,
-      y: startPos.y
-    })
   };
 
   var mousemove = function(data) {
 
-    // if(isDown) {
-    //   var curPos = data.getLocalPosition(this);
-    //   var width = curPos.x - startPos.x;
-    //   var height = curPos.y - startPos.y;
-    //   curCols = Math.ceil(width/cellWidth);
-    //   curRows = Math.ceil(height/cellHeight);
+    if(isDown) {
+      var curPos = data.getLocalPosition(this);
+      var width = curPos.x - startPos.x;
+      var height = curPos.y - startPos.y;
+      curCols = Math.ceil(width/cellWidth);
+      curRows = Math.ceil(height/cellHeight);
 
-    //   if(curCols <= 0 || curRows <= 0) {
-    //     if(table) {
-    //       drawCols = curCols;
-    //       drawRows = curRows;
-    //       shapes.removeShape(table);
-    //       socket.emit(EVENT.shapeEvent, 'remove', table);
-    //       table = null;
-    //     }
-    //   } else {
+      if(curCols <= 0 || curRows <= 0) {
+        if(table) {
+          drawCols = curCols;
+          drawRows = curRows;
+          shapes.removeShape(table);
+          socket.emit(EVENT.shapeEvent, 'remove', table);
+          table = null;
+        }
+      } else {
+        
+        if (curRows < minRows) curRows = minRows;
+        if (curCols < minCols) curCols = minCols;
 
-    //     if (curRows < minRows) curRows = minRows;
-    //     if (curCols < minCols) curCols = minCols;
+        if(curCols != drawCols || curRows != drawRows) {
+          if(!table) {
+            table = shapes.addNew(new Table(Tools.table));
+            socket.emit(EVENT.shapeEvent, 'add', table.getProperties());
+          }
 
-    //     if(curCols != drawCols || curRows != drawRows) {
-    //       if(!table) {
-    //         table = shapes.addNew(new Table(Tools.table));
-    //         socket.emit(EVENT.shapeEvent, 'add', table.getProperties());
-    //       }
+          drawRows = curRows;
+          drawCols = curCols;
 
-    //       drawRows = curRows;
-    //       drawCols = curCols;
+          table.draw({
+            x: startPos.x,
+            y: startPos.y,
+            cellWidth: cellWidth,
+            cellHeight: cellHeight,
+            rows: drawRows,
+            cols: drawCols
+          });
 
-    //       table.draw({
-    //         x: startPos.x,
-    //         y: startPos.y,
-    //         cellWidth: cellWidth,
-    //         cellHeight: cellHeight,
-    //         rows: drawRows,
-    //         cols: drawCols
-    //       });
-
-    //       table.highlight();
-    //       socket.emit(EVENT.shapeEvent, 'draw', table.getProperties());
-    //     }
-    //   }
-    // }
+          table.highlight();
+          socket.emit(EVENT.shapeEvent, 'draw', table.getProperties());
+        }
+      }
+    }
   };
 
   var mouseup = function(data) {
     if(isDown) {
-      table.setMoveListeners(AppState);
       table.unHighlight();
-      // socket.emit(EVENT.shapeEvent, 'drawEnd', table.getProperties());
-      // socket.emit(EVENT.saveObject, table.getProperties());
+      socket.emit(EVENT.shapeEvent, 'drawEnd', table.getProperties());
+      socket.emit(EVENT.saveObject, table.getProperties());
       table = null;
     }
 
@@ -120,4 +105,3 @@ module.exports = function(el, AppState) {
     stage.mouseout = mouseup;
   }
 };
-
