@@ -484,7 +484,7 @@ Object.defineProperty(Text.prototype, 'text', {
 
 Object.defineProperty(Text.prototype, 'height', {
   get: function() {
-    return this._height;
+    return this.textField.height;//this._height;
   },
   set: function(v) {
     this._height = v > this.textField.height
@@ -495,7 +495,7 @@ Object.defineProperty(Text.prototype, 'height', {
 
 Object.defineProperty(Text.prototype, 'width', {
   get: function() {
-    return this._width;//this.textField.width;
+    return this.textField.width;//this._width;//this.textField.width;
   },
   set: function(v) {
     //this.backgroundGraphics.width = v;
@@ -503,6 +503,5 @@ Object.defineProperty(Text.prototype, 'width', {
                     ? v
                     : this.textField.width;
     //this.width = v;//this.graphics.width = v;
-    //this.draw();
   }
 })

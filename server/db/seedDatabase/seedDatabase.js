@@ -1,5 +1,6 @@
 //var database = require('../../db/database');
 var CanvasSession = require('../../db/models/Session');
+
 //var mongoose = require('../../node_modules/mongoose');
 
 console.log('calling seed DB');

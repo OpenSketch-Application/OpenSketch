@@ -57,7 +57,6 @@ module.exports = function(io,DB) {
       socket.on(EVENT.removeShape, wbLogic.removeShapeCB(socket));
       socket.on(EVENT.imageUpload, wbLogic.imageUploadCB(socket));
 
-
       //socket.on(EVENT.populateCanvas, wbLogic.populateCanvasCB(socket));
 
       socket.on(EVENT.saveObject,wbLogic.saveObjectCB(socket,nspWb));
@@ -65,6 +64,7 @@ module.exports = function(io,DB) {
 
       // User Permissions
       socket.on(EVENT.permissionChanged, wbLogic.permissionChangedCB(socket));
+      socket.on(EVENT.usersChanged, wbLogic.usersChangedCB(socket));
       socket.on(EVENT.removeUser, wbLogic.removeUser(socket));
       socket.on(EVENT.removeThisUser, wbLogic.removeThisUser(socket))
     };

@@ -26,8 +26,3 @@ Connection.on('disconnected', function() {
 Connection.on('error', function() {
   console.log('error in connection');
 });
-
-
-
-
-

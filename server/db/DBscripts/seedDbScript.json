@@ -1,0 +1,19 @@
+var mongoose = require('mongoose');
+var dbConf = require('../../config/dbConf');
+var Session = require('../models/Session');
+var CanvasShapesManager = require('../DbManagers/CanvasShapesManager');
+var sampleSession = require('./sampleSession');
+
+mongoose.connect(dbConf.getUri());
+
+var Connection = mongoose.connection;
+
+Connection.on('open', function() {
+    //mongoose.connection.db.dropDatabase();
+
+    //CanvasShapesManager.
+    console.log(sampleSession._id);
+    console.log(sampleSession.users);
+
+    mongoose.connection.close();
+})

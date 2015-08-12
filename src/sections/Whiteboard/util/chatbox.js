@@ -52,7 +52,7 @@ module.exports = {
   sendMessage: function() {
     var _this = this;
     var message = {
-      user: _this.currentUser,
+      user: _this.users.currentUser.username,
       msg: this.inputBox.value
     };
 

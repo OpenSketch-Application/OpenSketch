@@ -16,7 +16,7 @@ module.exports = {
     this.container = find('#userManagement');//find('.cd-tabs-content li[data-content=Users]');
 
     this.Users = AppState.Users;
-
+    this.headUser = this.Users.users.length > 0 && this.Users.users[0];
     this.onMouseClick = this.onMouseClick.bind(this);
 
     // We want to make sure we attach mouse event once, which happens in
@@ -33,9 +33,6 @@ module.exports = {
     Mustache.render(userManagementTemplate, [user]);
   },
   updateUsers: function(users) {
-    //this.container.removeEventListener('click', this.onMouseClick);
-
-    //this.container.addEventListener('click', this.onMouseClick.bind(this), false);
     // users should be in an Array
     this.container.innerHTML = Mustache.render(userManagementTemplate, users);
 
@@ -48,7 +45,6 @@ module.exports = {
 
     e.stopPropagation();
     e.preventDefault();
-    console.log('UM Clicked', target);
 
     if(target.className.match('chatToggle')) {
 
@@ -124,88 +120,108 @@ module.exports = {
     this.container.addEventListener('dragleave', this.dragLeaveHandler.bind(this), false);
     this.container.addEventListener('dragend', this.dragEndHandler.bind(this), false);
     this.container.addEventListener('drop', this.dropHandler.bind(this), false);
-    // var list = find('#userManagement li');
 
-    // Array.prototype.forEach.call(list, function(row) {
-    //   row.addEventListener('drop', this.dropHandler.bind(this), false);
-    // }.bind(this));
     this.mouseEventAttached = true;
   },
   dragStartHandler: function(e) {
-    console.log(e);
-
     var userId;
     this.currentRow;
     console.log('Drag Start over ', e.target.id);
 
-    //if(e.target.id && e.target.localName && e.target.localName === 'li') {
-    userId = e.target.id;
-    this.currentRow = e.target;
-    console.log('userId:', userId);
-    this.currentRow.style.opacity = '0.4';
-    e.dataTransfer.effectAllowed = 'move';
-    e.dataTransfer.setData('text/html', this.currentRow.innerHTML);
-    //}
+    if(e.target.id && e.target.id === this.headUser._id) {
+      return false;
+    }
+    if(e.target.localName && e.target.localName === 'li') {
+      userId = e.target.id;
+      this.currentRow = e.target;
+      console.log('userId:', userId);
+      this.currentRow.style.opacity = '0.4';
+      e.dataTransfer.effectAllowed = 'move';
+      e.dataTransfer.setData('text/html', this.currentRow.innerHTML);
+    }
   },
   dragEnterHandler: function(e) {
-    if(this.currentRow && e.target.id !== this.currentRow.id && e.target.classList) {
+    if(this.currentRow &&
+      e.target.id !== this.currentRow.id &&
+      e.target.classList &&
+      e.target.id !== this.headUser._id) {
+
       e.target.classList.add('over');
     }
   },
   dragOverHandler: function(e) {
-    // if (e.preventDefault) {
-    //   e.preventDefault(); // Necessary. Allows us to drop.
-    //   //e.stopPropagation();
-    // }
-    if(e.dataTransfer) {
-      e.dataTransfer.dropEffect = 'move';
-    //  console.log('Dropping over ', e.target.id);
+    if (e.preventDefault) {
+      e.preventDefault(); // Necessary. Allows us to drop.
     }
+
+    e.dataTransfer.dropEffect = 'move';
+
     return false;
   },
   dragLeaveHandler: function (e) {
     // this / e.target is previous target element.
+    if(e.target.id && e.target.id === this.headUser._id) {
+      return false;
+    }
     if(e.target.id && e.target.classList) {
       e.target.classList.remove('over');
     }
   },
   dragEndHandler: function(e) {
-    console.log('Drag End called', this);
-    this.currentRow.style.opacity = '';
+    if(this.currentRow)
+      this.currentRow.style.opacity = '';
 
-    var list = find('#userManagement li');
+    var list = document.querySelectorAll('#userManagement li');
+
     e.target.classList.remove('over');
-    // var tempData = e.target.innerHTML;
-    // e.target.innerHTML = this.currentRow.innerHTML;
-    // this.currentRow.innerHTML = tempData;
-    this.currentRow = undefined;
+
+    Array.prototype.forEach.call(list, function(row) {
+      if(row.classList) row.classList.remove('over');
+    });
+
+    //this.currentRow = undefined;
   },
   dropHandler: function(e) {
+
     if (e.stopPropagation) {
       e.stopPropagation(); // stops the browser from redirecting.
     }
-
-    console.log('Dropping content');
-
-    if(this.currentRow !== e.target) {
-      // Set the source rows's HTML to the HTML of the row we dropped on.
-      this.currentRow.innerHTML = e.target.innerHTML;
-      this.currentRow.innerHTML = e.dataTransfer.getData('text/html');
+    if(e.target.id && e.target.id === this.headUser._id) {
+      return false;
     }
+    if(e.target.id && e.target.localName && e.target.localName === 'li') {
+      if(this.currentRow && this.currentRow !== e.target) {
+        var userSelectedIndex = this.currentRow.getAttribute('userRank');
+        var userToChangeIndex = e.target.getAttribute('userRank');
 
+        if(userSelectedIndex && userToChangeIndex) {
+          // Set the source rows's HTML to the HTML of the row we dropped on.
+          this.currentRow.innerHTML = e.target.innerHTML;
+          e.target.innerHTML = e.dataTransfer.getData('text/html');
+
+          // Update the model
+          var tempUser = this.Users.users[userSelectedIndex];
+
+
+          this.Users.users[userSelectedIndex] = this.Users.users[userToChangeIndex];
+          this.Users.users[userToChangeIndex] = tempUser;
+
+          this.Users.users[userSelectedIndex].userRank = userSelectedIndex;
+          this.Users.users[userToChangeIndex].userRank = userToChangeIndex;
+
+          e.target.setAttribute('userRank', userToChangeIndex);
+          this.currentRow.setAttribute('userRank', userSelectedIndex);
+
+          this.emitUsersChanged(
+            [
+              this.Users.users[userSelectedIndex],
+              this.Users.users[userToChangeIndex]
+            ]
+          );
+        }
+      }
+    }
     return false;
-  },
-  dragInteractionStopped: function(e) {
-    console.log('Mouse Up fired');
-    //if(this.currentRow) {
-    this.currentRow = undefined;
-    var list = find('#userManagement li');
-    if(list) {
-      Array.prototype.forEach.call(list, function(row) {
-        row.classList.remove('over');
-      });
-    }
-    //}
   },
   removeUserInteraction: function() {
     this.container.removeEventListener('click', this.onMouseClick, false);
@@ -214,8 +230,7 @@ module.exports = {
     this.container.removeEventListener('dragover', this.dragOverHandler, false);
     this.container.removeEventListener('dragleave', this.dragLeaveHandler, false);
     this.container.removeEventListener('dragend', this.dragEndHandler, false);
-    //this.container.removeEventListener('drop', this.dropHandler, false);
-    //this.container.removeEventListener('mouseup', this.dragInteractionStopped, false);
+    this.container.removeEventListener('drop', this.dropHandler, false);
     this.mouseEventAttached = false;
   },
   setSocketEvents: function(AppState) {
@@ -228,12 +243,10 @@ module.exports = {
 
       AppState.Users.users = users;
 
-      this.container.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
-
       if(curUserIndex !== undefined && users[curUserIndex]){
         AppState.Users.currentUser = users[curUserIndex];
 
-        if(AppState.Users.currentUser._id) {
+        if(AppState.Users.currentUser._id === this.Users.users[0]._id) {
           Cookies.set(
             AppState.sessionId,
             AppState.Users.currentUser._id + ',' +
@@ -242,14 +255,18 @@ module.exports = {
             { expires: 800 }
           );
         }
-
-        // Set up the User Interface, based on the User's permissions
-        this.setUserInterface(AppState.Users.currentUser, AppState);
       }
 
-    }.bind(this));
+      if(AppState.Users.currentUser.userRank === 0) {
+        // Set up the User Interface, based on the User's permissions
+        this.setUserInterface(AppState.Users.currentUser, AppState);
 
-    socket.on(EVENT.userLeft, function(removedUser) {})
+        this.headUser = AppState.Users.currentUser;
+      }
+
+      this.container.innerHTML = Mustache.render(userManagementTemplate, AppState.Users);
+
+    }.bind(this));
 
     socket.on(EVENT.permissionChanged, function(userModel) {
       console.log('Premission changed', userModel);
@@ -266,10 +283,12 @@ module.exports = {
       // Update the User List visible to the User
       this.updateUsers(AppState.Users);
 
+      this.headUser = AppState.Users.users.length > 0 && AppState.Users.users[0];
     }.bind(this));
 
     socket.on(EVENT.disconnectUser, function(removeUserData) {
       var currentUserId = AppState.Users.currentUser._id;
+      console.log('Remove this user', removeUserData);
 
       if(removeUserData._id === currentUserId && removeUserData.sessionId === AppState.sessionId) {
         Cookies.expire(removeUserData.sessionId);
@@ -315,6 +334,9 @@ module.exports = {
   },
   emitRemoveUser: function(userModel) {
     this.socket.emit(EVENT.removeUser, userModel);
+  },
+  emitUsersChanged: function(users) {
+    this.socket.emit(EVENT.usersChanged, users);
   },
   destroy: function() {
     this.container.removeEventListener('click', this.onMouseClick.bind(this), false);

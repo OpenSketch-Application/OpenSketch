@@ -21,6 +21,7 @@ var model  = {
     'removeUser':'removeUser',
     'removeThisUser':'removeThisUser',
     'disconnectUser': 'disconnectUser',
+    'usersChanged': 'usersChanged',
 
     //'addUser':'addUser' // just show email pop and email the user the session url
 
@@ -42,7 +43,7 @@ var model  = {
     'deleteObject' : 'deleteObject',
     'clearShapes' : 'clearShapes',
     'removeShape' : 'removeShape',
-    'imageUpload' : 'imageUpload'
+    'imageUpload' : 'imageUpload',
 
     //'sendPencil' : 'sendPencil'
     // 'sendLine' : 'sendLine'

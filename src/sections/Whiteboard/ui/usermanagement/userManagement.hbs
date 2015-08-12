@@ -1,6 +1,6 @@
 <!-- Template for User Management Cell -->
 {{#users}}
-  <li id="{{_id}}" data-content="Users" draggable="true">
+  <li id="{{_id}}" data-content="Users" userRank="{{userRank}}" draggable="true">
     <!-- <img class="profilePicture" alt="U"/> -->
     <p>
       {{^username}}{{_id}}{{/username}}

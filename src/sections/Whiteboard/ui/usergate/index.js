@@ -32,7 +32,9 @@ Section.prototype = {
     var socket = io.connect(SERVERNAME +curSession);
     // Wait four seconds before deciding to navigate User back to Home Page
     var timerCallback = setTimeout(function() {
+
       console.error('Unable to connect to session ', curSession, ' in 5 seconds');
+
       socket.disconnect();
       framework.go('/home');
       done();
@@ -52,7 +54,7 @@ Section.prototype = {
       }
       // Need to store all user info in DB
       if(userId && username) {
-        socket.emit(EVENT.joinSession, username, userId, userRank);
+        socket.emit(EVENT.joinSession, username, userId, this.createID === userId);
         done();
       }
       else {
@@ -61,30 +63,11 @@ Section.prototype = {
     })
 
     socket.on(EVENT.UserList, function(users) {
-      // Head User has been added to session for the first time
-      // if(users.length === 0) {
-      //   socket.emit(EVENT.joinSession, username, userId);
-      //   done();
-      // }
-      // else {
-        // var matchedUser;
 
-        // users.some(function(user) {
-        //   if(userId === user._id) {
-        //     matchedUser = user;
-        //     return true;
-        //   }
-        //   return false;
-        // });
-
-        // If we found a match, show user the whiteboard, since he has already joined the session
-
-        //
-        //else {
       showUserGate(req, done, users);
-        //}
+
       done();
-    })
+    });
 
     var showUserGate = function(req, done, users) {
       var content = find('#content');
@@ -115,6 +98,7 @@ Section.prototype = {
       var usernames = [];
 
       userList.innerHTML = '';
+
       for( var i = 0; i < users.length;i++)
       {
        var li = document.createElement('li');

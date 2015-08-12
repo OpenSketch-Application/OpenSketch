@@ -48,80 +48,135 @@ whiteboardSockets.userListCB = function(socket,nsp){
 };
 //JOIN
 whiteboardSockets.joinSessionCB = function(socket,nsp) {
-  return function(uName, uID, userRank) {
+  return function(uName, uID, newUser) {
         var sessionid = socket.adapter.nsp.name.split('/');
         sessionid = sessionid[sessionid.length - 1];
         //validate name
         console.log('joinsession');
 
         //console.log(socket.request.headers.cookie);
-
-        Session.findById(sessionid, function(err, session){
-          if(err){
-            console.warn('Error Retrieving Session: at ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
-            //throw new Error('Error retrieving Session');
-          }
-          else if(session && session._id) {
-            var currentUser = session.users.id(uID);
-            console.log('CHECKING USER ', currentUser, socket.id);
-            if(!uName) {
-              console.log('ERROR: must have username');
-              socket.emit(EVENT.badSession);
+        //try {
+          Session.findById(sessionid, function(err, session) {
+            if(err){
+              console.warn('Error Retrieving Session: at ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+              //throw new Error('Error retrieving Session');
             }
-            else if(currentUser && currentUser.username === uName) {
+            else if(session && session._id) {
+              var currentUser = session.users.id(uID);
+              console.log('CHECKING USER ', currentUser, socket.id);
+              console.log('uName', uName, 'uId', uID);
 
+              if(!uName) {
+                console.log('ERROR: must have username');
+                socket.emit(EVENT.badSession);
 
-              socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
+                return;
+              }
+              else if(uName && session.users.length < session.sessionProperties.maxUsers) {
+                var canChat = session.sessionProperties.canChat;
+                var canDraw = session.sessionProperties.canDraw;
 
-              socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
+                // If user doesnt exist in DB already
+                if(!currentUser) {
+                  if(session.users.length === 0) {
+                    canChat = true;
+                    canDraw = true;
+                  }
 
-              socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
+                  currentUser = {
+                    username: uName,
+                    userRank: session.users.length,
+                    permissions: {
+                      canDraw: canDraw,
+                      canChat: canChat
+                    },
+                    _id: socket.id
+                  };
 
-              socket.emit(EVENT.populateCanvas, session.canvasShapes);
-
-            }
-            //push user to db
-            else if(session.users.length < session.sessionProperties.maxUsers){
-              var newUser = {
-                username: uName,
-                userRank: userRank || session.users.length,
-                permissions: {
-                  canDraw: session.users.length === 0 ? true : session.sessionProperties.canDraw,
-                  canChat: session.users.length === 0 ? true : session.sessionProperties.canChat
-                },
-                _id: socket.id
-              };
-
-              session.users.push(newUser);
-
-              session.save(function(err){
-                if(err) {
-                  console.log(err);
+                  session.users.push(currentUser);
                 }
                 else {
-                  console.log(session);
-                  console.log(session.users[0].permissions);
-                  socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
-                  socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
-
-                  socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, session.users.length - 1);
-
-                  socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
-
-                  socket.emit(EVENT.populateCanvas, session.canvasShapes);
+                  // Set the permissions to w/e the DB settings had
+                  if(currentUser.userRank && session.users[currentUser.userRank]) {
+                    session.users[currentUser.userRank].permissions.canChat = canChat;
+                    session.users[currentUser.userRank].permissions.canDraw = canDraw;
+                  }
+                  else {
+                    console.log('ERROR: Uh oh, mismatch', currentUser);
+                  }
                 }
-              });
+                session.save(function(err) {
+                  if(err) {
+                    console.log(err);
+                  }
+                  else {
+                    console.log(session);
+                    if(newUser){
+                      socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has joined the session');
+                      socket.emit(EVENT.announcement, currentUser.username + ' has joined the session');
+                    }
+                    else {
+                      socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
+                      socket.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
+                    }
+
+                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
+
+                    socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
+
+                    socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
+
+                    socket.emit(EVENT.populateCanvas, session.canvasShapes);
+                  }
+                });
+              }
+              else {
+                // Need to emit socket event that too many users are present in session
+                console.log('Too many users in this session ', session);
+              }
             }
             else {
-              // Need to emit socket event that too many users are present in session
-              console.log('Too many users in this session ', session);
+             console.warn('Null Sesson returned, Date: ', new Date().toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
             }
+          });
+              //push new user to db
+              // else if(!currentUser && session.users.length < session.sessionProperties.maxUsers){
+              //   var newUser = {
+              //     username: uName,
+              //     userRank: userRank || session.users.length,
+              //     permissions: {
+              //       canDraw: session.users.length === 0 ? true : session.sessionProperties.canDraw,
+              //       canChat: session.users.length === 0 ? true : session.sessionProperties.canChat
+              //     },
+              //     _id: socket.id
+              //   };
 
-          }
-          else {
-           console.warn('Null Sesson returned, Date: ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
-          }
-        });
+              //   session.users.push(newUser);
+
+              //   session.save(function(err){
+              //     if(err) {
+              //       console.log(err);
+              //     }
+              //     else {
+              //       console.log(session);
+              //       console.log(session.users[0].permissions);
+              //       socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
+              //       socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
+
+              //       socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, session.users.length - 1);
+
+              //       socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
+
+              //       socket.emit(EVENT.populateCanvas, session.canvasShapes);
+              //     }
+              //   });
+              // }
+
+
+        //}
+        // catch(e) {
+        //   console.log(e);
+        // }
   };
 };
 //CHAT
@@ -311,7 +366,6 @@ whiteboardSockets.removeUser = function(socket) {
       _id: userModel._id,
       sessionId: sessionid
     });
-
   }
 };
 
@@ -360,14 +414,43 @@ whiteboardSockets.removeThisUser = function(socket) {
         console.log('Unable to find Session ID', sessionid);
       }
     });
-    // UserManager.deleteOne(sessionid, userModel._id, function(err) {
-    //   if(err) console.log('Unable to remove User from DB');
-    //   else {
-    //     socket.broadcast.emit(EVENT.announcement, userModel.username + ' has been removed from the session');
-    //   }
-    // });
   };
 };
+
+whiteboardSockets.usersChangedCB = function(socket) {
+  return function(usersToChange) {
+    var sessionid = socket.adapter.nsp.name.split('/');
+    sessionid = sessionid[sessionid.length - 1];
+    console.log(usersToChange);
+
+    //UserManager.updateOne(sessionid,)
+    Session.findById(sessionid, function(err, session) {
+      if(err){
+        console.log('error');
+      } else if(session && session.users && session.users.length > 0 && usersToChange.length > 0) {
+        console.log(session);
+
+        //console.log(usersToChange);
+
+        var firstUser = session.users.id(usersToChange[0]._id);
+        var secondUser = session.users.id(usersToChange[1]._id);
+
+        session.users.set(firstUser.userRank, usersToChange[1]);
+        session.users.set(secondUser.userRank, usersToChange[0]);
+
+        session.save(function(err) {
+          if(err) console.log(err);
+          else {
+            socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+          }
+        });
+      }
+      else {
+        console.log('Error: unable to change user ranks');
+      }
+    });
+  }
+}
 
 whiteboardSockets.clearShapesCB = function(socket) {
   return function(data, onComplete) {

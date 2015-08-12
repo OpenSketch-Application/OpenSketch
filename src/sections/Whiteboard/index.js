@@ -43,7 +43,6 @@ Section.prototype = {
     // Inits AppState with Pixi and adds Socket object to AppState objects
     AppState.init(PIXI, socket, this.section.querySelector('#whiteboard-container'));
 
-
     this.toolbar = new Toolbar({
       whiteboard: '#whiteboard-container',
       tools: {
@@ -73,7 +72,6 @@ Section.prototype = {
 
     var closeSettings = function() {
 
-      
     };
 
     this.sessionOptions.onclick = function(e) {
@@ -114,13 +112,29 @@ Section.prototype = {
 
     };
 
+    var settingsMenu = this.section.querySelector('#opt-settings-menu');
+    settingsMenu.addEventListener('click', function(e) {
+      if(e.target.name) {
+        switch(e.target.name) {
+          case 'canChat':
+            console.log('canChat Toggled', e.target.value);
+          break;
+          case 'canDraw':
+            console.log('canDraw Toggled', e.target.value);
+          break;
+          case 'maxUsers':
+            console.log('maxUsers set', e.target.value);
+          break;
+        }
+      }
+      console.log(e.target);
+    }, false)
 
     this.animate = new f1().states(states)
                            .transitions(require('./transitions'))
                            .targets({ whiteboard: this.section.querySelector('#whiteboard')})
                            .parsers(require('f1-dom'))
                            .init('init');
-
 
     this.toolbar.addUserInteraction();
     AppState.ToolBar = this.toolbar;
