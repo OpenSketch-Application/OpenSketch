@@ -29,12 +29,12 @@ function activate(AppState) {
  var f = AppState.Tools.Colors.fill; 
  var l = AppState.Tools.Colors.line;
 
- $('#color-wheel #fill').spectrum({showInput: true, color:'#'+ hextostring(f),change: function(color){
+ $('#color-wheel #fill').spectrum({preferredFormat:'hex',showInput: true, color:'#'+ hextostring(f),change: function(color){
     AppState.Tools.Colors.fill = rgbtohex(color._r,color._g,color._b); 
     updateTools(AppState.Tools);
     console.log('primary changed');
    }});
- $('#color-wheel #line').spectrum({showInput: true, color:'#'+ hextostring(l),change: function(color){
+ $('#color-wheel #line').spectrum({preferredFormat:'hex',showInput: true, color:'#'+ hextostring(l),change: function(color){
       
    AppState.Tools.Colors.line = rgbtohex(color._r,color._g,color._b); 
    updateTools(AppState.Tools);
@@ -62,6 +62,10 @@ function rgbtohex(r,g,b){
   var ir = parseInt(r).toString(16);
   var ig = parseInt(g).toString(16);
   var ib = parseInt(b).toString(16);
+  if(ir.length === 1) ir = '0' + ir;
+  if(ig.length === 1) ig = '0' + ig;
+  if(ib.length === 1) ib = '0' + ib;
+
   var val = ir +ig + ib; 
   val = parseInt(val,16);
   return val; 
