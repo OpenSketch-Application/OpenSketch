@@ -162,13 +162,13 @@ Section.prototype = {
       socket.emit(EVENT.saveSession,function(data){
         var a  = window.document.createElement('a');
         a.href = window.URL.createObjectURL(new Blob([data],{type: 'application/javascript'}));
-        var filename = this.section.querySelector('#save-whiteboard-prompt input').value;
-        a.download = filename + '.js';
+        var filename = this.section.querySelector('#save-prompt').value;
+        a.download = filename + '.json';
         savePrompt.className = '';
         a.click();
-      });
+      }.bind(this));
 
-    },false);
+    }.bind(this),false);
 
 
     setTimeout(function(){
@@ -187,12 +187,14 @@ Section.prototype = {
   },
 
   animateIn: function(req, done) {
+    if(this.animate)
       this.animate.go('idle', function() {
         done();
       }.bind(this));
   },
 
   animateOut: function(req, done) {
+    if(this.animate)
     this.animate.go('out', function() {
       done();
     }.bind(this));
