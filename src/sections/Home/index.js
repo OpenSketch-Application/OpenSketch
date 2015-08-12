@@ -39,7 +39,7 @@ function ValidateJSON(content){
       if(shp._id  == null || shp._id == undefined)
        skip = true;
 
-     if(shp.shapeType !='pencil'){
+     if(shp.shapeType !='pencil' && shp.shapeType !== 'import'){
       if(shp.x == null || shp.x == undefined) skip = true;
       if(shp.y == null || shp.y == undefined) skip = true;
     }
@@ -69,6 +69,8 @@ function ValidateJSON(content){
       break;
       case 'textbox':
       if(shp.textContent == null || shp.textContent == undefined) skip = true;
+      break;
+      case 'import':
       break;
       default:
       skip = true;
@@ -176,11 +178,19 @@ Section.prototype = {
     username.addEventListener('click', function(e) {
       this.className = "username";
     });
+
+    var filename = this.section.querySelector('.file-name');
+
     //-----FILE LISTENERS
     var file = find('#file-input');
     file.addEventListener('click', function(e) {
       this.id = "file-input";
     });
+
+    file.onchange = function(e) {
+      filename.innerHTML = file.value ? file.files[0].name : 'No File Selected';
+    }.bind(this);
+
     var filecontent = null;
 
     file.value = null;
