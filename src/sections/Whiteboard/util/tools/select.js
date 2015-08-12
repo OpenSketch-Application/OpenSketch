@@ -52,13 +52,6 @@ module.exports = function(AppState, el) {
       socket.emit(EVENT.shapeEvent, 'unlockShape', { _id: select.selectedObject._id });
       select.selectedObject = null;
     }
-    // else {
-    //   this.dragging = true;
-    //   this.mousePressPoint[0] = data.getLocalPosition(pixiStage).x -
-    //                             this.position.x;
-    //   this.mousePressPoint[1] = data.getLocalPosition(pixiStage).y -
-    //                             this.position.y;
-    // }
   };
 
   var mousemove = function(data) {
@@ -93,7 +86,7 @@ module.exports = function(AppState, el) {
       var shapeId = select.selectedObject._id;
 
       // Emit socket interactionEnd Event, since drawing has ended on mouse up
-      //socket.emit(EVENT.shapeEvent, 'interactionEnd', shapeId);
+      socket.emit(EVENT.shapeEvent, 'interactionEnd', shapeId);
       saveObject = select.selectedObject.getProperties();
       saveObject.moveX = modifiedShape.x;
       saveObject.moveY = modifiedShape.y;
@@ -105,9 +98,11 @@ module.exports = function(AppState, el) {
       // So if he diconnects while still moving a Shape or drawing a Shape, it should be invalidated
       // by default, hence why we only save on mouseUp and if selected Shape had been modified
       if(isDown && shapeModified) {
+        //debugger;
+        if(saveObject.cells) saveObject.cells = null;
         // Update the Shape Object
         // and it should also unlock the Shape
-        //socket.emit(EVENT.updateObject, saveObject);
+        socket.emit(EVENT.updateObject, saveObject);
       }
       // Due to our inability to do proper delegation yet, we had to wait to BaseShape class's
       // mouseDown event to attach the shape that experienced a mouseDown to attach the shape

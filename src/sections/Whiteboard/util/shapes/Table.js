@@ -25,6 +25,14 @@ function Table(shapeProperties) {
   this.fillAlpha = Number.parseFloat(shapeProperties.fillAlpha || 1);
   this.cellTextStyle = shapeProperties.cellTextStyle;
 
+  this.cellDefaults = shapeProperties.cellDefaults;
+  this.cells = [];
+
+  this.rowHeights = [];
+  this.colWidths = [];
+
+  this.cell = new TableCell(this.cellDefaults);
+
   // Set Style properties to the internal Graphics object
   this.graphics.lineWidth = this.lineWidth;
   this.graphics.lineColor = this.lineColor;
@@ -32,15 +40,6 @@ function Table(shapeProperties) {
   this.graphics.lineAlpha = this.lineAlpha;
   this.graphics.fillAlpha = this.fillAlpha;
   this.graphics.alpha = this.fillAlpha;
-
-  var tempCell;
-
-  this.cellDefaults = shapeProperties.cellDefaults;
-  this.cells = [];
-
-  this.rowHeights = [];
-  this.colWidths = [];
-
 }
 
 Table.prototype = Object.create(BaseShape.prototype);
@@ -70,7 +69,7 @@ Table.prototype.getProperties = function() {
 
   shape.cells = this.cells.map(function(row) {
     return row.map(function(col) {
-      return col;
+      return col.getProperties();
     });
   });
 
@@ -105,20 +104,13 @@ Table.prototype.setProperties = function(shapeProperties) {
   this.graphics.fillAlpha = this.fillAlpha;
   this.graphics.alpha = this.fillAlpha;
 
-  var tempCell;
-
-
-
-  // if(shapeProperties.children && shapeProperties.children.length > 0) {
-  //   this.children = shapeProperties.children.map(function(cell) {
-  //     tempCell = new TableCell(cell.shapeProperties);
-  //     this.graphics.addChild(tempCell.getGraphics());
-  //     return tempCell;
-  //   });
-  // }
-  // else {
-  //   this.children = [];
-  // }
+  if(shapeProperties.cells && shapeProperties.cells.length > 0) {
+    shape.cells.forEach(function(row, r) {
+      row.forEach(function(cellProperties, c) {
+        this.cells[r][c].setProperties(cellProperties);
+      })
+    })
+  }
 }
 
 Table.prototype.draw = function(shapeProperties) {
@@ -238,6 +230,54 @@ Table.prototype.draw = function(shapeProperties) {
   return this;
 };
 
+Table.prototype.drawTemplate = function(shapeProperties) {
+  this.graphics.clear();
+  this.graphics.interactive = false;
+
+  if(shapeProperties.x) this.x = shapeProperties.x;
+  if(shapeProperties.y) this.y = shapeProperties.y;
+  if(shapeProperties.cellWidth) this.cell.width = shapeProperties.cellWidth;
+  if(shapeProperties.cellHeight) this.cell.height = shapeProperties.cellHeight;
+  if(shapeProperties.rows) this.rows = shapeProperties.rows;
+  if(shapeProperties.cols) this.cols = shapeProperties.cols;
+
+  this.width = this.cols*this.cell.width;
+  this.height = this.rows*this.cell.height;
+
+  // Since we cleared all the draw properties for redrawing, we need to set the styles again
+  this.graphics.lineWidth = shapeProperties.lineWidth ? this.lineWidth = shapeProperties.lineWidth
+                                                      : this.lineWidth;
+
+  this.graphics.lineColor = shapeProperties.lineColor ? this.lineColor = shapeProperties.lineColor
+                                                      : this.lineColor;
+  this.graphics.lineAlpha = shapeProperties.lineAlpha ? this.lineAlpha = shapeProperties.lineAlpha
+                                                      : this.lineAlpha;
+
+  this.graphics.fillAlpha = shapeProperties.fillAlpha ? this.fillAlpha = shapeProperties.fillAlpha
+                                                      : this.fillAlpha;
+  this.graphics.fillColor = shapeProperties.fillColor ? this.fillColor = shapeProperties.fillColor
+                                                      : this.fillColor;
+  this.graphics.beginFill(this.fillColor);
+  this.graphics.drawRect(this.x, this.y, this.width, this.height) ;
+  this.graphics.lineStyle(1, 0x000000);
+
+  for(var i = this.cols-1; i >= 0; i--) {
+    for(var j = this.rows-1; j >= 0; j--) {
+      if(j === 0) {
+        this.graphics.beginFill(0x8DCFDE);
+      } else {
+        this.graphics.beginFill(0xFFFFFF);
+      }
+
+      this.graphics.drawRect(this.x + i*this.cell.width, this.y + j*this.cell.height, this.cell.width, this.cell.height);
+    }
+  }
+
+  this.graphics.endFill();
+
+  return this;
+}
+
 Table.prototype.reDraw = function(newDimensions, cellCoords) {
   var r = 0, c = 0;
   var maxR = this.rows;
@@ -245,7 +285,7 @@ Table.prototype.reDraw = function(newDimensions, cellCoords) {
 
   var widestCells = this.getWidestCellColumns(this.cells);
   var highestCells = this.getHighestCellRows(this.cells);
-  debugger;
+
   // Width of Column needs to be changed
   if(newDimensions.xDiff !== 0){
     for(r = 0; r < maxR; r++) {

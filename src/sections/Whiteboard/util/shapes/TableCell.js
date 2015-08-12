@@ -383,7 +383,8 @@ TableCell.prototype.textWrap = function(text, wordWrapWidth) {
 
 TableCell.prototype.getProperties = function() {
 
-  var shape = Rectangle.prototype.getProperties.call(this);
+  var shape = {};
+  //Rectangle.prototype.getProperties.call(this);
 
   shape.fontColor = this.fontColor;
   shape.font = this.textField.font;
@@ -397,6 +398,15 @@ TableCell.prototype.getProperties = function() {
   shape.align = this.textField.align;
   shape.strokeThickness = this.textField.strokeThickness;
   shape.fillColor = this.fillColor;
+
+  shape.highestCell = this.highestCell;
+  shape.widestCell = this.widestCell;
+  shape.cellCoords = this.cellCoords;
+  shape.width = this.width;
+  shape.height = this.height;
+  shape.parentId = this.parentContainer._id;
+  // shape.maxWidth = maxWidth;
+
   return shape;
 };
 
@@ -414,7 +424,7 @@ TableCell.prototype.setProperties = function(shapeProperties) {
   if(shapeProperties.align) this.textField.align = shapeProperties.align;
   if(shapeProperties.strokeThickness) this.textField.strokeThickness;
   if(shapeProperties.fillColor) this.fillColor;
-
+  //if(shapeProperties.parent._id) this.parent
   //this.textField.setText(shape.textContent);
   this.textArray = this.getTextArray(this.text);
 
