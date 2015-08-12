@@ -30,8 +30,12 @@ function Table(shapeProperties) {
 
   this.rowHeights = [];
   this.colWidths = [];
+  var tempCell = new TableCell(this.cellDefaults);
 
-  this.cell = new TableCell(this.cellDefaults);
+  this.cell = {
+    width: tempCell.width,
+    height: tempCell.height
+  };
 
   // Set Style properties to the internal Graphics object
   this.graphics.lineWidth = this.lineWidth;
@@ -309,9 +313,8 @@ Table.prototype.reDraw = function(newDimensions, cellCoords) {
 
   // Height of the row needs to be changed
   if(newDimensions.yDiff !== 0) {
-    for(r = 0; r < maxR; r++) {
-      for(c = cellCoords[1]; c < maxC; c++) {
-
+    for(r = cellCoords[0]; r < maxR; r++) {
+      for(c = 0; c < maxC; c++) {
         if(highestCells.indexOf(this.cells[r][c]) !== -1) {
           this.cells[r][c].highestCell = true;
         }
@@ -337,6 +340,17 @@ Table.prototype.reDraw = function(newDimensions, cellCoords) {
   this.width = widestCells.reduce(function(sum, cell) {
     return sum += cell.width;
   }, 0);
+
+  this.graphics.beginFill(0x000000);
+
+  this.graphics.drawRect({
+    x: this.x,
+    y: this.y,
+    width: this.width,
+    height: this.height
+  })
+
+  this.graphics.endFill();
 
   this.highlight();
 }
@@ -457,13 +471,13 @@ Table.prototype.setMoveListeners = function(AppState) {
   // }
 
   // Calculate width/heights of row/cols and draw the cells
-  for(var r = this.rows-1; r >= 0; r--) {
-    for(var c = this.cols-1; c >= 0; c--) {
-      this.cells[r][c].setMoveListeners(AppState);
-      //this.cells[r][c].graphics.mousemove = function() {};
+  // for(var r = this.rows-1; r >= 0; r--) {
+  //   for(var c = this.cols-1; c >= 0; c--) {
+  //     this.cells[r][c].setMoveListeners(AppState);
+  //     //this.cells[r][c].graphics.mousemove = function() {};
 
-    }
-  }
+  //   }
+  // }
 
   //this.graphics.mousedown = function(data) {
     // Get x,y of mouseclick

@@ -98,6 +98,7 @@ TableCell.prototype.hideCaret = function() {
 }
 
 TableCell.prototype.calculateCaretPosition = function() {
+
   if(this._caretYIndex < 0) {
     this._caretYIndex = 0;
   }
@@ -153,6 +154,7 @@ TableCell.prototype.getActualXIndex = function() {
 }
 
 TableCell.prototype.onKeyEvent = function(e) {
+  var oldYIndex = this._caretYIndex;
 
   if(e.type === 'keypress') {
     if(e.keyCode !== 13) {
@@ -255,12 +257,19 @@ TableCell.prototype.onKeyEvent = function(e) {
     this.width = this.textField.width;
   }
 
+  if(oldYIndex !== this._caretYIndex) {
+    this.height = this.lineHeight * this.textArray.length;
+  }
+
   if(this.textField.height > this.height) {
+
     this.height = this.textField.height;
   }
 
   this.width = this.textField.width;
   this.height = this.textField.height;
+
+  this.drawBackground();
 
   var xDiff = this.width > this.maxWidth ? this.width - this.maxWidth : 0;
   var yDiff = this.height > this.maxHeight ? this.height - this.maxHeight : 0;
@@ -285,6 +294,7 @@ TableCell.prototype.onKeyEvent = function(e) {
       this.maxWidth = this.width;
       this.parentContainer.colWidths[this.cellCoords[1]] = this.width;
     }
+
     if(yDiff !== 0) {
       this.maxHeight = this.height;
       this.parentContainer.rowHeights[this.cellCoords[0]] = this.height;
@@ -292,7 +302,7 @@ TableCell.prototype.onKeyEvent = function(e) {
   }
 
   //else {
-  this.drawBackground();
+
   //}
   // Check if width is greater than parent width
   // ie. parent's column width
@@ -560,7 +570,7 @@ Object.defineProperty(TableCell.prototype, 'text', {
 
 Object.defineProperty(TableCell.prototype, 'height', {
   get: function() {
-    return this.textField.height;
+    return this.textField.height < this._height ? this._height : this.textField.height;
   },
   set: function(v) {
     this._height = v > this.textField.height

@@ -72,7 +72,7 @@ module.exports = function(el, AppState) {
           drawCols = curCols;
           drawRows = curRows;
           shapes.removeShape(table);
-          //socket.emit(EVENT.shapeEvent, 'remove', table);
+          socket.emit(EVENT.shapeEvent, 'remove', table);
           table = null;
         }
       } else {
@@ -83,7 +83,7 @@ module.exports = function(el, AppState) {
         if(curCols != drawCols || curRows != drawRows) {
           if(!table) {
             table = shapes.addNew(new Table(Tools.table));
-            //socket.emit(EVENT.shapeEvent, 'add', table.getProperties());
+            socket.emit(EVENT.shapeEvent, 'add', table.getProperties());
           }
 
           drawRows = curRows;
@@ -99,7 +99,7 @@ module.exports = function(el, AppState) {
           });
 
           table.highlight();
-          //socket.emit(EVENT.shapeEvent, 'draw', table.getProperties());
+          socket.emit(EVENT.shapeEvent, 'draw', table.getProperties());
         }
       }
     }
@@ -108,14 +108,14 @@ module.exports = function(el, AppState) {
   var mouseup = function(data) {
     if(isDown) {
       if(table) {
-        table.draw({
-          x: startPos.x,
-          y: startPos.y
-        })
+        // table.draw({
+        //   x: startPos.x,
+        //   y: startPos.y
+        // })
         table.setMoveListeners(AppState);
         table.unHighlight();
-        // socket.emit(EVENT.shapeEvent, 'drawEnd', table.getProperties());
-        // socket.emit(EVENT.saveObject, table.getProperties());
+        socket.emit(EVENT.shapeEvent, 'drawEnd', table.getProperties());
+        socket.emit(EVENT.saveObject, table.getProperties());
         table = null;
       }
 
