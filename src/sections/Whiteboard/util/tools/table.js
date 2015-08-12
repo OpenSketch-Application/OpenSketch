@@ -35,8 +35,7 @@ module.exports = function(el, AppState) {
 
     console.log('Drawing table');
 
-    // Activates the Table UI mouse events
-    activate();
+    activate(AppState);
 
     return false;
   });
@@ -45,17 +44,7 @@ module.exports = function(el, AppState) {
     isDown = true;
     drawRows = curRows =  0;
     drawCols = curCols = 0;
-    startPos = data.getLocalPosition(stage);
-
-    table = shapes.addNew(new Table(Tools.table));
-
-    table.drawTemplate({
-      x: startPos.x,
-      y: startPos.y
-    })
-
-    //table.graphics.position.x = startPos.x;
-    //table.graphics.position.y = startPos.y;
+    startPos = data.getLocalPosition(this);
   };
 
   var mousemove = function(data) {
@@ -89,7 +78,7 @@ module.exports = function(el, AppState) {
           drawRows = curRows;
           drawCols = curCols;
 
-          table.drawTemplate({
+          table.draw({
             x: startPos.x,
             y: startPos.y,
             cellWidth: cellWidth,
@@ -107,18 +96,11 @@ module.exports = function(el, AppState) {
 
   var mouseup = function(data) {
     if(isDown) {
-      if(table) {
-        // table.draw({
-        //   x: startPos.x,
-        //   y: startPos.y
-        // })
-        table.setMoveListeners(AppState);
-        table.unHighlight();
-        socket.emit(EVENT.shapeEvent, 'drawEnd', table.getProperties());
-        socket.emit(EVENT.saveObject, table.getProperties());
-        table = null;
-      }
-
+      table.setMoveListeners(AppState);
+      table.unHighlight();
+      socket.emit(EVENT.shapeEvent, 'drawEnd', table.getProperties());
+      socket.emit(EVENT.saveObject, table.getProperties());
+      table = null;
     }
 
     isDown = false;
@@ -131,4 +113,3 @@ module.exports = function(el, AppState) {
     stage.mouseout = mouseup;
   }
 };
-
