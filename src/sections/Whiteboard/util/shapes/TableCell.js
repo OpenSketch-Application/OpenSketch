@@ -16,6 +16,9 @@ function TableCell(shapeProperties) {
   this.maxWidth = 0; // Will be set by Parent's draw method
   this.maxHeight = 0; // Set by Parent's draw method
 
+  this.widestCell = false;
+  this.highestCell = false;
+
   //this.padding = shapeProperties.padding || 0;
   this.textField = new PIXI.Text(shapeProperties.textContent, shapeProperties);
 
@@ -262,8 +265,17 @@ TableCell.prototype.onKeyEvent = function(e) {
 
   this.width = this.textField.width;
   this.height = this.textField.height;
+
   var xDiff = this.width > this.maxWidth ? this.width - this.maxWidth : 0;
   var yDiff = this.height > this.maxHeight ? this.height - this.maxHeight : 0;
+
+  if(this.widestCell && this.width < this.maxWidth) {
+    xDiff = this.width - this.maxWidth;
+  }
+
+  if(this.highestCell && this.height < this.maxHeight) {
+    yDiff = this.height - this.maxHeight;
+  }
 
   if(xDiff !== 0 || yDiff !== 0) {
 
@@ -272,6 +284,7 @@ TableCell.prototype.onKeyEvent = function(e) {
       xDiff: xDiff,
       yDiff: yDiff
     }, this.cellCoords);
+
     if(xDiff !== 0) {
       this.maxWidth = this.width;
       this.parentContainer.colWidths[this.cellCoords[1]] = this.width;
@@ -281,6 +294,7 @@ TableCell.prototype.onKeyEvent = function(e) {
       this.parentContainer.rowHeights[this.cellCoords[0]] = this.height;
     }
   }
+
   //else {
   this.drawBackground();
   //}
@@ -420,6 +434,7 @@ TableCell.prototype.setProperties = function(shapeProperties) {
 
 TableCell.prototype.draw = function(shapeProperties) {
   console.log('Drawing text');
+  this.graphics.clear();
 
   if(shapeProperties) {
     if(shapeProperties.x) this.x = this.textField.x = shapeProperties.x;
@@ -427,6 +442,8 @@ TableCell.prototype.draw = function(shapeProperties) {
 
     this.setProperties(shapeProperties);
   }
+  // this.graphics.x = this.x;
+  // this.graphics.y = this.y;
 
   this.drawBackground();
 

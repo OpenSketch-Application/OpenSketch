@@ -45,13 +45,17 @@ module.exports = function(el, AppState) {
     isDown = true;
     drawRows = curRows =  0;
     drawCols = curCols = 0;
-    startPos = data.getLocalPosition(this);
+    startPos = data.getLocalPosition(stage);
 
     table = shapes.addNew(new Table(Tools.table));
+
     table.draw({
       x: startPos.x,
       y: startPos.y
     })
+
+    //table.graphics.position.x = startPos.x;
+    //table.graphics.position.y = startPos.y;
   };
 
   var mousemove = function(data) {
@@ -103,6 +107,7 @@ module.exports = function(el, AppState) {
 
   var mouseup = function(data) {
     if(isDown) {
+
       table.setMoveListeners(AppState);
       table.unHighlight();
       // socket.emit(EVENT.shapeEvent, 'drawEnd', table.getProperties());

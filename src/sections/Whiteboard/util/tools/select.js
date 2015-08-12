@@ -83,13 +83,6 @@ module.exports = function(AppState, el) {
       // A flag to tell us a Shape has just been modified
       shapeModified = true;
     }
-    // else {
-    //   if(this.dragging) {
-    //     var position = data.getLocalPosition(pixiStage);
-    //     this.position.x = position.x - this.mousePressPoint[0];
-    //     this.position.y = position.y - this.mousePressPoint[1];
-    //   }
-    // }
   };
 
   // On mouseUp: deselect object and remove lock
@@ -114,17 +107,17 @@ module.exports = function(AppState, el) {
       if(isDown && shapeModified) {
         // Update the Shape Object
         // and it should also unlock the Shape
-        socket.emit(EVENT.updateObject, saveObject);
+        //socket.emit(EVENT.updateObject, saveObject);
       }
       // Due to our inability to do proper delegation yet, we had to wait to BaseShape class's
       // mouseDown event to attach the shape that experienced a mouseDown to attach the shape
       // to AppState.select.selectedObject
       else {
         // Emit socket lockShape Event, since we know a Shape had been selected by now
-        socket.emit(EVENT.lockShape, 'lockShape', {
-          _id: select.selectedObject._id,
-          currentUserId: Users.currentUserId
-        });
+        // socket.emit(EVENT.lockShape, 'lockShape', {
+        //   _id: select.selectedObject._id,
+        //   currentUserId: Users.currentUserId
+        // });
       }
     }
 

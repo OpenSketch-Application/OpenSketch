@@ -49,134 +49,96 @@ whiteboardSockets.userListCB = function(socket,nsp){
 //JOIN
 whiteboardSockets.joinSessionCB = function(socket,nsp) {
   return function(uName, uID, newUser) {
-        var sessionid = socket.adapter.nsp.name.split('/');
-        sessionid = sessionid[sessionid.length - 1];
-        //validate name
-        console.log('joinsession');
+      var sessionid = socket.adapter.nsp.name.split('/');
+      sessionid = sessionid[sessionid.length - 1];
+      //validate name
+      console.log('joinsession');
 
-        //console.log(socket.request.headers.cookie);
-        //try {
-          Session.findById(sessionid, function(err, session) {
-            if(err){
-              console.warn('Error Retrieving Session: at ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
-              //throw new Error('Error retrieving Session');
-            }
-            else if(session && session._id) {
-              var currentUser = session.users.id(uID);
-              console.log('CHECKING USER ', currentUser, socket.id);
-              console.log('uName', uName, 'uId', uID);
+      //console.log(socket.request.headers.cookie);
+      //try {
+      Session.findById(sessionid, function(err, session) {
+        if(err){
+          console.warn('Error Retrieving Session: at ', new Date.toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+          //throw new Error('Error retrieving Session');
+        }
+        else if(session && session._id) {
+          var currentUser = session.users.id(uID);
+          console.log('CHECKING USER ', currentUser, socket.id);
+          console.log('uName', uName, 'uId', uID);
 
-              if(!uName) {
-                console.log('ERROR: must have username');
-                socket.emit(EVENT.badSession);
+          if(!uName) {
+            console.log('ERROR: must have username');
+            socket.emit(EVENT.badSession);
 
-                return;
+            return;
+          }
+          else if(uName && session.users.length < session.sessionProperties.maxUsers) {
+            var canChat = session.sessionProperties.canChat;
+            var canDraw = session.sessionProperties.canDraw;
+
+            // If user doesnt exist in DB already
+            if(!currentUser) {
+              if(session.users.length === 0) {
+                canChat = true;
+                canDraw = true;
               }
-              else if(uName && session.users.length < session.sessionProperties.maxUsers) {
-                var canChat = session.sessionProperties.canChat;
-                var canDraw = session.sessionProperties.canDraw;
 
-                // If user doesnt exist in DB already
-                if(!currentUser) {
-                  if(session.users.length === 0) {
-                    canChat = true;
-                    canDraw = true;
-                  }
+              currentUser = {
+                username: uName,
+                userRank: session.users.length,
+                permissions: {
+                  canDraw: canDraw,
+                  canChat: canChat
+                },
+                _id: socket.id
+              };
 
-                  currentUser = {
-                    username: uName,
-                    userRank: session.users.length,
-                    permissions: {
-                      canDraw: canDraw,
-                      canChat: canChat
-                    },
-                    _id: socket.id
-                  };
-
-                  session.users.push(currentUser);
-                }
-                else {
-                  // Set the permissions to w/e the DB settings had
-                  if(currentUser.userRank && session.users[currentUser.userRank]) {
-                    session.users[currentUser.userRank].permissions.canChat = canChat;
-                    session.users[currentUser.userRank].permissions.canDraw = canDraw;
-                  }
-                  else {
-                    console.log('ERROR: Uh oh, mismatch', currentUser);
-                  }
-                }
-                session.save(function(err) {
-                  if(err) {
-                    console.log(err);
-                  }
-                  else {
-                    console.log(session);
-                    if(newUser){
-                      socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has joined the session');
-                      socket.emit(EVENT.announcement, currentUser.username + ' has joined the session');
-                    }
-                    else {
-                      socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
-                      socket.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
-                    }
-
-                    socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
-
-                    socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
-
-                    socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
-
-                    socket.emit(EVENT.populateCanvas, session.canvasShapes);
-                  }
-                });
-              }
-              else {
-                // Need to emit socket event that too many users are present in session
-                console.log('Too many users in this session ', session);
-              }
+              session.users.push(currentUser);
             }
             else {
-             console.warn('Null Sesson returned, Date: ', new Date().toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+              // Set the permissions to w/e the DB settings had
+              if(currentUser.userRank && session.users[currentUser.userRank]) {
+                session.users[currentUser.userRank].permissions.canChat = canChat;
+                session.users[currentUser.userRank].permissions.canDraw = canDraw;
+              }
+              else {
+                console.log('ERROR: Uh oh, mismatch', currentUser);
+              }
             }
-          });
-              //push new user to db
-              // else if(!currentUser && session.users.length < session.sessionProperties.maxUsers){
-              //   var newUser = {
-              //     username: uName,
-              //     userRank: userRank || session.users.length,
-              //     permissions: {
-              //       canDraw: session.users.length === 0 ? true : session.sessionProperties.canDraw,
-              //       canChat: session.users.length === 0 ? true : session.sessionProperties.canChat
-              //     },
-              //     _id: socket.id
-              //   };
+            session.save(function(err) {
+              if(err) {
+                console.log(err);
+              }
+              else {
+                console.log(session);
+                if(newUser){
+                  socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has joined the session');
+                  socket.emit(EVENT.announcement, currentUser.username + ' has joined the session');
+                }
+                else {
+                  socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
+                  socket.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
+                }
 
-              //   session.users.push(newUser);
+                socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
 
-              //   session.save(function(err){
-              //     if(err) {
-              //       console.log(err);
-              //     }
-              //     else {
-              //       console.log(session);
-              //       console.log(session.users[0].permissions);
-              //       socket.broadcast.emit(EVENT.announcement, uName + ' has joined the session');
-              //       socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users);
+                socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
 
-              //       socket.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, session.users.length - 1);
+                socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
 
-              //       socket.emit(EVENT.updateChatList, session.messages, session.canvasShapes);
-
-              //       socket.emit(EVENT.populateCanvas, session.canvasShapes);
-              //     }
-              //   });
-              // }
-
-
-        //}
-        // catch(e) {
-        //   console.log(e);
-        // }
+                socket.emit(EVENT.populateCanvas, session.canvasShapes);
+              }
+            });
+          }
+          else {
+            // Need to emit socket event that too many users are present in session
+            console.log('Too many users in this session ', session);
+          }
+        }
+        else {
+         console.warn('Null Sesson returned, Date: ', new Date().toUTCString(), ' recieved sessionId: ', sessionid, ' retreieved ', session);
+        }
+      });
   };
 };
 //CHAT

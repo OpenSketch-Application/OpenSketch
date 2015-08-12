@@ -68,8 +68,10 @@ Table.prototype.getProperties = function() {
   shape.cols = this.cols;
   shape.headerStyle = this.headerStyle;
 
-  shape.cells = this.cells.map(function(cell) {
-    return cell.getProperties();
+  shape.cells = this.cells.map(function(row) {
+    return row.map(function(col) {
+      return col;
+    });
   });
 
   return shape;
@@ -136,8 +138,11 @@ Table.prototype.draw = function(shapeProperties) {
     if(shapeProperties.fillAlpha) this.fillAlpha = shapeProperties.fillAlpha;
     if(shapeProperties.fillColor) this.fillColor = shapeProperties.fillColor;
   }
+
   // this.width = this.cols*this.cell.width;
   // this.height = this.rows*this.cell.height;
+  // this.graphics.x = this.x;
+  // this.graphics.y = this.y;
 
   // Since we cleared all the draw properties for redrawing, we need to set the styles again
   this.graphics.lineWidth =  this.lineWidth;
@@ -189,6 +194,8 @@ Table.prototype.draw = function(shapeProperties) {
 
   // Calculate width/heights of row/cols and draw the cells
   for(r = this.rows-1; r >= 0; r--) {
+    var widestSet = false;
+    var highestSet = false;
     for(c = this.cols-1; c >= 0; c--) {
       this.cells[r][c].draw({
         x: this.x + c * this.cells[r][c].width,
@@ -197,12 +204,33 @@ Table.prototype.draw = function(shapeProperties) {
         height: this.rowHeights[r]
       });
 
+      this.cells[r][c].x = this.x + c * this.cells[r][c].width;
+      this.cells[r][c].y = this.y + r * this.cells[r][c].height;
+
       // Set the max dimensions a cell can expand to before affecting other cells
       // in the table
       this.cells[r][c].maxWidth = this.colWidths[c];
       this.cells[r][c].maxHeight = this.colWidths[r];
+      if(!widestSet && this.cells[r][c].width === this.colWidths[c]) {
+        this.cells[r][c].widestCell = true;
+        widestSet = true;
+      }
+      if(!highestSet && this.cells[r][c].height === this.rowHeights[r]) {
+        this.cells[r][c].highestCell = false;
+        highestSet = true;
+      }
     }
   }
+
+  // var widestCells = this.getWidestCellColumns(this.cells);
+  // var highestCells = this.getHighestCellRows(this.cells);
+
+  // widestCells.forEach(function(cell) {
+  //   cell.widestCell = true;
+  // })
+  // highestCells.forEach(function(cell) {
+  //   cell.highestCell = true;
+  // })
 
   this.height = this.rowHeights.reduce(function(sum, row) {
     return sum += row;
@@ -214,26 +242,55 @@ Table.prototype.draw = function(shapeProperties) {
   console.log(this.rowHeights);
   console.log(this.colWidths);
 
+  console.log('Cell widths', this.getWidestCellColumns(this.cells));
+  console.log('Cell heights', this.getHighestCellRows(this.cells));
+
   return this;
 };
 
 Table.prototype.reDraw = function(newDimensions, cellCoords) {
   var r = 0, c = 0;
+  var maxR = this.rows;
+  var maxC = this.cols;
 
-  for(r = this.rows-1; r >= 0; r--) {
-    for(c = this.cols-1; c >= 0; c--) {
+  var widestCells = this.getWidestCellColumns(this.cells);
+  var highestCells = this.getHighestCellRows(this.cells);
+
+  for(r = 0; r < maxR; r++) {
+    for(c = 0; c < maxC; c++) {
+
+      // Check if cell is widest in row
+      if(widestCells.indexOf(this.cells[r][c]) !== -1) {
+        this.cells[r][c].widestCell = true;
+      }
+      else {
+        this.cells[r][c].widestCell = false;
+      }
+
+      if(highestCells.indexOf(this.cells[r][c]) !== -1) {
+        this.cells[r][c].highestCell = true;
+      }
+      else {
+        this.cells[r][c].highestCell = false;
+      }
+
       if(r === cellCoords[0] && c === cellCoords[1]) continue;
 
       // Width of Column needs to be changed
-      if(newDimensions.x !== 0)
-        this.cells[r][c].graphics.x = this.cells[r][c].x + newDimensions.x;
+      if(newDimensions.xDiff !== 0){
+        if(c !== cellCoords[1]) {
+          this.cells[r][c].graphics.x = this.cells[r][c].graphics.x + newDimensions.xDiff;
+        }
+      }
 
       // Height of the row needs to be changed
-      if(newDimensions.y !== 0)
-        this.cells[r][c].graphics.y = this.cells[r][c].y + newDimensions.y;
+      if(newDimensions.yDiff !== 0) {
+        if(r !== cellCoords[0]) {
+          this.cells[r][c].graphics.y = this.cells[r][c].graphics.y + newDimensions.yDiff;
+        }
+      }
     }
   }
-  //this.draw();
 }
 
 Table.prototype.getWidestCellColumns = function (cells) {
@@ -333,7 +390,7 @@ Table.prototype.setMoveListeners = function(AppState) {
   var Tools = AppState.Tools;
 
   // Call BaseShape's setMoveListeners
-  //BaseShape.prototype.setMoveListeners.call(this, AppState);
+  BaseShape.prototype.setMoveListeners.call(this, AppState);
 
   // If we wish to keep the BaseShape's mouse events, bind the mouse events
   // of the graphics object and store the bound mouse event handlers in this scope
@@ -355,12 +412,12 @@ Table.prototype.setMoveListeners = function(AppState) {
   for(var r = this.rows-1; r >= 0; r--) {
     for(var c = this.cols-1; c >= 0; c--) {
       this.cells[r][c].setMoveListeners(AppState);
-      this.cells[r][c].graphics.mousemove = function() {};
+      //this.cells[r][c].graphics.mousemove = function() {};
 
     }
   }
 
-  this.graphics.mousedown = function(data) {
+  //this.graphics.mousedown = function(data) {
     // Get x,y of mouseclick
     // var localPos = data.getLocalPosition(this.graphics);
     // console.log(localPos);
@@ -376,7 +433,7 @@ Table.prototype.setMoveListeners = function(AppState) {
     //   col: Math.floor(relativeCoords.x/this.width * this.cols)
     // };
 
-    console.log(cellCoords);
+    //console.log(cellCoords);
 
     //this.cells[cellCoords.row][cellCoords.col].highlight();
 
@@ -387,7 +444,7 @@ Table.prototype.setMoveListeners = function(AppState) {
 
     //this.highlight();
 
-  }.bind(this);
+  //}.bind(this);
   // Mouse handlers for highlighting shapes
   this.graphics.mouseover = function(data) {
     if(this.locked) return;
