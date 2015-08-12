@@ -22,7 +22,7 @@ module.exports = function(io, framework, AppState){
   socket = io.connect(SERVERNAME + curSession);
 
   socket.on('connect', function(info) {
-    AppState.sessionId = curSessionId;
+    //AppState.sessionId = curSessionId;
   });
 
   // if(Cookies.get('UserId') === curSessionId) {

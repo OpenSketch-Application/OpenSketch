@@ -97,7 +97,7 @@ function getWhiteboardSession(socket,whiteboardId,shapes){
   }
   var name = find('.username').value;
 
-  Cookies.set('username',name);
+  //Cookies.set('username',name);
 
   var sessionSettings = {};
   sessionSettings.id = whiteboardId;
@@ -226,7 +226,6 @@ Section.prototype = {
           el.className = el.className + ' error';
           errLabel.innerHTML = errLabel.innerHTML + err.errors[i].msg + '<br/>';
         }
-
       }
       else {
 
@@ -238,7 +237,16 @@ Section.prototype = {
         if(settings.id){
 
           Cookies.set('created', settings.id);
-          Cookies.set('UserId', settings.id);
+
+          // Set User Info
+          Cookies.set(
+            settings.id,
+            settings.id + ',' +
+            find('.username').value + ',' +
+            0 + ',',
+            { expires: 800 }
+          );
+
           framework.go('/whiteboard/'+ settings.id);
 
         }else{

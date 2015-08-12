@@ -50,8 +50,9 @@ module.exports = {
   },
 
   sendMessage: function() {
+    var _this = this;
     var message = {
-      user: Cookies.get('username'),
+      user: _this.currentUser,
       msg: this.inputBox.value
     };
 

@@ -45,6 +45,8 @@ module.exports = function(io,DB) {
 
     return function(socket) {
 
+      socket.on(EVENT.saveSettings, wbLogic.saveSettingsCB(socket,nspWb));
+      socket.on(EVENT.loadSettings, wbLogic.loadSettingsCB(socket,nspWb));
       socket.on(EVENT.deleteSession, wbLogic.deleteSessionCB(socket,nspWb));
       socket.on(EVENT.saveSession, wbLogic.saveSessionCB(socket,nspWb));
       socket.on(EVENT.joinSession, wbLogic.joinSessionCB(socket, nspWb));
