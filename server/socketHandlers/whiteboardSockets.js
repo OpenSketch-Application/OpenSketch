@@ -55,7 +55,7 @@ whiteboardSockets.loadSettingsCB = function(socket,nsp){
             throw new Error('Error retrieving Session');
           }
           else if(session && session._id){
-            
+
             callback(session.sessionProperties);
           }
 
@@ -84,7 +84,7 @@ whiteboardSockets.saveSettingsCB = function(socket,nsp){
               session.sessionProperties.maxUsers = max;
             }
 
-            callback(session.sessionProperties); 
+            callback(session.sessionProperties);
             session.save(function(err){});
 
           }
@@ -157,14 +157,14 @@ whiteboardSockets.joinSessionCB = function(socket,nsp) {
               }
               else {
                 console.log(session);
-                if(newUser){
+                //if(newUser){
                   socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has joined the session');
                   socket.emit(EVENT.announcement, currentUser.username + ' has joined the session');
-                }
-                else {
-                  socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
-                  socket.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
-                }
+                //}
+                // else {
+                //   socket.broadcast.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
+                //   socket.emit(EVENT.announcement, currentUser.username + ' has rejoined the session');
+                // }
 
                 socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/' + session.sessionProperties.maxUsers, session.users, currentUser.userRank);
 
@@ -256,18 +256,17 @@ whiteboardSockets.disconnectCB = function(socket, nspWb){
         }
       }
 
-      if(removedUser !== undefined){
-       socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has left the session');
-
-       socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
-
-       socket.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
-      }
       session.save(function(err){
          if(err) console.log(err);
          else {
           console.log(session);
+          if(removedUser !== undefined){
+           socket.broadcast.emit(EVENT.announcement, removedUser.username + ' has left the session');
 
+           socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+
+           socket.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+          }
           socket.disconnect();
          }
       });
@@ -368,7 +367,7 @@ whiteboardSockets.removeUser = function(socket) {
     var sessionid = socket.adapter.nsp.name.split('/');
     sessionid = sessionid[sessionid.length - 1];
 
-    console.log('Removing User', userModel);
+    console.log('Removing User for all Sessions', userModel);
 
     socket.broadcast.emit(EVENT.disconnectUser, {
       _id: userModel._id,
@@ -382,7 +381,7 @@ whiteboardSockets.removeThisUser = function(socket) {
     var sessionid = socket.adapter.nsp.name.split('/');
     sessionid = sessionid[sessionid.length - 1];
 
-    console.log('Removing User', userModel);
+    console.log('Removing This User', userModel);
 
     Session.findById(sessionid, function(err, session){
       if(err){
@@ -431,7 +430,9 @@ whiteboardSockets.usersChangedCB = function(socket) {
     sessionid = sessionid[sessionid.length - 1];
     console.log(usersToChange);
 
-    //UserManager.updateOne(sessionid,)
+    //socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
+
+
     Session.findById(sessionid, function(err, session) {
       if(err){
         console.log('error');
@@ -443,12 +444,13 @@ whiteboardSockets.usersChangedCB = function(socket) {
         var firstUser = session.users.id(usersToChange[0]._id);
         var secondUser = session.users.id(usersToChange[1]._id);
 
-        session.users.set(firstUser.userRank, usersToChange[1]);
-        session.users.set(secondUser.userRank, usersToChange[0]);
+        session.users.set(session.users.indexOf(firstUser), usersToChange[1]);
+        session.users.set(session.users.indexOf(secondUser), usersToChange[0]);
 
         session.save(function(err) {
           if(err) console.log(err);
           else {
+            console.log(session);
             socket.broadcast.emit(EVENT.updateUserList, session.users.length+'/'+session.sessionProperties.maxUsers, session.users);
           }
         });

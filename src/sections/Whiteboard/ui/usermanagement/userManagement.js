@@ -198,10 +198,11 @@ module.exports = {
           // Set the source rows's HTML to the HTML of the row we dropped on.
           this.currentRow.innerHTML = e.target.innerHTML;
           e.target.innerHTML = e.dataTransfer.getData('text/html');
-
+          var tempId = this.currentRow.id;
+          this.currentRow.id = e.target.id;
+          e.target.id = tempId;
           // Update the model
           var tempUser = this.Users.users[userSelectedIndex];
-
 
           this.Users.users[userSelectedIndex] = this.Users.users[userToChangeIndex];
           this.Users.users[userToChangeIndex] = tempUser;
@@ -243,19 +244,21 @@ module.exports = {
 
       AppState.Users.users = users;
 
-      if(curUserIndex !== undefined && users[curUserIndex]){
+      if(!AppState.Users.currentUser._id && curUserIndex !== undefined && users[curUserIndex]) {
         AppState.Users.currentUser = users[curUserIndex];
 
-        if(AppState.Users.currentUser._id === this.Users.users[0]._id) {
-          Cookies.set(
-            AppState.sessionId,
-            AppState.Users.currentUser._id + ',' +
-            AppState.Users.currentUser.username + ',' +
-            AppState.Users.currentUser.userRank + ',',
-            { expires: 800 }
-          );
-        }
+        //if(AppState.Users.currentUser._id === this.Users.users[0]._id) {
+        Cookies.set(
+          AppState.sessionId,
+          AppState.Users.currentUser._id + ',' +
+          AppState.Users.currentUser.username + ',' +
+          AppState.Users.currentUser.userRank + ',',
+          { expires: 800 }
+        );
+        //}
       }
+
+      AppState.Users.currentUser = AppState.Users.getUserById(AppState.Users.currentUser._id);
 
       if(AppState.Users.currentUser.userRank === 0) {
         // Set up the User Interface, based on the User's permissions
@@ -309,6 +312,16 @@ module.exports = {
 
       // Sets the events listeners that handle user interaction
       this.addUserInteraction();
+
+    }
+
+    if(AppState.Users.currentUser.userRank === 0) {
+      document.getElementById('opt-settings').style.display = "";
+      document.getElementById('opt-close').style.display = "";
+    }
+    else {
+      document.getElementById('opt-settings').style.display = "none";
+      document.getElementById('opt-close').style.display = "none";
     }
 
     // Remove listeners on other components to prevent user from
@@ -324,9 +337,11 @@ module.exports = {
     // Remove Canvas/Stage and Toolbar Listeners
     if(userModel.permissions.canDraw === false) {
       AppState.ToolBar.removeUserInteraction();
+      document.getElementById('opt-clear').style.display = "none";
     }
     else {
       AppState.ToolBar.addUserInteraction();
+      document.getElementById('opt-clear').style.display = "";
     }
   },
   emitSocketUserPermissionsChanged: function(userModel) {
